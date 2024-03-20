@@ -44,3 +44,14 @@ const tradeSchema = new Schema({
         required: true
     }
 })
+
+tradeSchema.pre('save', (next) => {
+    this.return = (this.closingPrice - this.entryPrice) * this.units;
+
+    this.status = this.return > 0 ? 'WIN' : this.return < 0 ? 'LOSS' : 'BREAKEVEN';
+
+    next();
+});
+
+
+module.exports = moongose.model('Trade', tradeSchema)
