@@ -43,7 +43,7 @@ const tradeSchema = new Schema({
         type: Number,
         required: true
     }
-})
+}, { timestamps: true })
 
 tradeSchema.pre('save', (next) => {
     this.return = (this.closingPrice - this.entryPrice) * this.units;
