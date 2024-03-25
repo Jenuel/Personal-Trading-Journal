@@ -1,6 +1,12 @@
 const Trade = require('./models/Trade.js')
 
 
+const getAllTrades = async (req, res) => {
+    const trades = await Trade.find({}).sort({createdAt: -1})
+
+    res.status(200).json(trades)
+}
+
 const createTrade = async (req, res) => {
     const {
         currencyPair,
