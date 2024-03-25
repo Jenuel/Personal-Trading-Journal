@@ -1,20 +1,20 @@
 const express = require('express')
-
+const {
+    createTrade
+} = require('../controllers/tradeController')
 const router = express.Router()
 
-router.get('/', () => {
+router.get('/', (req, res) => {
     
 })
 
-router.post('/', () => {
+router.post('/', createTrade)
+
+router.delete('/', (req, res) => {
     
 })
 
-router.delete('/', () => {
-    
-})
-
-router.patch('/', () => {
+router.patch('/', (req, res) => {
     
 })
 
