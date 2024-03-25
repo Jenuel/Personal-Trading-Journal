@@ -35,12 +35,12 @@ const tradeSchema = new Schema({
         type: String,
         required: true
     },
-    OvrBalance: {
-        type: Number,
-        required: true
-    },
     description: {
         type: String,
+        required: true
+    },
+    balance: {
+        type: Number,
         required: true
     }
 })
@@ -50,6 +50,7 @@ tradeSchema.pre('save', (next) => {
 
     this.status = this.return > 0 ? 'WIN' : this.return < 0 ? 'LOSS' : 'BREAKEVEN';
 
+    this.balance = this.balance + this.return;
     next();
 });
 
