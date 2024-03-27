@@ -7,6 +7,18 @@ const getAllTrades = async (req, res) => {
     res.status(200).json(trades)
 }
 
+const getTrade = async (req, res) => {
+    const { id } = req.params
+
+    const trade = await Trade.findById(id)
+
+    if (!trade){
+        res.status(404).json({error: 'No such trade'})
+    }
+
+    res.status(200).json(trade)
+}
+
 const createTrade = async (req, res) => {
     const {
         currencyPair,
@@ -34,6 +46,9 @@ const createTrade = async (req, res) => {
     }
 }
 
+
+
 module.exports = {
+    
     createTrade
 }
