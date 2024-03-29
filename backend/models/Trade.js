@@ -1,7 +1,7 @@
-const moongose = require('moongose')
+const mongoose = require('moongose')
 const Portflio = require('./Portfolio')
 
-const Schema = moongose.Schema
+const Schema = mongoose.Schema
 
 const tradeSchema = new Schema({
     currencyPair: {
