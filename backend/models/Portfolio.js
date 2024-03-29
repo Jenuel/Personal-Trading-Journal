@@ -3,6 +3,10 @@ moongose = require('moongose')
 const Schema = moongose.Schema
 
 const newPortfolio = new Schema({
+    portName: {
+        type: String,
+        required: true
+    },
     balance: {
         type: Number,
         required: true
