@@ -1,4 +1,5 @@
 const moongose = require('moongose')
+const Portflio = require('./Portfolio')
 
 const Schema = moongose.Schema
 
@@ -40,17 +41,24 @@ const tradeSchema = new Schema({
         required: true
     },
     balance: {
-        type: Number,
-        required: true
+        type: Schema.Types.ObjectId,
+        ref: 'Portfolio'
     }
 }, { timestamps: true })
 
-tradeSchema.pre('save', (next) => {
+tradeSchema.post('save', async (next) => {
     this.return = (this.closingPrice - this.entryPrice) * this.units;
 
     this.status = this.return > 0 ? 'WIN' : this.return < 0 ? 'LOSS' : 'BREAKEVEN';
 
     this.balance = this.balance + this.return;
+
+    const balance = await Portflio.findOneAndUpdate(
+        { _id: this.balance },
+        { $inc: { balance: returnAmount } }, 
+        { new: true } 
+    );
+
     next();
 });
 
