@@ -9,3 +9,8 @@ const newPortfolio = new Schema({
     }
 })
 
+const Portflio = moongose.model('Portfolio', newPortfolio)
+
+module.exports = {
+    Portflio
+}
