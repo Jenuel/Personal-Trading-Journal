@@ -1,8 +1,8 @@
-import mongoose from 'moongose'
+import mongoose from 'mongose'
 
-const Schema = moongose.Schema
+const Schema = mongoose.Schema
 
-const newPortfolio = new Schema({
+const newPortfolioSchema = new Schema({
     portName: {
         type: String,
         required: true
@@ -13,8 +13,6 @@ const newPortfolio = new Schema({
     }
 })
 
-const Portflio = moongose.model('Portfolio', newPortfolio)
+const Portfolio = mongoose.model('Portfolio', newPortfolioSchema)
 
-module.exports = {
-    Portflio
-}
+export default Portfolio;
