@@ -5,13 +5,11 @@ import express from 'express';
 import tradeRoutes from './routes/tradeRoute.js';
 import mongoose from 'mongoose';
 
-
 //application
 const app = express()
 
 //routers
 app.use('/trades', tradeRoutes)
-
 
 //connection to database
 mongoose.connect(process.env.DB_URI)
@@ -23,6 +21,3 @@ mongoose.connect(process.env.DB_URI)
  .catch((error) => {
     console.log(error)
  })
-
-
- 
