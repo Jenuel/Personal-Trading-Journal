@@ -1,4 +1,4 @@
-moongose = require('moongose')
+import mongoose from 'moongose'
 
 const Schema = moongose.Schema
 
