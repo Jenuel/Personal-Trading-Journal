@@ -48,4 +48,4 @@ const updateTrade = async (req, res ) => {
 const deleteTrade = async (req, res ) => {
     
 }
-export { getTrades, getTrade, createTrade }
+export { getTrades, getTrade, createTrade, updateTrade, deleteTrade }

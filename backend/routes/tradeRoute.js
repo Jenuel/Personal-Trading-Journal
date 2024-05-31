@@ -1,22 +1,21 @@
 import express from 'express'
-import { createTrade } from '../controllers/tradeController'
+import { getTrades, getTrade, createTrade, updateTrade, deleteTrade } from '../controllers/tradeController'
 
 const router = express.Router()
 
-router.get('/', (request, response) => {
-    
-})
+//get all trades
+router.get('/', getTrades)
 
+router.get('/', getTrade)
+
+//create a trade
 router.post('/', createTrade)
 
-router.delete('/', (req, res) => {
-    
-})
+//update a trade
+router.put('/', updateTrade)
 
-router.put('/', )
+//delete a trade
+router.delete('/', deleteTrade)
 
-router.patch('/', (req, res) => {
-    
-})
 
 export default router;
