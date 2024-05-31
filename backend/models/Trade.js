@@ -1,5 +1,5 @@
-const mongoose = require('moongose')
-const Portflio = require('./Portfolio')
+import mongoose from 'moongose'
+import { Portflio } from './Portfolio'
 
 const Schema = mongoose.Schema
 
