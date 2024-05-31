@@ -1,10 +1,9 @@
-const express = require('express')
-const {
-    createTrade
-} = require('../controllers/tradeController')
+import express from 'express'
+import { createTrade } from '../controllers/tradeController'
+
 const router = express.Router()
 
-router.get('/', (req, res) => {
+router.get('/', (request, response) => {
     
 })
 
@@ -14,8 +13,10 @@ router.delete('/', (req, res) => {
     
 })
 
+router.put('/', )
+
 router.patch('/', (req, res) => {
     
 })
 
-module.exports = router
+export default router;
