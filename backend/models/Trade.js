@@ -1,11 +1,11 @@
-import mongoose from 'moongose'
-import { Portflio } from './Portfolio'
+import mongoose from 'mongoose';
+import Portfolio from './Portfolio.js';
 
-const Schema = mongoose.Schema
+const Schema = mongoose.Schema;
 
 const tradeSchema = new Schema({
     currencyPair: {
-        type: String, 
+        type: String,
         required: true
     },
     entryPrice: {
@@ -44,23 +44,24 @@ const tradeSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Portfolio'
     }
-}, { timestamps: true })
+}, { timestamps: true });
 
-tradeSchema.post('save', async (next) => {
-    this.return = (this.closingPrice - this.entryPrice) * this.units;
+tradeSchema.post('save', async function(doc, next) {
+    doc.return = (doc.closingPrice - doc.entryPrice) * doc.units;
+    doc.status = doc.return > 0 ? 'WIN' : doc.return < 0 ? 'LOSS' : 'BREAKEVEN';
 
-    this.status = this.return > 0 ? 'WIN' : this.return < 0 ? 'LOSS' : 'BREAKEVEN';
-
-    this.balance = this.balance + this.return;
-
-    const balance = await Portflio.findOneAndUpdate(
-        { _id: this.balance },
-        { $inc: { balance: returnAmount } }, 
-        { new: true } 
-    );
-
-    next();
+    try {
+        const portfolio = await Portfolio.findById(doc.balance);
+        if (portfolio) {
+            portfolio.balance += doc.return;
+            await portfolio.save();
+        }
+        next();
+    } catch (error) {
+        next(error);
+    }
 });
 
+const Trade = mongoose.model('Trade', tradeSchema);
 
-module.exports = moongose.model('Trade', tradeSchema)
+export default Trade;
