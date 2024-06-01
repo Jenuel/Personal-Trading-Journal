@@ -14,7 +14,15 @@ const getTrade = async (req, res) => {
     res.status(200).json(trade)
 }
 
-const createTrade = async (req, res) => {
+const createTrade = async (request, response) => {
+    const { body } = request
+    const newTrade = new Trade(body)
+    try {
+        const savedTrade = await newTrade.save();
+        return response.status(201).send(savedTrade)
+    } catch (error) {
+        return response.sendStatus(400)
+    }
     const {
         currencyPair,
         entryPrice,
