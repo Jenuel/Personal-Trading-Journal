@@ -3,13 +3,15 @@ dotenv.config();
 
 import express from 'express';
 import tradeRoutes from './routes/tradeRoute.js';
+import portRoutes from './routes/portRoute.js';
 import mongoose from 'mongoose';
 
 //application
 const app = express()
 
 //routers
-app.use('/trades', tradeRoutes)
+app.use(portRoutes)
+app.use(tradeRoutes)
 
 //connection to database
 mongoose.connect(process.env.DB_URI)
