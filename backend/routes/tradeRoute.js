@@ -4,18 +4,19 @@ import { getTrades, getTrade, createTrade, updateTrade, deleteTrade } from '../c
 const router = express.Router()
 
 //get all trades
-router.get('/', getTrades)
+router.get('/trades', getTrades)
 
-router.get('/', getTrade)
+//get a specific trade
+router.get('/trades/:id', getTrade)
 
 //create a trade
-router.post('/', createTrade)
+router.post('/trades/:id', createTrade)
 
 //update a trade
-router.put('/', updateTrade)
+router.put('/trades/:id', updateTrade)
 
 //delete a trade
-router.delete('/', deleteTrade)
+router.delete('/trades/:id', deleteTrade)
 
 
 export default router;

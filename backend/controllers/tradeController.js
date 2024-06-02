@@ -1,17 +1,18 @@
+import { request } from 'express'
 import Trade from './models/Trade.js'
 
-const getTrades = async (req, res) => {
+const getTrades = async (request, response) => {
     const trades = await Trade.find({}).sort({createdAt: -1})
-    res.status(200).json(trades)
+    response.status(200).send(trades)
 }
 
-const getTrade = async (req, res) => {
-    const { id } = req.params
+const getTrade = async (request, response) => {
+    const { id } = request.params
     const trade = await Trade.findById(id)
     if (!trade){
         res.status(404).json({error: 'No such trade'})
     }
-    res.status(200).json(trade)
+    response.status(200).send(trade)
 }
 
 const createTrade = async (request, response) => {
@@ -23,37 +24,36 @@ const createTrade = async (request, response) => {
     } catch (error) {
         return response.sendStatus(400)
     }
-    const {
-        currencyPair,
-        entryPrice,
-        closingPrice,
-        entryTime,
-        closingTime,
-        units,
-        description
-    } = req.body
+}
 
+const updateTrade = async (request, response) => {
+    const { id } = request.params
+    const updatedTrade = request.body
     try {
-        const trade = await Trade.create({
-            currencyPair,
-            entryPrice,
-            closingPrice,
-            entryTime,
-            closingTime,
-            units,
-            description
-        })
-        res.status(200).json(trade)
+        const result = await Trade.findOneAndUpdate({ _id: id }, updatedTrade, { new: true });
+        if (result) {
+            return response.status(200).send(result);
+        } else {
+            return response.sendStatus(404);  // Trade not found
+        }
     } catch (error) {
-        res.status(400).json({error: error.message})
+        return response.sendStatus(400);
     }
 }
 
-const updateTrade = async (req, res ) => {
 
+const deleteTrade = async (request, response) => {
+    const { id } = request.params
+    try {
+        const result = await Trade.findOneAndDelete({ _id: id });
+        if (result) {
+            return response.sendStatus(204);  
+        } else {
+            return response.sendStatus(404);  
+        }
+    } catch (error) {
+        return response.sendStatus(400);
+    }
 }
 
-const deleteTrade = async (req, res ) => {
-    
-}
 export { getTrades, getTrade, createTrade, updateTrade, deleteTrade }
