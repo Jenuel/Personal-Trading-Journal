@@ -1,22 +1,43 @@
-import { useState }from 'react'
+import React, { useState } from 'react'
 
 interface Trade {
     id: string
     name: string
 }
+
 type PortPickerProps = {
     options: Trade[]
     onSelect: (option: Trade) => void;
 }
 
-function DropButton({}) {
+const DropButton: React.FC<PortPickerProps> = ({ options, onSelect }) => {
+    const [isOpen, setIsOpen] = useState(false)
 
-  
-  return (
-    <div className='port-picker'>
+    const toggleDropdown = () => {
+        setIsOpen(!isOpen)
+    }
 
-    </div>
-  )
+    const handleSelect = (option: Trade) => {
+        onSelect(option)
+        setIsOpen(false)
+    }
+
+    return (
+        <div className='port-picker'>
+            <button className="dropdown" onClick={toggleDropdown}>
+                Select Trade
+            </button>
+            {isOpen && (
+                <div className="dropdown-menu">
+                    {options.map(option => (
+                        <div key={option.id} className="dropdown-item" onClick={() => handleSelect(option)}>
+                            {option.name}
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+    )
 }
 
 export default DropButton
