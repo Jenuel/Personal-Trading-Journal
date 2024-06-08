@@ -10,7 +10,7 @@ type PortPickerProps = {
     onSelect: (option: Trade) => void;
 }
 
-const DropButton: React.FC<PortPickerProps> = ({ options, onSelect }) => {
+const DropButton = ({ options, onSelect } : PortPickerProps) => {
     const [isOpen, setIsOpen] = useState(false)
 
     const toggleDropdown = () => {
