@@ -5,7 +5,12 @@ import './App.css';
 function App() {
   return (
     <div className="App">
-      <Navbar/>
+      <div className='sidebar-app'>
+        <Navbar/>
+      </div>
+      <div className="choice-page">
+        
+      </div>
     </div>
   );
 }
