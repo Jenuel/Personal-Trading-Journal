@@ -1,5 +1,7 @@
+import AddPortPopup from '../pages/AddPortPopup'
 import DropButton from './DropButton'
 import React from 'react'
+import { Link } from 'react-router-dom' 
 
 interface Trade {
     id: string
@@ -7,7 +9,6 @@ interface Trade {
 }
 
 function Navbar() {
-
   function handleSelected(option: Trade) {
     console.log('Selected option:', option)
   }
@@ -21,7 +22,16 @@ function Navbar() {
   
   return (
     <div className='sidebar'>
-      <DropButton options={samplePorts} onSelect={handleSelected}/>
+      <div className="portpicker">
+        <DropButton options={samplePorts} onSelect={handleSelected}/>
+        <AddPortPopup />
+      </div>
+      <div className="choices">
+        <ul>
+          <li><Link to="/">Statistics</Link></li>
+          <li><Link to="/">Trades</Link></li>
+        </ul>
+      </div>
     </div>
   )
 }
