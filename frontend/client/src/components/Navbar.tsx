@@ -2,6 +2,7 @@ import AddPortPopup from '../pages/AddPortPopup'
 import DropButton from './DropButton'
 import React from 'react'
 import { Link } from 'react-router-dom' 
+import './Navbar.css'
 
 interface Trade {
     id: string
@@ -22,14 +23,18 @@ function Navbar() {
   
   return (
     <div className='sidebar'>
-      <div className="portpicker">
-        <DropButton options={samplePorts} onSelect={handleSelected}/>
-        <AddPortPopup />
+      <div className="port-container">
+        <div className="portpicker">
+          <DropButton options={samplePorts} onSelect={handleSelected}/>
+        </div>
+        <div className="addport">
+          <AddPortPopup />
+        </div>
       </div>
       <div className="choices">
         <ul>
-          <li><Link to="/">Statistics</Link></li>
-          <li><Link to="/">Trades</Link></li>
+          <li><Link to="/statistics">Statistics</Link></li>
+          <li><Link to="/trades">Trades</Link></li>
         </ul>
       </div>
     </div>
