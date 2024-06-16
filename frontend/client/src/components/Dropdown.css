@@ -1,25 +1,31 @@
 .dropdown {
-    position: relative; 
+    position: relative;
+    width: 150px; /* Set width for the dropdown button */
+    box-sizing: border-box; /* Ensure padding and border are included in width */
 }
-  
+
 .dropdown-menu {
     position: absolute;
     top: 100%; 
     left: 0;
     z-index: 1000; 
-    background: white;
+    background: red;
     border: 1px solid #ccc;
     list-style: none;
     padding: 0;
     margin: 0;
+    width: 150px; /* Match width of the dropdown button */
+    box-sizing: border-box; /* Ensure padding and border are included in width */
 }
-  
-.dropdown-menu li {
+
+.dropdown-item {
     padding: 10px;
     cursor: pointer;
+    color: black;
+    width: 100%; /* Ensure each item respects the dropdown menu width */
+    box-sizing: border-box; /* Ensure padding and border are included in width */
 }
-  
-.dropdown-menu li:hover {
+
+.dropdown-menu .dropdown-item:hover {
     background: #f0f0f0;
 }
-  
