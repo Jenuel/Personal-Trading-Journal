@@ -1,69 +1,44 @@
-/* General Sidebar Styles */
 .sidebar {
     padding: 20px;
-  }
+    position: relative;
+}
   
-  .port-container {
-    display: flex;
-    align-items: flex-start; /* Align items at the start to ensure they stay at the top */
-    gap: 10px;
-  }
+.port-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  position: relative;
+}
   
-  .choices {
-    margin-top: 20px;
-  }
+.choices {
+  margin-top: 20px;
+}
   
-  .choices ul {
-    list-style-type: none;
-    padding: 0;
-  }
+.choices ul {
+  list-style-type: none;
+  padding: 0;
+}
   
-  .choices li {
-    margin-bottom: 10px;
-  }
+.choices li {
+  margin-bottom: 10px;
+}
   
-  .choices a {
-    text-decoration: none;
-    color: #333;
-  }
+.choices a {
+  text-decoration: none;
+  color: #333;
+}
+
+.dropdown {
+  position: relative; 
+  cursor: pointer;
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 16px;
+  font-size: 16px;
+  border: none;
+}
   
-  /* Dropdown Styles */
-  .dropdown {
-    position: relative; /* Required for absolutely positioned dropdown content */
-  }
-  
-  .dropbtn {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 16px;
-    font-size: 16px;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .dropdown-content {
-    display: none;
-    position: absolute;
-    top: 100%; /* Position below the button */
-    left: 0;
-    background-color: #f9f9f9;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1;
-  }
-  
-  .dropdown-content a {
-    color: black;
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-  }
-  
-  .dropdown-content a:hover {
-    background-color: #f1f1f1;
-  }
-  
-  .dropdown.open .dropdown-content {
-    display: block;
-  }
+.dropdown.open .dropdown-content {
+  display: block;
+}
   

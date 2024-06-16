@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import './Dropdown.css'
 
 interface Trade {
     id: string
