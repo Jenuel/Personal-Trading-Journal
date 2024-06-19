@@ -49,7 +49,7 @@ const handleClick = () => {
           <DropButton options={samplePorts} onSelect={handleSelected}/>
         </div>
         <div className="addport">
-          <AddPort onClick={handleClick} />
+          <AddPort />
         </div>
       </div>
       <div className="choices">
