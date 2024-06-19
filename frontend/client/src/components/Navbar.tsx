@@ -39,6 +39,9 @@ function Navbar() {
 ];
 
   
+const handleClick = () => {
+
+}
   return (
     <div className='sidebar'>
       <div className="port-container">
@@ -46,7 +49,7 @@ function Navbar() {
           <DropButton options={samplePorts} onSelect={handleSelected}/>
         </div>
         <div className="addport">
-          <AddPort />
+          <AddPort onClick={handleClick} />
         </div>
       </div>
       <div className="choices">
