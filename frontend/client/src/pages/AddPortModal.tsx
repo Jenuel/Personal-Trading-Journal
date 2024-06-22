@@ -28,8 +28,8 @@ function AddPortModal({ closeModal } : AddPortModalProps) {
             value={balance}
             />
         </form>
-        <button className="submit" type='submit'>Create</button>
         <button className="cancel" onClick={closeModal}>Cancel</button>
+        <button className="submit" type='submit'>Create</button>
     </div>
   )
 }
