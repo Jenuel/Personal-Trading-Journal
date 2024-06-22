@@ -10,16 +10,21 @@ interface AddPortPopupProps {
 const AddPortPopup = () => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleOpen = () => {
-    setIsOpen(true);
+  const handleClick = () => {
+    if (isOpen){
+      setIsOpen(false)
+    }
+    else{
+      setIsOpen(true)
+    }
   }
 
   const handleClose = () => {
-    setIsOpen(false);
+    setIsOpen(false)
   }
   return (
     <>
-      <IconButton onClick={handleOpen} color="primary" aria-label="add port">
+      <IconButton onClick={handleClick} color="primary" aria-label="add port">
         <AddIcon />
       </IconButton>
 
