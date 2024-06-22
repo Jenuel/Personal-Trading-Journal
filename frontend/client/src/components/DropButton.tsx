@@ -25,6 +25,10 @@ const DropButton = ({ options, onSelect } : PortPickerProps) => {
         setCurrentName(option.name)
     }
 
+    const handleDelete = (option: Trade) => {
+
+    }
+
     return (
         <div className='port-picker'>
             <button className="dropdown" onClick={toggleDropdown}>
@@ -33,8 +37,15 @@ const DropButton = ({ options, onSelect } : PortPickerProps) => {
             {isOpen && (
                 <div className="dropdown-menu">
                     {options.map(option => (
-                        <div key={option.id} className="dropdown-item" onClick={() => handleSelect(option)}>
-                            {option.name}
+                        <div key={option.id} className="dropdown-item">
+                            <div className="port-name">
+                                <span onClick={() => handleSelect(option)}>{option.name}</span>
+                            </div>
+                            <div className="delete-container">
+                                <button className="delete-button" onClick={() => handleDelete(option)}>
+                                    Delete    
+                                </button>  
+                            </div>                      
                         </div>
                     ))}
                 </div>
