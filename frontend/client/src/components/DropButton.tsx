@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react';
 import './Dropdown.css'
 
 interface Trade {
@@ -14,6 +14,7 @@ type PortPickerProps = {
 const DropButton = ({ options, onSelect } : PortPickerProps) => {
     const [isOpen, setIsOpen] = useState(false)
     const [currentName, setCurrentName] = useState("Select Trade")
+    const dropdownRef = useRef<HTMLDivElement>(null)
 
     const toggleDropdown = () => {
         setIsOpen(!isOpen)
@@ -29,8 +30,22 @@ const DropButton = ({ options, onSelect } : PortPickerProps) => {
 
     }
 
+    const handleClickOutside = (event: MouseEvent) => {
+        if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+            setIsOpen(false);
+        }
+    };
+
+    useEffect(() => {
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside)
+        }
+    }, [])
+
+
     return (
-        <div className='port-picker'>
+        <div className='port-picker' ref={dropdownRef}>
             <button className="dropdown" onClick={toggleDropdown}>
                 { currentName }
             </button>
