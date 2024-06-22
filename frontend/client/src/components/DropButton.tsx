@@ -13,6 +13,7 @@ type PortPickerProps = {
 
 const DropButton = ({ options, onSelect } : PortPickerProps) => {
     const [isOpen, setIsOpen] = useState(false)
+    const [currentName, setCurrentName] = useState("Select Trade")
 
     const toggleDropdown = () => {
         setIsOpen(!isOpen)
@@ -21,12 +22,13 @@ const DropButton = ({ options, onSelect } : PortPickerProps) => {
     const handleSelect = (option: Trade) => {
         onSelect(option)
         setIsOpen(false)
+        setCurrentName(option.name)
     }
 
     return (
         <div className='port-picker'>
             <button className="dropdown" onClick={toggleDropdown}>
-                Select Trade
+                { currentName }
             </button>
             {isOpen && (
                 <div className="dropdown-menu">
