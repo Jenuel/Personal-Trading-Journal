@@ -1,5 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react'
+import { IconButton } from '@mui/material'
+import DeleteIcon from '@mui/icons-material/Delete'
 import './Dropdown.css'
+import ConfirmationModal from '../pages/ConfirmationModal'
+
 
 interface Trade {
     id: string
@@ -27,7 +31,7 @@ const DropButton = ({ options, onSelect } : PortPickerProps) => {
     }
 
     const handleDelete = (option: Trade) => {
-
+        <ConfirmationModal  />
     }
 
     const handleClickOutside = (event: MouseEvent) => {
@@ -58,7 +62,9 @@ const DropButton = ({ options, onSelect } : PortPickerProps) => {
                             </div>
                             <div className="delete-container">
                                 <button className="delete-button" onClick={() => handleDelete(option)}>
-                                    Delete    
+                                    <IconButton onClick={() => handleDelete(option)} color="primary" aria-label="add port">
+                                        <DeleteIcon />
+                                    </IconButton>
                                 </button>  
                             </div>                      
                         </div>
