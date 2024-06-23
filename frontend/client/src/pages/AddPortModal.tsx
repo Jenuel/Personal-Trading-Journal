@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
-import './AddPortModal.css';
+import React, { useState, useEffect, useRef } from 'react'
+import './AddPortModal.css'
 
 interface AddPortModalProps {
     closeModal: () => void;
 }
 
 const AddPortModal = ({ closeModal }: AddPortModalProps) => {
-    const [name, setName] = useState('');
-    const [balance, setBalance] = useState(0);
+    const [name, setName] = useState('')
+    const [balance, setBalance] = useState(0)
+    const modalRef = useRef<HTMLDivElement>(null)
 
     const handleSubmit = (e: React.FormEvent) => {
       e.preventDefault();
@@ -15,9 +16,22 @@ const AddPortModal = ({ closeModal }: AddPortModalProps) => {
       closeModal()
     }
 
+    const handleClickOutside = (event: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+        closeModal()
+      }
+    };
+
+    useEffect(() => {
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside)
+        }
+    }, [])
+
     return (
         <div className="modal-backdrop">
-            <div className="modal-content">
+             <div className="modal-content" ref={modalRef}>
                 <form onSubmit={handleSubmit}>
                     <label htmlFor="name">Name</label>
                     <input 
