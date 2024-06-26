@@ -4,7 +4,6 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import './Dropdown.css'
 import ConfirmationModal from '../pages/ConfirmationModal'
 
-
 interface Trade {
     id: string
     name: string
@@ -17,6 +16,8 @@ type PortPickerProps = {
 
 const DropButton = ({ options, onSelect } : PortPickerProps) => {
     const [isOpen, setIsOpen] = useState(false)
+    const [modalOpen, setModalOpen] = useState(false)
+    const [selectedTrade, setSelectedTrade] = useState<Trade | null>(null);
     const [currentName, setCurrentName] = useState("Select Trade")
     const dropdownRef = useRef<HTMLDivElement>(null)
 
@@ -31,14 +32,23 @@ const DropButton = ({ options, onSelect } : PortPickerProps) => {
     }
 
     const handleDelete = (option: Trade) => {
-        <ConfirmationModal  />
+        setSelectedTrade(option)
+        setModalOpen(true)
+    }
+
+    const confirmDelete = () => {
+        if (selectedTrade) {
+            console.log(`Deleted ${selectedTrade.name}`);
+        }
+        setModalOpen(false);
+        setSelectedTrade(null);
     }
 
     const handleClickOutside = (event: MouseEvent) => {
         if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
             setIsOpen(false);
         }
-    };
+    }
 
     useEffect(() => {
         document.addEventListener('mousedown', handleClickOutside)
@@ -57,19 +67,27 @@ const DropButton = ({ options, onSelect } : PortPickerProps) => {
                 <div className="dropdown-menu">
                     {options.map(option => (
                         <div key={option.id} className="dropdown-item">
-                            <div className="port-name">
-                                <span onClick={() => handleSelect(option)}>{option.name}</span>
-                            </div>
-                            <div className="delete-container">
-                                <button className="delete-button" onClick={() => handleDelete(option)}>
-                                    <IconButton onClick={() => handleDelete(option)} color="primary" aria-label="add port">
-                                        <DeleteIcon />
-                                    </IconButton>
-                                </button>  
-                            </div>                      
+                            <span className="port-name" onClick={() => handleSelect(option)}>{option.name}</span>
+                            <IconButton
+                                onClick={() => handleDelete(option)}
+                                color="primary"
+                                aria-label="delete port"
+                                sx={{ p: 0.25 }} 
+                                size="small"
+                            >
+                                <DeleteIcon sx={{ fontSize: 16 }} />
+                            </IconButton>
                         </div>
                     ))}
                 </div>
+            )}
+             {selectedTrade && (
+                <ConfirmationModal 
+                    open={modalOpen} 
+                    onClose={() => setModalOpen(false)} 
+                    onConfirm={confirmDelete} 
+                    message={`Are you sure you want to delete ${selectedTrade.name}?`} 
+                />
             )}
         </div>
     )

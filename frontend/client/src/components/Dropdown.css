@@ -1,49 +1,54 @@
-/* Dropdown.css */
-
 .dropdown {
     position: relative;
-    width: 150px; /* Set width for the dropdown button */
+    width: 150px;
 }
 
 .dropdown-menu {
     position: absolute;
-    top: calc(100% + 5px); /* Position below the button */
+    top: calc(100% + 5px); 
     left: 0;
     z-index: 1000;
-    background: red;
+    background: white;
     border: 1px solid #ccc;
     list-style: none;
     padding: 0;
     margin: 0;
-    width: 100%; /* Match width of the dropdown button */
-    max-height: 120px; /* Maximum height to display 3 items */
-    overflow-y: auto; /* Enable vertical scrollbar if content exceeds max-height */
-    box-sizing: border-box; /* Ensure padding and border are included in width */
-    border-radius: 4px; /* Optional: Rounded corners for dropdown menu */
+    width: 100%; 
+    max-height: 120px; 
+    overflow-y: auto; 
+    box-sizing: border-box;
+    border-radius: 4px;
 }
 
 .dropdown-menu::-webkit-scrollbar {
-    width: 8px; /* Width of the scrollbar */
+    width: 8px;
 }
 
 .dropdown-menu::-webkit-scrollbar-track {
-    background: #f1f1f1; /* Color of the track */
-    border-radius: 4px; /* Optional: Rounded corners for the track */
+    background: #f1f1f1; 
+    border-radius: 4px; 
 }
 
 .dropdown-menu::-webkit-scrollbar-thumb {
-    background: #888; /* Color of the thumb */
-    border-radius: 4px; /* Optional: Rounded corners for the thumb */
+    background: #888; 
+    border-radius: 4px; 
 }
 
 .dropdown-item {
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; 
     padding: 10px;
     cursor: pointer;
     color: black;
-    width: 100%; /* Ensure each item respects the dropdown menu width */
-    box-sizing: border-box; /* Ensure padding and border are included in width */
+    width: 100%; 
+    box-sizing: border-box;
 }
 
-.dropdown-menu .dropdown-item:hover {
+.dropdown-item:hover {
     background: #f0f0f0;
+}
+
+.port-name {
+    flex-grow: 1; 
 }
