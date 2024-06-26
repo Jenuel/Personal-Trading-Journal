@@ -11,17 +11,13 @@ const AddPortPopup = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleClick = () => {
-    if (isOpen){
-      setIsOpen(false)
-    }
-    else{
-      setIsOpen(true)
-    }
+    setIsOpen(true)
   }
 
   const handleClose = () => {
     setIsOpen(false)
   }
+  
   return (
     <>
       <IconButton onClick={handleClick} color="primary" aria-label="add port">
