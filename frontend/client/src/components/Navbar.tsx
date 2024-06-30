@@ -9,7 +9,12 @@ interface Trade {
     name: string
 }
 
-function Navbar() {
+interface NavbarProps {
+  chosenPort: Trade
+  portfolios: Trade[]
+  onSelectPortfolio: (portfolio: Trade) => void;
+}
+function Navbar({chosenPort, portfolios, onSelectPortfolio} : NavbarProps) {
   function handleSelected(option: Trade) {
     console.log('Selected option:', option)
   }
@@ -42,11 +47,12 @@ function Navbar() {
 const handleClick = () => {
 
 }
+
   return (
     <div className='sidebar'>
       <div className="port-container">
         <div className="portpicker">
-          <DropButton options={samplePorts} onSelect={handleSelected}/>
+          <DropButton selectedPort={chosenPort} options={samplePorts} onSelect={handleSelected}/>
         </div>
         <div className="addport">
           <AddPort />
