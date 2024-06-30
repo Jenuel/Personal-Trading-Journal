@@ -45,10 +45,9 @@ function App() {
       ) : (
         <>
           <div className='sidebar-app'>
-            <Navbar/>
+            <Navbar chosenPort={selectedPortfolio} portfolios={samplePorts} onSelectPortfolio={handleSelect}/>
           </div>
           <div className="choice-page">
-           
           </div>
         </>
       )}
