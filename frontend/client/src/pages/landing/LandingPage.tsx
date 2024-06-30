@@ -1,30 +1,36 @@
-import React from 'react'
+import React from 'react';
 
 interface Trade {
-    id: string
-    name: string
+  id: string;
+  name: string;
 }
 
 interface LandingPageProps {
-    portfolios: Trade[]
-    onSelectPortfolio: (portfolio: Trade) => void;
+  portfolios: Trade[];
+  onSelectPortfolio: (portfolio: Trade) => void;
 }
 
-function LandingPage({portfolios, onSelectPortfolio} : LandingPageProps) {
+const LandingPage: React.FC<LandingPageProps> = ({ portfolios, onSelectPortfolio }) => {
+  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedPortfolioId = event.target.value;
+    const selectedPortfolio = portfolios.find(portfolio => portfolio.id === selectedPortfolioId);
+    if (selectedPortfolio) {
+      onSelectPortfolio(selectedPortfolio);
+    }
+  };
+
   return (
     <div className="container">
-        <button className="initial">
-            Please select a portfolio
-        </button>
-        <div className="ports">
+      <select className="portfolio-dropdown" onChange={handleChange}>
+        <option value="">Please select a portfolio</option>
         {portfolios.map((portfolio) => (
-            <button key={portfolio.id} onClick={() => onSelectPortfolio(portfolio)} className="portfolio-button">
-              {portfolio.name}
-            </button>
+          <option key={portfolio.id} value={portfolio.id}>
+            {portfolio.name}
+          </option>
         ))}
-        </div>
+      </select>
     </div>
-  )
-}
+  );
+};
 
-export default LandingPage
+export default LandingPage;
