@@ -66,20 +66,24 @@ const DropButton = ({ selectedPort, options, onSelect } : PortPickerProps) => {
             </button>
             {isOpen && (
                 <div className="dropdown-menu">
-                    {options.map(option => (
-                        <div key={option.id} className="dropdown-item">
-                            <span className="port-name" onClick={() => handleSelect(option)}>{option.name}</span>
-                            <IconButton
-                                onClick={() => handleDelete(option)}
-                                color="primary"
-                                aria-label="delete port"
-                                sx={{ p: 0.25 }} 
-                                size="small"
-                            >
-                                <DeleteIcon sx={{ fontSize: 16 }} />
-                            </IconButton>
-                        </div>
-                    ))}
+                    {options
+                        .filter(option => option.name !== currentName)
+                        .map(option => (
+                            <div key={option.id} className="dropdown-item">
+                                <span className="port-name" onClick={() => handleSelect(option)}>
+                                    {option.name}
+                                </span>
+                                <IconButton
+                                    onClick={() => handleDelete(option)}
+                                    color="primary"
+                                    aria-label="delete port"
+                                    sx={{ p: 0.25 }}
+                                    size="small"
+                                >
+                                    <DeleteIcon sx={{ fontSize: 16 }} />
+                                </IconButton>
+                            </div>
+                        ))}
                 </div>
             )}
              {selectedTrade && (
