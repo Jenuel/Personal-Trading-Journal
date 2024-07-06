@@ -4,23 +4,20 @@ import React from 'react'
 import { Link } from 'react-router-dom' 
 import './Navbar.css'
 
-interface Trade {
-    id: string
-    name: string
+interface Portfolio {
+  id: string
+  name: string
 }
 
 interface NavbarProps {
-  chosenPort: Trade
-  portfolios: Trade[]
-  onSelectPortfolio: (portfolio: Trade) => void;
+  chosenPort: string
+  portfolios: Portfolio[]
 }
-function Navbar({chosenPort, portfolios, onSelectPortfolio} : NavbarProps) {
-  function handleSelected(option: Trade) {
-    console.log('Selected option:', option)
-  }
+function Navbar({chosenPort, portfolios} : NavbarProps) {
+
 
   // Sample portfolios
-  const samplePorts: Trade[] = [
+  const samplePorts: Portfolio[] = [
     { id: '1', name: 'Trade A' },
     { id: '2', name: 'Trade B' },
     { id: '3', name: 'Trade C' },
@@ -52,7 +49,7 @@ const handleClick = () => {
     <div className='sidebar'>
       <div className="port-container">
         <div className="portpicker">
-          <DropButton selectedPort={chosenPort} options={samplePorts} onSelect={handleSelected}/>
+          <DropButton selectedPort={chosenPort} options={samplePorts} />
         </div>
         <div className="addport">
           <AddPort />

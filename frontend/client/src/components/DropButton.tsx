@@ -10,7 +10,7 @@ interface Trade {
 }
 
 type PortPickerProps = {
-    selectedPort: Trade
+    selectedPort: string
     options: Trade[]
     onSelect: (option: Trade) => void;
 }
@@ -19,7 +19,7 @@ const DropButton = ({ selectedPort, options, onSelect } : PortPickerProps) => {
     const [isOpen, setIsOpen] = useState(false)
     const [modalOpen, setModalOpen] = useState(false)
     const [selectedTrade, setSelectedTrade] = useState<Trade | null>(null);
-    const [currentName, setCurrentName] = useState(selectedPort.name)
+    const [currentName, setCurrentName] = useState(selectedPort)
     const dropdownRef = useRef<HTMLDivElement>(null)
 
     const toggleDropdown = () => {
