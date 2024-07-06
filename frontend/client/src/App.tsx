@@ -2,11 +2,15 @@ import Navbar from './components/Navbar';
 import React, { useState } from 'react';
 import './App.css';
 import LandingPage from './pages/landing/LandingPage';
+import { createBrowserRouter } from 'react-router-dom';
+import Layout from './pages/Layout';
+
 
 interface Trade {
   id: string;
   name: string;
 }
+
 
 function App() {
 
@@ -32,7 +36,45 @@ function App() {
     { id: '19', name: 'Trade S' },
     { id: '20', name: 'Trade T' }
 ];
-  const [data, setData] = useState<Trade[]>([])
+
+
+const [data, setData] = useState(samplePorts)
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <LandingPage data={data}/>
+  },
+  { //Statistics page
+    path: "/statistics/:portId",
+    element: <Layout data={data}/>
+  },
+  { //Trades page
+    path: "/trades/:portId",
+    element: <Layout data={data} />
+  }
+])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
   const [selectedPortfolio, setSelectedPortfolio] = useState<Trade | null>(null)
 
   const handleSelect = (portfolio: Trade) => {
