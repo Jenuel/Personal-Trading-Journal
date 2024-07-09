@@ -1,6 +1,6 @@
 .sidebar {
-    padding: 20px;
-    position: relative;
+  padding: 10px;
+  position: relative;
 }
   
 .port-container {
@@ -36,6 +36,7 @@
   padding: 10px 16px;
   font-size: 16px;
   border: none;
+  width: 175px;
 }
 
 .dropdown-menu .dropdown-item {
