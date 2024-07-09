@@ -1,29 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-interface Trade {
+interface Portfolio {
   id: string;
   name: string;
 }
 
 interface LandingPageProps {
-  portfolios: Trade[];
-  onSelectPortfolio: (portfolio: Trade) => void;
+  data: Portfolio[];
 }
 
-const LandingPage: React.FC<LandingPageProps> = ({ portfolios, onSelectPortfolio }) => {
-  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+function LandingPage({ data }: LandingPageProps) {
+  const navigate = useNavigate();
+  const [selectedId, setSelectedId] = useState<string>('');
+
+  const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedPortfolioId = event.target.value;
-    const selectedPortfolio = portfolios.find(portfolio => portfolio.id === selectedPortfolioId);
-    if (selectedPortfolio) {
-      onSelectPortfolio(selectedPortfolio);
-    }
+    setSelectedId(selectedPortfolioId);
+    navigate(`/statistics/${selectedPortfolioId}`);
   };
 
+  console.log("Testing 1")
   return (
     <div className="container">
-      <select className="portfolio-dropdown" onChange={handleChange}>
+      <select className="portfolio-dropdown" value={selectedId} onChange={handleSelectChange}>
         <option value="">Please select a portfolio</option>
-        {portfolios.map((portfolio) => (
+        {data.map((portfolio) => (
           <option key={portfolio.id} value={portfolio.id}>
             {portfolio.name}
           </option>
@@ -31,6 +33,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ portfolios, onSelectPortfolio
       </select>
     </div>
   );
-};
+}
 
 export default LandingPage;
