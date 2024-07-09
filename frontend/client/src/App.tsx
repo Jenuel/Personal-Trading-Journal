@@ -2,8 +2,10 @@ import Navbar from './components/Navbar';
 import React, { useState } from 'react';
 import './App.css';
 import LandingPage from './pages/landing/LandingPage';
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Layout from './pages/Layout';
+import Statistics from './pages/statistics/Statistics';
+import Trades from './pages/trades/Trades';
 
 
 interface Trade {
@@ -47,54 +49,22 @@ const router = createBrowserRouter([
   },
   { //Statistics page
     path: "/statistics/:portId",
-    element: <Layout data={data}/>
+    element: <Layout data={data} page={<Statistics/>} />
   },
   { //Trades page
     path: "/trades/:portId",
-    element: <Layout data={data} />
+    element: <Layout data={data} page={<Trades/>} />
   }
 ])
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  return (
+    <RouterProvider router={router}/>
+  );
 
 
   
-  const [selectedPortfolio, setSelectedPortfolio] = useState<Trade | null>(null)
-
-  const handleSelect = (portfolio: Trade) => {
-    setSelectedPortfolio(portfolio)
-  }
-  return (
-    <div className="App">
-      {!selectedPortfolio ? (
-        <LandingPage portfolios={samplePorts} onSelectPortfolio={handleSelect} />
-      ) : (
-        <>
-          <div className='sidebar-app'>
-            <Navbar chosenPort={selectedPortfolio} portfolios={samplePorts} onSelectPortfolio={handleSelect}/>
-          </div>
-          <div className="choice-page">
-          </div>
-        </>
-      )}
-    </div>
-  );
 }
 
 export default App;
