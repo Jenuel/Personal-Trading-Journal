@@ -3,36 +3,35 @@ import { IconButton } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete'
 import './Dropdown.css'
 import ConfirmationModal from '../pages/ConfirmationModal'
+import { Link } from 'react-router-dom'
 
-interface Trade {
+interface Portfolio {
     id: string
     name: string
 }
 
 type PortPickerProps = {
-    selectedPort: string
-    options: Trade[]
-    onSelect: (option: Trade) => void;
+    selectedPort: Portfolio
+    options: Portfolio[]
 }
 
-const DropButton = ({ selectedPort, options, onSelect } : PortPickerProps) => {
+function DropButton({ selectedPort, options} : PortPickerProps) {
     const [isOpen, setIsOpen] = useState(false)
     const [modalOpen, setModalOpen] = useState(false)
-    const [selectedTrade, setSelectedTrade] = useState<Trade | null>(null);
-    const [currentName, setCurrentName] = useState(selectedPort)
+    const [selectedTrade, setSelectedTrade] = useState<Portfolio | null>(null);
+    const [currentName, setCurrentName] = useState(selectedPort.name)
     const dropdownRef = useRef<HTMLDivElement>(null)
 
     const toggleDropdown = () => {
         setIsOpen(!isOpen)
     }
 
-    const handleSelect = (option: Trade) => {
-        onSelect(option)
+    const handleSelect = (option: Portfolio) => {
         setIsOpen(false)
         setCurrentName(option.name)
     }
 
-    const handleDelete = (option: Trade) => {
+    const handleDelete = (option: Portfolio) => {
         setSelectedTrade(option)
         setModalOpen(true)
     }
@@ -58,7 +57,7 @@ const DropButton = ({ selectedPort, options, onSelect } : PortPickerProps) => {
         }
     }, [])
 
-
+   console.log(currentName)
     return (
         <div className='port-picker' ref={dropdownRef}>
             <button className="dropdown" onClick={toggleDropdown}>
@@ -70,9 +69,11 @@ const DropButton = ({ selectedPort, options, onSelect } : PortPickerProps) => {
                         .filter(option => option.name !== currentName)
                         .map(option => (
                             <div key={option.id} className="dropdown-item">
-                                <span className="port-name" onClick={() => handleSelect(option)}>
-                                    {option.name}
-                                </span>
+                               <Link to={`/statistics/${option.id}`} className="port-name">
+                                    <span onClick={() => handleSelect(option)}>
+                                        {option.name}
+                                    </span>
+                                </Link>
                                 <IconButton
                                     onClick={() => handleDelete(option)}
                                     color="primary"
