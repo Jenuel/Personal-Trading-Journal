@@ -4,6 +4,10 @@ import Portfolio from './Portfolio.js';
 const Schema = mongoose.Schema;
 
 const tradeSchema = new Schema({
+    category: {
+        type: String,
+        required: true
+    },
     currencyPair: {
         type: String,
         required: true
