@@ -17,10 +17,10 @@ function LandingPage({ data }: LandingPageProps) {
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedPortfolioId = event.target.value;
     setSelectedId(selectedPortfolioId);
-    navigate(`/statistics/${selectedPortfolioId}`);
+    navigate(`/trades/${selectedPortfolioId}`);
   };
 
-  console.log("Testing 1")
+
   return (
     <div className="container">
       <select className="portfolio-dropdown" value={selectedId} onChange={handleSelectChange}>
