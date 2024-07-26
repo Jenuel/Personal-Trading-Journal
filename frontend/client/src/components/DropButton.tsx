@@ -69,7 +69,7 @@ function DropButton({ selectedPort, options} : PortPickerProps) {
                         .filter(option => option.name !== currentName)
                         .map(option => (
                             <div key={option.id} className="dropdown-item">
-                               <Link to={`/statistics/${option.id}`} className="port-name">
+                               <Link to={`/trades/${option.id}`} className="port-name">
                                     <span onClick={() => handleSelect(option)}>
                                         {option.name}
                                     </span>
