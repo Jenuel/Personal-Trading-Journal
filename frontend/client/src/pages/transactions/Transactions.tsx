@@ -3,23 +3,22 @@ import './Transactions.css';
 import AddTrade from '../../components/AddTrade';
 import Trade from '../../components/Trade';
 
+interface TradeData {
+  category: string;
+  currencyPair: string;
+  entryPrice: number;
+  closingPrice: number;
+  entryTime: Date;
+  closingTime: Date;
+  units: number;
+  return: number;
+  status: string;
+  description: string;
+  balance: string;
+}
+
 function Transactions() {
-
-  interface TradeData {
-    category: string;
-    currencyPair: string;
-    entryPrice: number;
-    closingPrice: number;
-    entryTime: Date;
-    closingTime: Date;
-    units: number;
-    return: number;
-    status: string;
-    description: string;
-    balance: string;
-  }
-
-  const sampleTrades = [
+  const sampleTrades: TradeData[] = [
     {
       category: "Long",
       currencyPair: "EUR/USD",
@@ -87,9 +86,14 @@ function Transactions() {
     }
   ];
 
-  const handleTradeClick = (trade : TradeData) => {
-    console.log(trade)
-  }
+  const handleTradeClick = (trade: TradeData) => {
+    console.log(trade);
+  };
+
+  const handleDelete = (trade: TradeData) => {
+    console.log(`Delete trade with balance: ${trade.balance}`);
+    // Implement your delete logic here
+  };
 
   return (
     <div className='trades-container'>
@@ -111,11 +115,17 @@ function Transactions() {
                   <th>Units</th>
                   <th>Return</th>
                   <th>Status</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {sampleTrades.map((trade, index) => (
-                  <Trade key={index} data={trade} onClick={() => handleTradeClick(trade)} />
+                  <Trade
+                    key={index}
+                    data={trade}
+                    onClick={() => handleTradeClick(trade)}
+                    onDelete={() => handleDelete(trade)}
+                  />
                 ))}
               </tbody>
             </table>
@@ -123,7 +133,7 @@ function Transactions() {
         </div>
       </div>
     </div>
-  );  
+  );
 }
 
 export default Transactions;

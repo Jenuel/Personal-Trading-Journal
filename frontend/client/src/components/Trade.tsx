@@ -17,9 +17,15 @@ interface Trade {
 interface TradeProps {
   data: Trade;
   onClick: () => void;
+  onDelete: () => void; 
 }
 
-function Trade({ data, onClick }: TradeProps) {
+function Trade({ data, onClick, onDelete }: TradeProps) {
+  const handleDeleteClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    event.stopPropagation();
+    onDelete();
+  };
+
   return (
     <tr onClick={onClick} style={{ cursor: 'pointer' }}>
       <td>{data.category}</td>
@@ -31,7 +37,7 @@ function Trade({ data, onClick }: TradeProps) {
       <td>{data.units}</td>
       <td>{data.return}</td>
       <td>{data.status}</td>
-      <td><button>Delete</button></td>
+      <td><button onClick={handleDeleteClick}>Delete</button></td>
     </tr>
   );
 }
