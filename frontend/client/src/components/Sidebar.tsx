@@ -9,11 +9,11 @@ interface Portfolio {
   name: string
 }
 
-interface NavbarProps {
+interface SidebarProps {
   chosenPort: Portfolio
   portfolios: Portfolio[]
 }
-function Sidebar({chosenPort, portfolios} : NavbarProps) {
+function Sidebar({chosenPort, portfolios} : SidebarProps) {
 
   return (
     <div className='sidebar'>
