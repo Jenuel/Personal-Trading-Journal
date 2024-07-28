@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import Navbar from '../components/Navbar'
+import Sidebar from '../components/Sidebar'
 import './Layout.css'
 interface Portfolio {
     id: string
@@ -34,7 +34,7 @@ function Layout({ data, page }: LayoutProps) {
     return (
         <div className='main-container'>
             <div className="sidebar-container">
-                <Navbar chosenPort={portfolio} portfolios={data}/>
+                <Sidebar chosenPort={portfolio} portfolios={data}/>
             </div>
             <div className="page">
                 {page}

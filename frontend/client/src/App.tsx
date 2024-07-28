@@ -1,11 +1,11 @@
-import Navbar from './components/Navbar';
+import Navbar from './components/Sidebar';
 import React, { useState } from 'react';
 import './App.css';
 import LandingPage from './pages/landing/LandingPage';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Layout from './pages/Layout';
 import Statistics from './pages/statistics/Statistics';
-import Trades from './pages/trades/Trades';
+import Transactions from './pages/transactions/Transactions';
 
 
 interface Trade {
@@ -53,7 +53,7 @@ const router = createBrowserRouter([
   },
   { //Trades page
     path: "/trades/:portId",
-    element: <Layout data={data} page={<Trades/>} />
+    element: <Layout data={data} page={<Transactions/>} />
   }
 ])
 

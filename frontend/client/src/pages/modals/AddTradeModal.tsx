@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import DateTimePicker from 'react-datetime-picker';
-import '../src/pages/AddTradeModal.css'
+import '../modals/AddTradeModal.css'
 
 interface AddTradeModalProps {
   closeModal: () => void;

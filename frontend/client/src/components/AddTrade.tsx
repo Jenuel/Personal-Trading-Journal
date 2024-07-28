@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import AddTradeModal from '../AddTradeModal'
+import AddTradeModal from '../pages/modals/AddTradeModal'
 
 function AddTrade() {
     const [isOpen, setIsOpen] = useState(false)

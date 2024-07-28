@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import { IconButton } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
-import AddPortModal from '../pages/AddPortModal'
+import AddPortModal from '../pages/modals/AddPortModal'
 
 interface AddPortPopupProps {
-  onClick?: () => void; // Optional prop for click handler
+  onClick?: () => void; 
 }
 
 const AddPortPopup = () => {
@@ -23,7 +23,6 @@ const AddPortPopup = () => {
       <IconButton onClick={handleClick} color="primary" aria-label="add port">
         <AddIcon />
       </IconButton>
-
       {isOpen && <AddPortModal closeModal={handleClose} />}
     </>
   )

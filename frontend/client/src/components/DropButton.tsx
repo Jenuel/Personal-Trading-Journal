@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { IconButton } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete'
 import './Dropdown.css'
-import ConfirmationModal from '../pages/ConfirmationModal'
+import ConfirmationModal from '../pages/modals/ConfirmationModal'
 import { Link } from 'react-router-dom'
 
 interface Portfolio {
