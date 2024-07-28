@@ -2,7 +2,7 @@ import AddPort from './AddPort'
 import DropButton from './DropButton'
 import React from 'react'
 import { Link } from 'react-router-dom' 
-import './Navbar.css'
+import './Sidebar.css'
 
 interface Portfolio {
   id: string
@@ -13,8 +13,7 @@ interface NavbarProps {
   chosenPort: Portfolio
   portfolios: Portfolio[]
 }
-function Navbar({chosenPort, portfolios} : NavbarProps) {
-
+function Sidebar({chosenPort, portfolios} : NavbarProps) {
 
   return (
     <div className='sidebar'>
@@ -34,4 +33,4 @@ function Navbar({chosenPort, portfolios} : NavbarProps) {
   )
 }
 
-export default Navbar
+export default Sidebar
