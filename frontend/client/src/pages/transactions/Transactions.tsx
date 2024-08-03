@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './Transactions.css';
 import AddTrade from '../../components/AddTrade';
-import Trade from '../../components/Trade';
+import TradeComponent from '../../components/TradeComponent';
+import ConfirmationModal from '../modals/ConfirmationModal';
 
 interface TradeData {
   category: string;
@@ -86,13 +87,29 @@ function Transactions() {
     }
   ];
 
+  const [confirm, setConfirm] = useState(false)
+  const [tradeToDelete, setTradeToDelete] = useState<TradeData | null>(null)
+
+  //set the modal for detailed view open
   const handleTradeClick = (trade: TradeData) => {
     console.log(trade);
   };
 
-  const handleDelete = (trade: TradeData) => {
-    console.log(`Delete trade with balance: ${trade.balance}`);
-    // Implement your delete logic here
+  //prompts the modal confirmation
+  const handleDeleteClick = (trade: TradeData) => {
+    console.log(`Confirm deletion of  trade with balance: ${trade.balance}`);
+    setTradeToDelete(trade)
+    setConfirm(true)
+  };
+
+  //actually deletes the data
+  const handleDelete = () => {
+    if (tradeToDelete) {
+      console.log(`Deleting trade with balance: ${tradeToDelete.balance}`);
+      // Perform delete operation here, for example updating the state or making an API call
+      setTradeToDelete(null);
+    }
+    setConfirm(false);
   };
 
   return (
@@ -120,11 +137,11 @@ function Transactions() {
               </thead>
               <tbody>
                 {sampleTrades.map((trade, index) => (
-                  <Trade
+                  <TradeComponent
                     key={index}
                     data={trade}
                     onClick={() => handleTradeClick(trade)}
-                    onDelete={() => handleDelete(trade)}
+                    onDelete={() => handleDeleteClick(trade)}
                   />
                 ))}
               </tbody>
@@ -132,6 +149,13 @@ function Transactions() {
           </div>
         </div>
       </div>
+
+      <ConfirmationModal 
+        open={confirm}
+        onClose={() => setConfirm(false)}
+        onConfirm={handleDelete}
+        message={'Are you sure that you want to delete this trade?'}
+      />
     </div>
   );
 }

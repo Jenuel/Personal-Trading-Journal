@@ -1,26 +1,14 @@
-import React from 'react';
-
-interface Trade {
-  category: string;
-  currencyPair: string;
-  entryPrice: number;
-  closingPrice: number;
-  entryTime: Date;
-  closingTime: Date;
-  units: number;
-  return: number;
-  status: string;
-  description: string;
-  balance: string;
-}
+import React, { useState } from 'react';
+import { Trade } from '../interfaces/interfaces';
 
 interface TradeProps {
-  data: Trade;
-  onClick: () => void;
-  onDelete: () => void; 
+  data: Trade
+  onClick: () => void
+  onDelete: () => void 
 }
 
-function Trade({ data, onClick, onDelete }: TradeProps) {
+function TradeComponent({ data, onClick, onDelete }: TradeProps) {
+
   const handleDeleteClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.stopPropagation();
     onDelete();
@@ -42,4 +30,4 @@ function Trade({ data, onClick, onDelete }: TradeProps) {
   );
 }
 
-export default Trade;
+export default TradeComponent;

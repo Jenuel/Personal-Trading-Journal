@@ -1,13 +1,9 @@
 import AddPort from './AddPort'
 import DropButton from './DropButton'
 import React from 'react'
-import { Link } from 'react-router-dom' 
+import { Link, useParams } from 'react-router-dom' 
 import './Sidebar.css'
-
-interface Portfolio {
-  id: string
-  name: string
-}
+import { Portfolio } from '../interfaces/interfaces'
 
 interface SidebarProps {
   chosenPort: Portfolio
@@ -15,6 +11,8 @@ interface SidebarProps {
 }
 function Sidebar({chosenPort, portfolios} : SidebarProps) {
 
+  const { id } = useParams()
+  
   return (
     <div className='sidebar'>
       <div className="port-container">

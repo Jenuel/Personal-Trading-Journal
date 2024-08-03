@@ -1,10 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-interface Portfolio {
-  id: string;
-  name: string;
-}
+import { Portfolio } from '../../interfaces/interfaces';
 
 interface LandingPageProps {
   data: Portfolio[];
