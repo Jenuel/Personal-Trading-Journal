@@ -3,23 +3,11 @@ import './Transactions.css';
 import AddTrade from '../../components/AddTrade';
 import TradeComponent from '../../components/TradeComponent';
 import ConfirmationModal from '../modals/ConfirmationModal';
+import { Trade } from '../../interfaces/interfaces';
 
-interface TradeData {
-  category: string;
-  currencyPair: string;
-  entryPrice: number;
-  closingPrice: number;
-  entryTime: Date;
-  closingTime: Date;
-  units: number;
-  return: number;
-  status: string;
-  description: string;
-  balance: string;
-}
 
 function Transactions() {
-  const sampleTrades: TradeData[] = [
+  const sampleTrades: Trade[] = [
     {
       category: "Long",
       currencyPair: "EUR/USD",
@@ -88,15 +76,15 @@ function Transactions() {
   ];
 
   const [confirm, setConfirm] = useState(false)
-  const [tradeToDelete, setTradeToDelete] = useState<TradeData | null>(null)
+  const [tradeToDelete, setTradeToDelete] = useState<Trade | null>(null)
 
   //set the modal for detailed view open
-  const handleTradeClick = (trade: TradeData) => {
+  const handleTradeClick = (trade: Trade) => {
     console.log(trade);
   };
 
   //prompts the modal confirmation
-  const handleDeleteClick = (trade: TradeData) => {
+  const handleDeleteClick = (trade: Trade) => {
     console.log(`Confirm deletion of  trade with balance: ${trade.balance}`);
     setTradeToDelete(trade)
     setConfirm(true)
