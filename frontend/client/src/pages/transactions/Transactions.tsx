@@ -4,6 +4,7 @@ import AddTrade from '../../components/AddTrade';
 import TradeComponent from '../../components/TradeComponent';
 import ConfirmationModal from '../modals/ConfirmationModal';
 import { Trade } from '../../interfaces/interfaces';
+import DetailModal from '../modals/DetailModal';
 
 
 function Transactions() {
@@ -77,10 +78,12 @@ function Transactions() {
 
   const [confirm, setConfirm] = useState(false)
   const [tradeToDelete, setTradeToDelete] = useState<Trade | null>(null)
+  const [selectedTrade, setSelectedTrade] = useState<Trade | null>(null);
 
   //set the modal for detailed view open
   const handleTradeClick = (trade: Trade) => {
     console.log(trade);
+    setSelectedTrade(trade);
   };
 
   //prompts the modal confirmation
@@ -144,7 +147,17 @@ function Transactions() {
         onConfirm={handleDelete}
         message={'Are you sure that you want to delete this trade?'}
       />
+
+      
+      {selectedTrade && (
+        <DetailModal 
+          open={!!selectedTrade}
+          onClose={() => setSelectedTrade(null)}
+          data={selectedTrade}
+        />
+      )}
     </div>
+
   );
 }
 
