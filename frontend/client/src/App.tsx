@@ -52,7 +52,7 @@ const router = createBrowserRouter([
     element: <Layout data={data} page={<Statistics/>} />
   },
   { //Trades page
-    path: "/trades/:portId",
+    path: "/transactions/:portId",
     element: <Layout data={data} page={<Transactions/>} />
   }
 ])

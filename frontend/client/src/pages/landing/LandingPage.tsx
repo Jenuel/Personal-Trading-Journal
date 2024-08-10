@@ -13,7 +13,7 @@ function LandingPage({ data }: LandingPageProps) {
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedPortfolioId = event.target.value;
     setSelectedId(selectedPortfolioId);
-    navigate(`/trades/${selectedPortfolioId}`);
+    navigate(`/transactions/${selectedPortfolioId}`);
   };
 
 
