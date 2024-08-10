@@ -1,4 +1,3 @@
-import Navbar from './components/Sidebar';
 import React, { useState } from 'react';
 import './App.css';
 import LandingPage from './pages/landing/LandingPage';
@@ -6,17 +5,12 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Layout from './pages/Layout';
 import Statistics from './pages/statistics/Statistics';
 import Transactions from './pages/transactions/Transactions';
-
-
-interface Trade {
-  id: string;
-  name: string;
-}
+import { Portfolio } from '../src/interfaces/interfaces'
 
 
 function App() {
 
-  const samplePorts: Trade[] = [
+  const samplePorts: Portfolio[] = [
     { id: '1', name: 'Trade A' },
     { id: '2', name: 'Trade B' },
     { id: '3', name: 'Trade C' },
