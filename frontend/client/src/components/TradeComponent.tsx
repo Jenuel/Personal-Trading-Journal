@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
+import IconButton from '@mui/material/IconButton';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { Trade } from '../interfaces/interfaces';
+import { Icon } from '@mui/material';
 
 interface TradeProps {
   data: Trade
@@ -25,7 +28,11 @@ function TradeComponent({ data, onClick, onDelete }: TradeProps) {
       <td>{data.units}</td>
       <td>{data.return}</td>
       <td>{data.status}</td>
-      <td><button onClick={handleDeleteClick}>Delete</button></td>
+      <td>
+        <IconButton onClick={handleDeleteClick} aria-label='delete'>
+          <DeleteIcon/>
+        </IconButton>
+      </td>
     </tr>
   );
 }
