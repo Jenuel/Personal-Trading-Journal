@@ -1,3 +1,16 @@
 .trades-container {
     flex: 1;
 }
+
+.table-container {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.table-container tr {
+    border-collapse: collapse;
+}
+.table-container tr:hover td{
+    background-color: #742727;
+}
