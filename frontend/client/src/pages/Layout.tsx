@@ -34,7 +34,7 @@ function Layout({ data, page }: LayoutProps) {
     return (
         <div className='main-container'>
             <div className="sidebar-container">
-                <Sidebar chosenPort={portfolio} portfolios={data}/>
+                <Sidebar chosenPort={portfolio} portfolios={data} id={portId || ''}/>
             </div>
             <div className="page">
                 {page}
