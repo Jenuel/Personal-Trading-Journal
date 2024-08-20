@@ -101,44 +101,42 @@ function Transactions() {
       setTradeToDelete(null);
     }
     setConfirm(false);
-  };
+  }
+
+  const handleSave = (updatedTrade: Trade) => {
+  }
 
   return (
     <div className='trades-container'>
+      <div className="filter">
+        <AddTrade />
+      </div>
       <div className="table-container">
-        <div className="contents">
-          <div className="filter">
-            <AddTrade />
-          </div>
-          <div className="header-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>Category</th>
-                  <th>Currency Pair</th>
-                  <th>Entry Price</th>
-                  <th>Closing Price</th>
-                  <th>Entry Time</th>
-                  <th>Closing Time</th>
-                  <th>Units</th>
-                  <th>Return</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {sampleTrades.map((trade, index) => (
-                  <TradeComponent
-                    key={index}
-                    data={trade}
-                    onClick={() => handleTradeClick(trade)}
-                    onDelete={() => handleDeleteClick(trade)}
-                  />
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Currency Pair</th>
+              <th>Entry Price</th>
+              <th>Closing Price</th>
+              <th>Entry Time</th>
+              <th>Closing Time</th>
+              <th>Units</th>
+              <th>Return</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sampleTrades.map((trade, index) => (
+              <TradeComponent
+                key={index}
+                data={trade}
+                onClick={() => handleTradeClick(trade)}
+                onDelete={() => handleDeleteClick(trade)}
+              />
+            ))}
+          </tbody>
+        </table>
       </div>
 
       <ConfirmationModal 
@@ -148,16 +146,15 @@ function Transactions() {
         message={'Are you sure that you want to delete this trade?'}
       />
 
-      
       {selectedTrade && (
         <DetailModal 
           open={!!selectedTrade}
           onClose={() => setSelectedTrade(null)}
           data={selectedTrade}
+          onSave={handleSave}
         />
       )}
     </div>
-
   );
 }
 
