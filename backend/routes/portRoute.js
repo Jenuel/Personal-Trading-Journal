@@ -1,5 +1,5 @@
 import express from 'express'
-import { getPortfolios, getPortfolio, createPortfolio, deletePortfolio } from '../controllers/portController'
+import { getPortfolios, getPortfolio, createPortfolio, deletePortfolio } from '../controllers/portController.js'
 const router = express.Router()
 
 router.get('/ports', getPortfolios)

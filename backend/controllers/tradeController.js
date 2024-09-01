@@ -1,5 +1,5 @@
 import { request } from 'express'
-import Trade from './models/Trade.js'
+import Trade from '../models/Trade.js'
 
 const getTrades = async (request, response) => {
     const trades = await Trade.find({}).sort({createdAt: -1})

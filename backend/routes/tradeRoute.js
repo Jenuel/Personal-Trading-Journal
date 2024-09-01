@@ -1,5 +1,5 @@
 import express from 'express'
-import { getTrades, getTrade, createTrade, updateTrade, deleteTrade } from '../controllers/tradeController'
+import { getTrades, getTrade, createTrade, updateTrade, deleteTrade } from '../controllers/tradeController.js'
 
 const router = express.Router()
 

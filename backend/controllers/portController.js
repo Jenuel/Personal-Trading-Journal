@@ -1,5 +1,5 @@
 import { request } from 'express'
-import Portfolio from './models/Portfolio.js'
+import Portfolio from '../models/Portfolio.js'
 
 const getPortfolios = async (request, response) => {
     const portfolios = await Portfolio.find({}).sort({createdAt: -1})
