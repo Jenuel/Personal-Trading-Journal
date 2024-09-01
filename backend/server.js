@@ -1,11 +1,10 @@
 import dotenv from 'dotenv';
-dotenv.config();
-
 import express from 'express';
 import tradeRoutes from './routes/tradeRoute.js';
 import portRoutes from './routes/portRoute.js';
 import mongoose from 'mongoose';
 
+dotenv.config();
 //application
 const app = express()
 
@@ -23,3 +22,17 @@ mongoose.connect(process.env.DB_URI)
  .catch((error) => {
     console.log(error)
  })
+
+ /* ANOTHER SOLUTION OF SPECIFYING THE DATABASE INSTEAD OF 
+    REFACTORING THE MONGO CLUSTER URI
+ try {
+    await mongoose.connect(process.env.MONGO_URI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        dbName: 'ecomm' // specify the database name here
+    });
+    console.log('Connected to MongoDB');
+} catch (error) {
+    console.error('Database connection error:', error);
+}
+ */
