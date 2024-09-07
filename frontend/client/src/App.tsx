@@ -37,7 +37,7 @@ function App() {
 const [data, setData] = useState(samplePorts)
 
 const router = createBrowserRouter([
-  {
+  { //root page aka Landing page
     path: "/",
     element: <LandingPage data={data}/>
   },
@@ -51,14 +51,10 @@ const router = createBrowserRouter([
   }
 ])
 
-
-
   return (
     <RouterProvider router={router}/>
   );
 
-
-  
 }
 
 export default App;
