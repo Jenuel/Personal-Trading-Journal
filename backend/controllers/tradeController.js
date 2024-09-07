@@ -2,9 +2,21 @@ import { request } from 'express'
 import Trade from '../models/Trade.js'
 
 const getTrades = async (request, response) => {
-    const trades = await Trade.find({}).sort({createdAt: -1})
-    response.status(200).send(trades)
+    const { id } = request.params
+
+    try {
+        const trades = await Trade.find({ balance: id }).sort({ createdAt: -1 })
+
+        if (!trades || trades.length === 0) {
+            return response.status(404).send({ message: 'No trades found for this portfolio' })
+        }
+
+        response.status(200).json(trades)
+    } catch (error) {
+        response.status(500).send({ message: 'Error fetching trades', error: error.message })
+    }
 }
+
 
 const getTrade = async (request, response) => {
     const { id } = request.params
