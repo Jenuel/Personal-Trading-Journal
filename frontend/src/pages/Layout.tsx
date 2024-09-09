@@ -2,10 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import Sidebar from '../components/Sidebar'
 import './Layout.css'
-interface Portfolio {
-    id: string
-    name: string
-}
+import { Portfolio } from '../interfaces/interfaces'
 
 interface LayoutProps {
     data: Portfolio[]
@@ -20,7 +17,7 @@ function Layout({ data, page }: LayoutProps) {
 
     useEffect(() => {
         console.log("Testing")
-        const portfolio = data.find(data => data.id === portId )
+        const portfolio = data.find(data => data._id === portId )
         if (portfolio) {
             setPortfolio(portfolio)
         }

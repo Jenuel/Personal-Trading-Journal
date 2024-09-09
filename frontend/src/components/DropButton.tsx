@@ -15,7 +15,7 @@ function DropButton({ selectedPort, options} : PortPickerProps) {
     const [isOpen, setIsOpen] = useState(false)
     const [modalOpen, setModalOpen] = useState(false)
     const [selectedTrade, setSelectedTrade] = useState<Portfolio | null>(null);
-    const [currentName, setCurrentName] = useState(selectedPort.name)
+    const [currentName, setCurrentName] = useState(selectedPort.portName)
     const dropdownRef = useRef<HTMLDivElement>(null)
 
     const toggleDropdown = () => {
@@ -24,7 +24,7 @@ function DropButton({ selectedPort, options} : PortPickerProps) {
 
     const handleSelect = (option: Portfolio) => {
         setIsOpen(false)
-        setCurrentName(option.name)
+        setCurrentName(option.portName)
     }
 
     const handleDelete = (option: Portfolio) => {
@@ -34,7 +34,7 @@ function DropButton({ selectedPort, options} : PortPickerProps) {
 
     const confirmDelete = () => {
         if (selectedTrade) {
-            console.log(`Deleted ${selectedTrade.name}`);
+            console.log(`Deleted ${selectedTrade.portName}`);
         }
         setModalOpen(false);
         setSelectedTrade(null);
@@ -62,12 +62,12 @@ function DropButton({ selectedPort, options} : PortPickerProps) {
             {isOpen && (
                 <div className="dropdown-menu">
                     {options
-                        .filter(option => option.name !== currentName)
+                        .filter(option => option.portName !== currentName)
                         .map(option => (
-                            <div key={option.id} className="dropdown-item">
-                               <Link to={`/transactions/${option.id}`} className="port-name">
+                            <div key={option._id} className="dropdown-item">
+                               <Link to={`/transactions/${option._id}`} className="port-name">
                                     <span onClick={() => handleSelect(option)}>
-                                        {option.name}
+                                        {option.portName}
                                     </span>
                                 </Link>
                                 <IconButton
@@ -88,7 +88,7 @@ function DropButton({ selectedPort, options} : PortPickerProps) {
                     open={modalOpen} 
                     onClose={() => setModalOpen(false)} 
                     onConfirm={confirmDelete} 
-                    message={`Are you sure you want to delete ${selectedTrade.name}?`} 
+                    message={`Are you sure you want to delete ${selectedTrade.portName}?`} 
                 />
             )}
         </div>

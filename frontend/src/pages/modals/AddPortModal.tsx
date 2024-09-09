@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import './AddPortModal.css'
+import axios from 'axios'
 
 interface AddPortModalProps {
     closeModal: () => void;
@@ -12,9 +13,22 @@ const AddPortModal = ({ closeModal }: AddPortModalProps) => {
 
     const handleSubmit = (e: React.FormEvent) => {
       e.preventDefault();
-      console.log('Name:', name, 'Balance:', balance)
-      closeModal()
+    //   console.log('Name:', name, 'Balance:', balance)
+      createPort()
     }
+
+    const createPort = () => {
+      const portData = { name, balance };
+      axios.post('http://localhost:4000/ports', portData)
+          .then(response => {
+              console.log('Port created:', response.data);
+              closeModal(); 
+          })
+          .catch(error => {
+              console.error('Error creating port:', error);
+          });
+  };
+
 
     const handleClickOutside = (event: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
