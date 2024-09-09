@@ -1,9 +1,14 @@
 export interface Portfolio {
-    id: string
-    name: string
+    _id: string;
+    portName: string;
+    balance: number;
+    createdAt: string;
 }
+  
+  
 
 export interface Trade {
+    _id: string
     category: string;
     currencyPair: string;
     entryPrice: number;
