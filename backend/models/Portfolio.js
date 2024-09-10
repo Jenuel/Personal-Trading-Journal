@@ -11,8 +11,8 @@ const Schema = mongoose.Schema
             type: Number,
             required: true
         }
-    })
+    }, { timestamps: true})
 
-const Portfolio = mongoose.model('Portfolio', newPortfolioSchema)
+const Portfolio = mongoose.model('portfolios', newPortfolioSchema)
 
 export default Portfolio;
