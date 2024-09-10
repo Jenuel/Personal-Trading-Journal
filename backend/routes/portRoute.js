@@ -6,7 +6,7 @@ router.get('/ports', getPortfolios)
 
 router.get('/ports/:id', getPortfolio)
 
-router.post('/ports/:id', createPortfolio)
+router.post('/ports', createPortfolio)
 
 router.delete('/ports', deletePortfolio)
 

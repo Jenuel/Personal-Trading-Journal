@@ -29,8 +29,7 @@ function Transactions() {
       })
     }
     fetchTrades()
-    
-  }) 
+  }, []) 
   //set the modal for detailed view open
   const handleTradeClick = (trade: Trade) => {
     console.log(trade);
@@ -56,6 +55,11 @@ function Transactions() {
 
   const handleSave = (updatedTrade: Trade) => {
   }
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
 
   return (
     <div className='trades-container'>

@@ -27,7 +27,7 @@ const AddPortModal = ({ closeModal }: AddPortModalProps) => {
           .catch(error => {
               console.error('Error creating port:', error);
           });
-  };
+    };
 
 
     const handleClickOutside = (event: MouseEvent) => {
