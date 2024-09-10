@@ -8,10 +8,15 @@ import cors from 'cors'
 dotenv.config();
 //application
 const app = express()
+
+app.use(cors({
+    origin: 'http://localhost:3000', 
+    methods: 'GET,POST,PUT,DELETE', 
+  }));
 //routers
 app.use(portRoutes)
 app.use(tradeRoutes)
-app.use(cors());
+
 
 //connection to database
 mongoose.connect(process.env.DB_URI)
