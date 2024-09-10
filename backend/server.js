@@ -14,6 +14,7 @@ app.use(cors({
     methods: 'GET,POST,PUT,DELETE', 
   }));
 //routers
+app.use(express.json()); 
 app.use(portRoutes)
 app.use(tradeRoutes)
 
