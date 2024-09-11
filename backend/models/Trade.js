@@ -21,18 +21,18 @@ const tradeSchema = new Schema({
         required: true
     },
     entryTime: {
-        type: Date,
+        type: String,
         required: true
     },
     closingTime: {
-        type: Date,
+        type: String,
         required: true
     },
     units: {
         type: Number,
         required: true
     },
-    return: {
+    profit: {
         type: Number,
         required: true
     },
@@ -44,27 +44,12 @@ const tradeSchema = new Schema({
         type: String,
         required: true
     },
-    balance: {
+    portId: {
         type: Schema.Types.ObjectId,
         ref: 'Portfolio'
     }
 }, { timestamps: true });
 
-tradeSchema.post('save', async function(doc, next) {
-    doc.return = (doc.closingPrice - doc.entryPrice) * doc.units;
-    doc.status = doc.return > 0 ? 'WIN' : doc.return < 0 ? 'LOSS' : 'BREAKEVEN';
-
-    try {
-        const portfolio = await Portfolio.findById(doc.balance);
-        if (portfolio) {
-            portfolio.balance += doc.return;
-            await portfolio.save();
-        }
-        next();
-    } catch (error) {
-        next(error);
-    }
-});
 
 const Trade = mongoose.model('Trade', tradeSchema);
 
