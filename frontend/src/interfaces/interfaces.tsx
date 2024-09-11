@@ -13,8 +13,8 @@ export interface Trade {
     currencyPair: string;
     entryPrice: number;
     closingPrice: number;
-    entryTime: Date;
-    closingTime: Date;
+    entryTime: string;
+    closingTime: string;
     units: number;
     return: number;
     status: string;
