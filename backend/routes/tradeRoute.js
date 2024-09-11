@@ -10,7 +10,7 @@ router.get('/trades/port/:id', getTrades)
 router.get('/trades/:id', getTrade)
 
 //create a trade
-router.post('/trades/:id', createTrade)
+router.post('/trades', createTrade)
 
 //update a trade
 router.put('/trades/:id', updateTrade)
