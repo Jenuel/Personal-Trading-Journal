@@ -48,7 +48,7 @@ const tradeSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Portfolio'
     }
-}, { timestamps: true });
+});
 
 
 const Trade = mongoose.model('Trade', tradeSchema);
