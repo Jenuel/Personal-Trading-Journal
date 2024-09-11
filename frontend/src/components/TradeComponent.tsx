@@ -23,8 +23,8 @@ function TradeComponent({ data, onClick, onDelete }: TradeProps) {
       <td>{data.currencyPair}</td>
       <td>{data.entryPrice}</td>
       <td>{data.closingPrice}</td>
-      <td>{data.entryTime.toLocaleString()}</td>
-      <td>{data.closingTime.toLocaleString()}</td>
+      <td>{data.entryTime}</td>
+      <td>{data.closingTime}</td>
       <td>{data.units}</td>
       <td>{data.return}</td>
       <td>{data.status}</td>
