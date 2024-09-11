@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../modals/AddTradeModal.css'
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
 
 interface AddTradeModalProps {
   closeModal: () => void;
@@ -13,10 +15,8 @@ function AddTradeModal({ closeModal }: AddTradeModalProps) {
   const [entryTime, setEntryTime] = useState<string>(''); 
   const [closingTime, setClosingTime] = useState<string>('');
   const [units, setUnits] = useState<number>(0);
-  const [profit, setProfit] = useState<number>(0);
-  const [status, setStatus] = useState<string>('');
   const [description, setDescription] = useState<string>('');
-
+  const { portId } = useParams()
   const majorCurrencyPairs: string[] = ["EUR/USD", "USD/JPY", "GBP/USD"];
 
   const handleCategorySelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -27,17 +27,41 @@ function AddTradeModal({ closeModal }: AddTradeModalProps) {
     setCurrencyPair(event.target.value);
   };
 
-  const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const createTrade = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const computedProfit = (closingPrice - entryPrice) * units;
-
     const computedStatus = computedProfit > 0 ? 'Win' : 'Loss';
+    
 
-    setProfit(computedProfit);
-    setStatus(computedStatus);
+    const tradeData = {
+      category,
+      currencyPair,
+      entryPrice,
+      closingPrice,
+      entryTime,
+      closingTime,
+      units,
+      profit: computedProfit,
+      status: computedStatus,
+      description,
+      portId
+    };
 
-    closeModal();
+    axios.post('http://localhost:4000/trades', tradeData)
+      .then(response => {
+        console.log('Trade created:', response.data);
+        closeModal()
+      })
+      .catch(error => {
+        if (error.response) {
+          console.error('Server responded with:', error.response.status, error.response.data);
+        } else if (error.request) {
+          console.error('No response received:', error.request);
+        } else {
+          console.error('Error:', error.message);
+        }
+      })
   };
 
   // Close modal when clicking outside
@@ -59,7 +83,7 @@ function AddTradeModal({ closeModal }: AddTradeModalProps) {
   return (
     <div className="modal-overlay">
       <div id="modal-container" className="modal-content">
-        <form onSubmit={handleFormSubmit}>
+        <form onSubmit={createTrade}>
           <div className="form-group">
             <label htmlFor="category">Category</label>
             <select id="category" className="category" value={category} onChange={handleCategorySelect}>
