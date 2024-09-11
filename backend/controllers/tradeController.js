@@ -5,7 +5,7 @@ const getTrades = async (request, response) => {
     const { id } = request.params
 
     try {
-        const trades = await Trade.find({ balance: id }).sort({ createdAt: -1 })
+        const trades = await Trade.find({ portId: id}).sort({ createdAt: -1 })
 
         if (!trades || trades.length === 0) {
             return response.status(404).send({ message: 'No trades found for this portfolio' })
