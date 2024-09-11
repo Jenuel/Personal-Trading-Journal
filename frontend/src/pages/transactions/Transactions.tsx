@@ -24,12 +24,16 @@ function Transactions() {
         setTrades(res.data)
         setLoading(false)
       }).catch(err => {
-        console.error(err);
+        if (err.response && err.response.status === 404) {
+          setTrades([]);
+        } else {
+          console.error("Error fetching trades:", err);
+        }
         setLoading(false)
       })
     }
     fetchTrades()
-  }, []) 
+  }, [portId]) 
   //set the modal for detailed view open
   const handleTradeClick = (trade: Trade) => {
     console.log(trade);
