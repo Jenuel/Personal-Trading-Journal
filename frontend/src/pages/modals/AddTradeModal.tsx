@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import DateTimePicker from 'react-datetime-picker';
 import '../modals/AddTradeModal.css'
 
 interface AddTradeModalProps {
@@ -11,8 +10,8 @@ function AddTradeModal({ closeModal }: AddTradeModalProps) {
   const [currencyPair, setCurrencyPair] = useState<string>('');
   const [entryPrice, setEntryPrice] = useState<number>(0);
   const [closingPrice, setClosingPrice] = useState<number>(0);
-  const [entryTime, setEntryTime] = useState<Date | null>(null);
-  const [closingTime, setClosingTime] = useState<Date | null>(null);
+  const [entryTime, setEntryTime] = useState<string>(''); 
+  const [closingTime, setClosingTime] = useState<string>('');
   const [units, setUnits] = useState<number>(0);
   const [profit, setProfit] = useState<number>(0);
   const [status, setStatus] = useState<string>('');
@@ -104,14 +103,26 @@ function AddTradeModal({ closeModal }: AddTradeModalProps) {
             />
           </div>
 
-          <div className="form-group">
-            <label>Entry Time</label>
-            <DateTimePicker onChange={setEntryTime} value={entryTime} />
+           <div className="form-group">
+            <label htmlFor="entry-time">Entry Time</label>
+            <input 
+              id="entry-time"
+              type="datetime-local"
+              value={entryTime}
+              onChange={(e) => setEntryTime(e.target.value)}
+              required
+            />
           </div>
 
           <div className="form-group">
-            <label>Closing Time</label>
-            <DateTimePicker onChange={setClosingTime} value={closingTime} />
+            <label htmlFor="closing-time">Closing Time</label>
+            <input 
+              id="closing-time"
+              type="datetime-local"
+              value={closingTime}
+              onChange={(e) => setClosingTime(e.target.value)}
+              required
+            />
           </div>
 
           <div className="form-group">
