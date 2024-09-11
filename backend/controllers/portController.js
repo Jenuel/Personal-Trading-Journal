@@ -16,15 +16,25 @@ const getPortfolio = async (request, response) => {
 }
 
 const createPortfolio = async (request, response) => {
-    const { body } = request
-    const newPortfolio = new Portfolio(body)
+    console.log(request.body);
+
+    const { portName, balance } = request.body;
+
+    if (!portName || typeof balance !== 'number') {
+        return response.status(400).json({ error: 'Invalid input data' });
+    }
+
     try {
+        const newPortfolio = new Portfolio({ portName, balance });
         const savedPortfolio = await newPortfolio.save();
-        return response.status(201).send(savedPortfolio)
+        response.status(201).json(savedPortfolio);
+        console.log(portName, balance)
     } catch (error) {
-        return response.sendStatus(400)
+        console.error('Error creating portfolio:', error.message);
+        response.status(500).json({ error: 'Internal Server Error' });
     }
 }
+
 
 const deletePortfolio = async (request, response) => {
     const { id } = request.params
