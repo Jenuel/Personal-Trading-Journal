@@ -7,7 +7,7 @@ interface AddPortModalProps {
 }
 
 const AddPortModal = ({ closeModal }: AddPortModalProps) => {
-    const [name, setName] = useState('')
+    const [portName, setPortName] = useState('')
     const [balance, setBalance] = useState(0)
     const modalRef = useRef<HTMLDivElement>(null)
 
@@ -18,16 +18,24 @@ const AddPortModal = ({ closeModal }: AddPortModalProps) => {
     }
 
     const createPort = () => {
-      const portData = { name, balance };
-      axios.post('http://localhost:4000/ports', portData)
+        const portData = { portName, balance };
+        
+        axios.post('http://localhost:4000/ports', portData)
           .then(response => {
-              console.log('Port created:', response.data);
-              closeModal(); 
+            console.log('Port created:', response.data);
+            closeModal();
           })
           .catch(error => {
-              console.error('Error creating port:', error);
+            if (error.response) {
+              console.error('Server responded with:', error.response.status, error.response.data);
+            } else if (error.request) {
+              console.error('No response received:', error.request);
+            } else {
+              console.error('Error:', error.message);
+            }
           });
-    };
+      };
+      
 
 
     const handleClickOutside = (event: MouseEvent) => {
@@ -52,8 +60,8 @@ const AddPortModal = ({ closeModal }: AddPortModalProps) => {
                         id="name"
                         type="text"
                         required
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
+                        value={portName}
+                        onChange={(e) => setPortName(e.target.value)}
                     />
                     <label htmlFor="balance">Balance</label>
                     <input 
