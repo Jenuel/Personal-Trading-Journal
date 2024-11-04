@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import '../modals/AddTradeModal.css'
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import { useTradesContext } from '../../hooks/useTradesContext';
 
 interface AddTradeModalProps {
   closeModal: () => void;
 }
 
 function AddTradeModal({ closeModal }: AddTradeModalProps) {
+  const { dispatch } = useTradesContext();
   const [category, setCategory] = useState<string>('');
   const [currencyPair, setCurrencyPair] = useState<string>('');
   const [entryPrice, setEntryPrice] = useState<number>(0);
@@ -48,9 +50,12 @@ function AddTradeModal({ closeModal }: AddTradeModalProps) {
       portId
     };
 
+    console.log("Adding this trade: "+ tradeData)
+
     axios.post('http://localhost:4000/trades', tradeData)
       .then(response => {
         console.log('Trade created:', response.data);
+        dispatch({type: 'CREATE_TRADE', payload: response.data})
         closeModal()
       })
       .catch(error => {
