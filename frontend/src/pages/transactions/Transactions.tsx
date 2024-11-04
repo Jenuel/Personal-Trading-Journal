@@ -6,64 +6,72 @@ import ConfirmationModal from '../modals/ConfirmationModal';
 import { Trade } from '../../interfaces/interfaces';
 import DetailModal from '../modals/DetailModal';
 import axios from 'axios';
-import { useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom';
+import { useTradesContext } from '../../hooks/useTradesContext';
 
 function Transactions() {
-  
-  const { portId } = useParams()
-  const [trades, setTrades] = useState<Trade[]>([])
-  const [loading, setLoading] = useState(true)
-  const [confirm, setConfirm] = useState(false)
-  const [tradeToDelete, setTradeToDelete] = useState<Trade | null>(null)
+  const { trades, dispatch } = useTradesContext();
+  const { portId } = useParams<{ portId: string }>(); // explicitly type portId
+  const [loading, setLoading] = useState(true);
+  const [confirm, setConfirm] = useState(false);
+  const [tradeToDelete, setTradeToDelete] = useState<Trade | null>(null);
   const [selectedTrade, setSelectedTrade] = useState<Trade | null>(null);
 
   useEffect(() => {
     const fetchTrades = async () => {
-      axios.get(`http://localhost:4000/trades/port/${portId}`)
-      .then(res =>{
-        setTrades(res.data)
-        setLoading(false)
-      }).catch(err => {
+      try {
+        const res = await axios.get(`http://localhost:4000/trades/port/${portId}`);
+        dispatch({ type: 'SET_TRADES', payload: res.data });
+      } catch (err: any) {
         if (err.response && err.response.status === 404) {
-          setTrades([]);
+          dispatch({ type: 'SET_TRADES', payload: [] });
         } else {
           console.error("Error fetching trades:", err);
         }
-        setLoading(false)
-      })
-    }
-    fetchTrades()
-  }, [portId]) 
-  //set the modal for detailed view open
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTrades();
+  }, [portId, dispatch]);
+
   const handleTradeClick = (trade: Trade) => {
-    console.log(trade);
     setSelectedTrade(trade);
   };
 
-  //prompts the modal confirmation
   const handleDeleteClick = (trade: Trade) => {
-    console.log(`Confirm deletion of  trade with balance: ${trade.balance}`);
-    setTradeToDelete(trade)
-    setConfirm(true)
+    setTradeToDelete(trade);
+    setConfirm(true);
   };
 
-  //actually deletes the data
   const handleDelete = () => {
     if (tradeToDelete) {
-      console.log(`Deleting trade with balance: ${tradeToDelete.balance}`);
-      // Perform delete operation here, for example updating the state or making an API call
+      axios.delete('http://localhost:4000/trades', { data: tradeToDelete })
+        .then(response => {
+          console.log('Trade deleted:', response.data);
+          // Optionally dispatch an action to remove the trade from state
+        })
+        .catch(error => {
+          if (error.response) {
+            console.error('Server responded with:', error.response.status, error.response.data);
+          } else if (error.request) {
+            console.error('No response received:', error.request);
+          } else {
+            console.error('Error:', error.message);
+          }
+        });
       setTradeToDelete(null);
     }
     setConfirm(false);
-  }
+  };
 
   const handleSave = (updatedTrade: Trade) => {
-  }
+    // Implement update functionality if needed
+  };
 
   if (loading) {
     return <div>Loading...</div>;
   }
-
 
   return (
     <div className='trades-container'>
@@ -86,7 +94,7 @@ function Transactions() {
             </tr>
           </thead>
           <tbody>
-            {trades.map((trade, index) => (
+            {trades && trades.map((trade: Trade, index: number) => (
               <TradeComponent
                 key={index}
                 data={trade}
