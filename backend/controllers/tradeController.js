@@ -39,19 +39,27 @@ const createTrade = async (request, response) => {
 }
 
 const updateTrade = async (request, response) => {
-    const { id } = request.params
-    const updatedTrade = request.body
+    const { id } = request.params;
+
     try {
-        const result = await Trade.findOneAndUpdate({ _id: id }, updatedTrade, { new: true });
+        console.log("Updating trade with data:", request.body);
+
+        const result = await Trade.findOneAndUpdate(
+            { _id: id },
+            { ...request.body },
+            { new: true, runValidators: true } 
+        );
+        console.log("Result:", result)
         if (result) {
             return response.status(200).send(result);
         } else {
             return response.sendStatus(404);  // Trade not found
         }
     } catch (error) {
-        return response.sendStatus(400);
+        return response.status(400).json({ message: "Error updating trade", error: error.message });
     }
-}
+};
+
 
 
 const deleteTrade = async (request, response) => {

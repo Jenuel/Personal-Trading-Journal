@@ -32,7 +32,7 @@ const tradeSchema = new Schema({
         type: Number,
         required: true
     },
-    profit: {
+    return: {
         type: Number,
         required: true
     },
