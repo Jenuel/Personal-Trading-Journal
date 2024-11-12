@@ -46,7 +46,8 @@ function Transactions() {
 
   const handleDelete = () => {
     if (tradeToDelete) {
-      axios.delete('http://localhost:4000/trades', { data: tradeToDelete })
+      const id = tradeToDelete._id;
+      axios.delete(`http://localhost:4000/trades/${id}`)
         .then(response => {
           console.log('Trade deleted:', response.data);
           // Optionally dispatch an action to remove the trade from state
@@ -65,8 +66,22 @@ function Transactions() {
     setConfirm(false);
   };
 
+  
   const handleSave = (updatedTrade: Trade) => {
-    // Implement update functionality if needed
+    console.log(updatedTrade);
+    axios.put(`http://localhost:4000/trades/${updatedTrade._id}`, updatedTrade)
+    .then(response => {
+      console.log('Trade edited:', response.data);
+    })
+    .catch(error => {
+      if (error.response) {
+        console.error('Server responded with:', error.response.status, error.response.data);
+      } else if (error.request) {
+        console.error('No response received:', error.request);
+      } else {
+        console.error('Error:', error.message);
+      }
+    });
   };
 
   if (loading) {
