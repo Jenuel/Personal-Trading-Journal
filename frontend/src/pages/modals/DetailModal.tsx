@@ -112,7 +112,7 @@ function DetailModal({ open, onClose, data, onSave }: DetailModalProps) {
               name="return"
               value={formData.return}
               onChange={handleChange}
-              readOnly={!isEditing}
+              readOnly={true}
             />
           </label>
           <label>Description: 
