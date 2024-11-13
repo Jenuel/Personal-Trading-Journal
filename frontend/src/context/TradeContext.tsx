@@ -8,7 +8,9 @@ interface TradesState {
 
 type TradesAction = 
   | { type: 'SET_TRADES', payload: Trade[] }
-  | { type: 'CREATE_TRADE', payload: Trade };
+  | { type: 'CREATE_TRADE', payload: Trade }
+  | { type: 'UPDATE_TRADE', payload: Trade }
+  | { type: 'DELETE_TRADE', payload: string };
 
 // Create initial state
 const initialState: TradesState = {
@@ -29,6 +31,20 @@ export const tradesReducer = (state: TradesState, action: TradesAction): TradesS
       return { trades: action.payload };
     case 'CREATE_TRADE':
       return { trades: [action.payload, ...(state.trades || [])] };
+    case 'UPDATE_TRADE':
+      return {
+        trades: state.trades
+          ? state.trades.map((trade) =>
+              trade._id === action.payload._id ? action.payload : trade
+            )
+          : null,
+      };
+    case 'DELETE_TRADE':
+      return {
+        trades: state.trades
+          ? state.trades.filter((trade) => trade._id !== action.payload)
+          : null,
+      };
     default:
       return state;
   }
