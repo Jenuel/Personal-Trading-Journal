@@ -32,8 +32,8 @@ function AddTradeModal({ closeModal }: AddTradeModalProps) {
   const createTrade = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const computedProfit = (closingPrice - entryPrice) * units;
-    const computedStatus = computedProfit > 0 ? 'Win' : 'Loss';
+    const computedProfit = parseFloat(((closingPrice - entryPrice) * units).toFixed(2));
+    const computedStatus = (computedProfit > 0) ? 'Win' : 'Loss';
     
 
     const tradeData = {
@@ -44,13 +44,13 @@ function AddTradeModal({ closeModal }: AddTradeModalProps) {
       entryTime,
       closingTime,
       units,
-      profit: computedProfit,
+      return: computedProfit,
       status: computedStatus,
       description,
       portId
     };
 
-    console.log("Adding this trade: "+ tradeData)
+    console.log("Adding this trade: "+ JSON.stringify(tradeData, null, 2))
 
     axios.post('http://localhost:4000/trades', tradeData)
       .then(response => {
