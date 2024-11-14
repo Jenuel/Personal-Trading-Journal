@@ -3,16 +3,17 @@ import './Transactions.css';
 import AddTrade from '../../components/AddTrade';
 import TradeComponent from '../../components/TradeComponent';
 import ConfirmationModal from '../modals/ConfirmationModal';
-import { Trade } from '../../interfaces/interfaces';
+import { Portfolio, Trade } from '../../interfaces/interfaces';
 import DetailModal from '../modals/DetailModal';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { useTradesContext } from '../../hooks/useTradesContext';
-
+import PortfolioDisplay from '../../components/PortfolioDisplay';
 
 function Transactions() {
   const { trades, dispatch } = useTradesContext();
   const { portId } = useParams<{ portId: string }>(); // explicitly type portId
+  const [port, setPort] = useState<Portfolio | null>(null)
   const [loading, setLoading] = useState(true);
   const [confirm, setConfirm] = useState(false);
   const [tradeToDelete, setTradeToDelete] = useState<Trade | null>(null);
@@ -33,6 +34,17 @@ function Transactions() {
         setLoading(false);
       }
     };
+
+    const fetchPort = async () => {
+      try {
+        const res = await axios.get(`http://localhost:4000/ports/${portId}`);
+        setPort(res.data)
+      } catch (error: any) {
+        console.error("Error:", error)
+      }
+    };
+    
+    fetchPort();
     fetchTrades();
   }, [portId, dispatch]);
 
@@ -94,8 +106,13 @@ function Transactions() {
 
   return (
     <div className='trades-container'>
-      <div className="filter">
-        <AddTrade />
+      <div className="header-container">
+        <div className="filter">
+          <AddTrade />
+        </div>
+        <div className="portfolio">
+          <PortfolioDisplay port ={port}/>
+        </div>
       </div>
       <div className="table-container">
         <table>
