@@ -9,6 +9,7 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { useTradesContext } from '../../hooks/useTradesContext';
 
+
 function Transactions() {
   const { trades, dispatch } = useTradesContext();
   const { portId } = useParams<{ portId: string }>(); // explicitly type portId
@@ -44,13 +45,15 @@ function Transactions() {
     setConfirm(true);
   };
 
+  //actually deletes the data
   const handleDelete = () => {
     if (tradeToDelete) {
       const id = tradeToDelete._id;
+      console.log(tradeToDelete)
       axios.delete(`http://localhost:4000/trades/${id}`)
         .then(response => {
           console.log('Trade deleted:', response.data);
-          // Optionally dispatch an action to remove the trade from state
+          dispatch({ type: 'DELETE_TRADE', payload: id });
         })
         .catch(error => {
           if (error.response) {
@@ -72,6 +75,7 @@ function Transactions() {
     axios.put(`http://localhost:4000/trades/${updatedTrade._id}`, updatedTrade)
     .then(response => {
       console.log('Trade edited:', response.data);
+      dispatch({ type: 'UPDATE_TRADE', payload: response.data })
     })
     .catch(error => {
       if (error.response) {
@@ -111,7 +115,7 @@ function Transactions() {
           <tbody>
             {trades && trades.map((trade: Trade, index: number) => (
               <TradeComponent
-                key={index}
+                key={trade._id}
                 data={trade}
                 onClick={() => handleTradeClick(trade)}
                 onDelete={() => handleDeleteClick(trade)}
