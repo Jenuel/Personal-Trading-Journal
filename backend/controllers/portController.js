@@ -35,6 +35,26 @@ const createPortfolio = async (request, response) => {
     }
 }
 
+const updatePortfolio = async (request, response) => {
+    const { id } = request.params
+    const { balance } = request.body
+
+    try {
+        const updatedPortfolio = await Portfolio.findByIdAndUpdate(
+            id,
+            { $set: { balance: balance } },
+            { new: true } 
+        );
+
+        if (!updatedPortfolio) {
+            return response.status(404).json({ error: 'No such portfolio' });
+        }
+
+        response.status(200).send(updatedPortfolio);
+    } catch (error) {
+        response.status(500).json({ error: 'An error occurred' });
+    }
+}
 
 const deletePortfolio = async (request, response) => {
     const { id } = request.params
@@ -50,4 +70,4 @@ const deletePortfolio = async (request, response) => {
     }
 }
 
-export { getPortfolios, getPortfolio, createPortfolio, deletePortfolio }
+export { getPortfolios, getPortfolio, createPortfolio, updatePortfolio, deletePortfolio }
