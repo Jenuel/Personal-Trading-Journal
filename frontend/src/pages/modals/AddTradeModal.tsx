@@ -55,6 +55,7 @@ function AddTradeModal({ closeModal }: AddTradeModalProps) {
     axios.post('http://localhost:4000/trades', tradeData)
       .then(response => {
         console.log('Trade created:', response.data);
+        updateBalance(computedProfit)
         dispatch({type: 'CREATE_TRADE', payload: response.data})
         closeModal()
       })
@@ -68,6 +69,21 @@ function AddTradeModal({ closeModal }: AddTradeModalProps) {
         }
       })
   };
+
+  const updateBalance = async (computedReturn: number) => {
+    axios.patch('http://localhost:4000/ports', {
+      _id: portId,
+      incrementValue: computedReturn,
+    })
+      .then(response => {
+        console.log('Balance updated successfully:', response.data);
+      })
+      .catch(error => {
+        // Handle error response
+        console.error('Error updating balance:', error.response?.data || error.message);
+      });
+  };
+  
 
   // Close modal when clicking outside
   useEffect(() => {
