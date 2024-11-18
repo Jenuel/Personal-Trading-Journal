@@ -35,14 +35,13 @@ const createPortfolio = async (request, response) => {
     }
 }
 
-const updatePortfolio = async (request, response) => {
-    const { id } = request.params
-    const { balance } = request.body
+const updateBalance = async (request, response) => {
+    const { _id, incrementValue } = request.body
 
     try {
         const updatedPortfolio = await Portfolio.findByIdAndUpdate(
-            id,
-            { $set: { balance: balance } },
+            _id,
+            { $inc: { balance: incrementValue } },
             { new: true } 
         );
 
@@ -70,4 +69,4 @@ const deletePortfolio = async (request, response) => {
     }
 }
 
-export { getPortfolios, getPortfolio, createPortfolio, updatePortfolio, deletePortfolio }
+export { getPortfolios, getPortfolio, createPortfolio, updateBalance, deletePortfolio }
