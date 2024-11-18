@@ -11,7 +11,7 @@ const app = express()
 
 app.use(cors({
     origin: 'http://localhost:3000', 
-    methods: 'GET,POST,PUT,DELETE', 
+    methods: 'GET,PATCH,POST,PUT,DELETE', 
   }));
 //routers
 app.use(express.json()); 
