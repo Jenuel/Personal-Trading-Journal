@@ -1,13 +1,15 @@
 import React from 'react'
+import './StatusComponent.css'
 
 interface StatusComponentProps {
-    status: string;
-  }
+  status: string;
+}
 
 function StatusComponent({ status } : StatusComponentProps) {
+
   return (
-    <div>
-        {status}
+    <div className={`status-component ${status.toLowerCase()}`}>
+      {status}
     </div>
   )
 }
