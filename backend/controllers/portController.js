@@ -55,6 +55,27 @@ const updateBalance = async (request, response) => {
     }
 }
 
+const rebateBalance = async (request, response) => {
+    const { _id } = request.params
+    const { decrementValue } = request.body
+
+    try {
+        const updatedTrade = await Trade.findByIdAndUpdate(
+            _id,
+            { $inc: { balance: -decrementValue } }, 
+            { new: true } 
+          );
+
+        if (!updatedPortfolio) {
+            return response.status(404).json({ error: 'No such portfolio' });
+        }
+
+        response.status(200).send(updatedPortfolio);
+    } catch (error) {
+        response.status(500).json({ error: 'An error occurred' });
+    }
+}
+
 const deletePortfolio = async (request, response) => {
     const { id } = request.params
     try {
@@ -69,4 +90,4 @@ const deletePortfolio = async (request, response) => {
     }
 }
 
-export { getPortfolios, getPortfolio, createPortfolio, updateBalance, deletePortfolio }
+export { getPortfolios, getPortfolio, createPortfolio, updateBalance, rebateBalance, deletePortfolio }
