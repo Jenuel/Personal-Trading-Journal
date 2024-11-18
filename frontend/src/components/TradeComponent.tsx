@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Trade } from '../interfaces/interfaces';
-import { Icon } from '@mui/material';
 import StatusComponent from './StatusComponent';
 
 interface TradeProps {
