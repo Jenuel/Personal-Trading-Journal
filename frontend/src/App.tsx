@@ -5,50 +5,48 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Layout from './pages/Layout';
 import Statistics from './pages/statistics/Statistics';
 import Transactions from './pages/transactions/Transactions';
-import { Portfolio } from '../src/interfaces/interfaces';
+import { usePortfolioContext } from './hooks/usePortfolioContext';
 import axios from 'axios';
 
 function App() {
-  const [data, setData] = useState<Portfolio[]>([]);
+  const { portfolios, dispatch } = usePortfolioContext();  
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchPortfolios = async () => {
       try {
         const response = await axios.get('http://localhost:4000/ports');
-        setData(response.data);
+        dispatch({ type: 'SET_PORTFOLIOS', payload: response.data });
       } catch (error) {
         console.error('Error fetching portfolios:', error);
       } finally {
         setLoading(false);
       }
-    }
-  
+    };
+
     fetchPortfolios();
-  }, []);
+  }, [dispatch]); 
 
   const router = createBrowserRouter([
-    { // Root page aka Landing page
+    {
       path: "/",
-      element: <LandingPage data={data} />
+      element: <LandingPage data={portfolios || []} />, 
     },
-    { // Statistics page
+    {
       path: "/statistics/:portId",
-      element: <Layout data={data} page={<Statistics />} />
+      element: <Layout data={portfolios || []} page={<Statistics />} />,
     },
-    { // Transactions page
+    {
       path: "/transactions/:portId",
-      element: <Layout data={data} page={<Transactions />} />
-    }
+      element: <Layout data={portfolios || []} page={<Transactions />} />,
+    },
   ]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>Loading...</div>; 
   }
 
-  return (
-    <RouterProvider router={router} />
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;
