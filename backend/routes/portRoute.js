@@ -12,7 +12,7 @@ router.patch('/ports', updateBalance)
 
 router.patch('/ports/:id', rebateBalance)
 
-router.delete('/ports', deletePortfolio)
+router.delete('/ports/:id', deletePortfolio)
 
 
 export default router;
