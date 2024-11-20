@@ -5,6 +5,7 @@ import './DropdownButton.css'
 import ConfirmationModal from '../pages/modals/ConfirmationModal'
 import { Link } from 'react-router-dom'
 import { Portfolio } from '../interfaces/interfaces'
+import axios from 'axios'
 
 type PortPickerProps = {
     selectedPort: Portfolio
@@ -32,9 +33,23 @@ function DropButton({ selectedPort, options} : PortPickerProps) {
         setModalOpen(true)
     }
 
+    //delete
     const confirmDelete = () => {
         if (selectedTrade) {
-            console.log(`Deleted ${selectedTrade.portName}`);
+            axios.delete(`http://localhost:4000/ports/${selectedTrade._id}`)
+            .then(response => {
+                console.log(`Deleted ${selectedTrade.portName}`);
+            })
+            .catch(error => {
+                if (error.response) {
+                    console.error('Server responded with:', error.response.status, error.response.data);
+                } else if (error.request) {
+                    console.error('No response received:', error.request);
+                } else {
+                    console.error('Error:', error.message);
+                }
+            });
+            
         }
         setModalOpen(false);
         setSelectedTrade(null);
