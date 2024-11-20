@@ -4,6 +4,7 @@ import React from 'react'
 import { Link } from 'react-router-dom' 
 import './Sidebar.css'
 import { Portfolio } from '../interfaces/interfaces'
+import { usePortfolioContext } from '../hooks/usePortfolioContext'
 
 interface SidebarProps {
   chosenPort: Portfolio
@@ -11,10 +12,22 @@ interface SidebarProps {
   id: string
 }
 function Sidebar({chosenPort, portfolios, id} : SidebarProps) {
+  const { dispatch } = usePortfolioContext();
+  
+  const handleDelete = (id : string) => {
+    dispatch({ type: "DELETE_PORTFOLIO", payload: id });
+
+    console.log(`Deleted portfolio with ID : ${id}`)
+  }
+
   return (
     <div className='sidebar'>
       <div className="port-container">
-        <DropButton selectedPort={chosenPort} options={portfolios} />
+        <DropButton 
+          selectedPort={chosenPort} 
+          options={portfolios}
+          onDelete={handleDelete}  
+        />
         <div className="addport"> 
           <AddPort />
         </div>

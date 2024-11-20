@@ -10,9 +10,10 @@ import axios from 'axios'
 type PortPickerProps = {
     selectedPort: Portfolio
     options: Portfolio[]
+    onDelete: (id : string ) => void;
 }
 
-function DropButton({ selectedPort, options} : PortPickerProps) {
+function DropButton({ selectedPort, options, onDelete } : PortPickerProps) {
     const [isOpen, setIsOpen] = useState(false)
     const [modalOpen, setModalOpen] = useState(false)
     const [selectedTrade, setSelectedTrade] = useState<Portfolio | null>(null);
@@ -28,7 +29,7 @@ function DropButton({ selectedPort, options} : PortPickerProps) {
         setCurrentName(option.portName)
     }
 
-    const handleDelete = (option: Portfolio) => {
+    const handleDeleteClick = (option: Portfolio) => {
         setSelectedTrade(option)
         setModalOpen(true)
     }
@@ -39,6 +40,7 @@ function DropButton({ selectedPort, options} : PortPickerProps) {
             axios.delete(`http://localhost:4000/ports/${selectedTrade._id}`)
             .then(response => {
                 console.log(`Deleted ${selectedTrade.portName}`);
+                onDelete(selectedTrade._id)
             })
             .catch(error => {
                 if (error.response) {
@@ -86,7 +88,7 @@ function DropButton({ selectedPort, options} : PortPickerProps) {
                                     </span>
                                 </Link>
                                 <IconButton
-                                    onClick={() => handleDelete(option)}
+                                    onClick={() => handleDeleteClick(option)}
                                     color="primary"
                                     aria-label="delete port"
                                     sx={{ p: 0.25 }}
