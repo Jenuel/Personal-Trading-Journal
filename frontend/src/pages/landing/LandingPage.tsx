@@ -19,6 +19,10 @@ function LandingPage({ data }: LandingPageProps) {
     }
   };
 
+  if (!data) {
+    return <div>No portfolios available</div>;
+  }
+  
   return (
     <div className="container">
       <select
