@@ -3,15 +3,19 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import { TradesContextProvider } from './context/TradeContext';
+import { PortfolioContextProvider } from './context/PortContext';
 
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
-  <TradesContextProvider>
-    <App/>
-  </TradesContextProvider>
+  <PortfolioContextProvider>
+    <TradesContextProvider>
+      <App/>
+    </TradesContextProvider>
+  </PortfolioContextProvider>
+  
 );
 
 // If you want to start measuring performance in your app, pass a function
