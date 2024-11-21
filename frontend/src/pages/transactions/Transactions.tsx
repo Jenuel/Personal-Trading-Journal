@@ -66,6 +66,7 @@ function Transactions() {
         .then(response => {
           console.log('Trade deleted:', response.data);
           dispatch({ type: 'DELETE_TRADE', payload: id });
+          rebateBalance()
         })
         .catch(error => {
           if (error.response) {
@@ -80,6 +81,26 @@ function Transactions() {
     }
     setConfirm(false);
   };
+
+  //handles the updating of port balance when trade deletion occurs
+  const rebateBalance = () => {
+    if (tradeToDelete){
+      axios.patch(`http://localhost:4000/ports/${tradeToDelete._id}`)
+      .then(response => {
+        console.log('Trade deleted:', response.data);
+        
+      })
+      .catch(error => {
+        if (error.response) {
+          console.error('Server responded with:', error.response.status, error.response.data);
+        } else if (error.request) {
+          console.error('No response received:', error.request);
+        } else {
+          console.error('Error:', error.message);
+        }
+      });
+    }
+  }
 
   
   const handleSave = (updatedTrade: Trade) => {
