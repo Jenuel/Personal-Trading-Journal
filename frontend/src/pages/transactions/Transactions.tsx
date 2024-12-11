@@ -12,7 +12,7 @@ import PortfolioDisplay from '../../components/PortfolioDisplay';
 
 function Transactions() {
   const { trades, dispatch } = useTradesContext();
-  const { portId } = useParams<{ portId: string }>(); // explicitly type portId
+  const { portId } = useParams<{ portId: string }>(); 
   const [port, setPort] = useState<Portfolio | null>(null)
   const [loading, setLoading] = useState(true);
   const [confirm, setConfirm] = useState(false);
