@@ -128,11 +128,11 @@ function Transactions() {
   return (
     <div className='trades-container'>
       <div className="header-container">
-        <div className="filter">
-          <AddTrade />
-        </div>
         <div className="portfolio">
           <PortfolioDisplay port ={port}/>
+        </div>
+        <div className="filter">
+          <AddTrade />
         </div>
       </div>
       <div className="table-container">
