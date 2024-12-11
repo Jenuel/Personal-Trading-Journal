@@ -21,11 +21,18 @@
   
 .choices li {
   margin-bottom: 10px;
+ 
 }
-  
-.choices a {
+
+.choices li a {
+  display: flex;             
+  align-items: center;       
   text-decoration: none;
-  color: white;
+  color: white;         
+}
+
+.choices li a svg {
+  margin-right: 8px;         /* Add space between the icon and the text */
 }
 
 .dropdown {
@@ -43,7 +50,7 @@
   padding: 10px;
   cursor: pointer;
   color: black;
-  width: 100%; /* Ensure each item respects the dropdown menu width */
+  width: 100%; 
 }
   
 .dropdown.open .dropdown-content {
