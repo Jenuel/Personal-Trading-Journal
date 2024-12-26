@@ -19,7 +19,6 @@ function Statistics() {
         setLoading(true);
         const res = await axios.get(`http://localhost:4000/trades/port/${portId}`);
         setTrades(res.data);
-        console.log(res.data);
       } catch (err: any) {
         console.error("Error fetching trades:", err);
       } finally {
@@ -52,16 +51,16 @@ function Statistics() {
 
   return (
     <div className="statistics">
-      <div className="bar-container">
+      <div className="chart-container">
         <LineGraph trades={trades} initialPortfolioValue={port.initialBalance} />
       </div>
-      <div className="bar-container">
+      <div className="chart-container">
         <DoughnotChart trades={trades} />
       </div>
-      <div className="bar-container">
+      <div className="chart-container">
         <BarChart trades={trades} />
       </div>
-      <div className="bar-container">
+      <div className="chart-container">
         <AccumulatedReturnsChart trades={trades} />
       </div>
     </div>

@@ -56,9 +56,7 @@ function AccumulatedReturnsChart({ trades }: { trades: { currencyPair: string, r
   };
 
   return (
-    <div className="accumulated-returns-chart">
-      <Bar data={data} options={options} />
-    </div>
+    <Bar data={data} options={options} />
   );
 }
 

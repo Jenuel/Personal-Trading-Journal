@@ -57,9 +57,7 @@ function BarChart({ trades }: { trades: { currencyPair: string }[] }) {
   };
 
   return (
-    <div className="pair-trade-chart">
-      <Bar data={data} options={options} />
-    </div>
+    <Bar data={data} options={options} />
   );
 }
 
