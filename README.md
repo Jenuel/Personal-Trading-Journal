@@ -11,7 +11,7 @@ This project also demonstrates the power of the [Model Context Protocol (MCP)](h
 ![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
 ![Postgres](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)
-![MCP](https://img.shields.io/badge/MCP-2f2f2f?logo=anthropic&logoColor=white&style=for-the-badge)
+![MCP](https://img.shields.io/badge/MCP-2f2f2f?logo=modelcontextprotocol&logoColor=white&style=for-the-badge)
 ![uv](https://img.shields.io/badge/uv-DE5FE9?logo=uv&logoColor=white&style=for-the-badge)
 
 ## ✨ Features
