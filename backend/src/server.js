@@ -1,9 +1,7 @@
 import dotenv from 'dotenv';
 import express from 'express';
-import tradeRoutes from './routes/tradeRoute.js';
-import portRoutes from './routes/portRoute.js';
-import mongoose from 'mongoose';
 import cors from 'cors'
+import routes from "./routes/index.js";
 import { connectDB } from './config/db.js';
 
 dotenv.config();
@@ -17,8 +15,7 @@ app.use(cors({
 
 //routers
 app.use(express.json());
-app.use(portRoutes)
-app.use(tradeRoutes)
+app.use(routes)
 
 try {
     await connectDB();
