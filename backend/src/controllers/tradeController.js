@@ -1,5 +1,5 @@
 import { request } from 'express'
-import pool from '../db.js'
+import pool from '../config/db.js'
 
 const getTrades = async (request, response) => {
     const { id } = request.params
@@ -9,7 +9,7 @@ const getTrades = async (request, response) => {
             'SELECT * FROM trades WHERE portId = $1 ORDER BY createdAt DESC',
             [id]
         );
-        
+
         if (results.rows.length === 0) {
             return response.status(404).json({ message: 'No trades found for this portfolio' });
         }
@@ -53,7 +53,7 @@ const createTrade = async (request, response) => {
 
         console.log("Result:", result.rows[0]);
         response.status(201).json(result.rows[0]);
-        
+
     } catch (error) {
         return response.sendStatus(400)
     }

@@ -4,19 +4,19 @@ import tradeRoutes from './routes/tradeRoute.js';
 import portRoutes from './routes/portRoute.js';
 import mongoose from 'mongoose';
 import cors from 'cors'
-import { connectDB } from './db.js';
+import { connectDB } from './config/db.js';
 
 dotenv.config();
 
 const app = express()
 
 app.use(cors({
-    origin: 'http://localhost:3000', 
-    methods: 'GET,PATCH,POST,PUT,DELETE', 
-  }));
+    origin: 'http://localhost:3000',
+    methods: 'GET,PATCH,POST,PUT,DELETE',
+}));
 
 //routers
-app.use(express.json()); 
+app.use(express.json());
 app.use(portRoutes)
 app.use(tradeRoutes)
 
