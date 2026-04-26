@@ -1,6 +1,6 @@
 import { supabase } from "./client";
 
-export async function healthCheck() {
+export async function checkSupabaseConnection() {
     const { error } = await supabase.from('_health').select('1').limit(1)
 
     if (error) {
