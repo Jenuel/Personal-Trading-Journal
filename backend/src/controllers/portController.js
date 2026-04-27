@@ -1,115 +1,97 @@
-import pool from '../db.js'
+import { PortfolioService } from '../services/portService.js';
 
-const getPortfolios = async (request, response) => {
+export const PortfolioController = {
+    getPortfolios: async (request, response) => {
+        try {
+            const results = await PortfolioService.getAllPortfolios();
+            return response.status(200).json(results);
+        } catch (error) {
+            console.error('Error fetching portfolios:', error.message);
+            return response.status(500).json({ message: 'Error fetching portfolios', error: error.message });
+        }
+    },
 
-    try {
-        const results = await pool.query('SELECT * FROM portfolios');
+    getPortfolio: async (request, response) => {
+        const { id } = request.params;
+        try {
+            const results = await PortfolioService.getPortfolio(id);
 
-        if (results.rows.length === 0) {
-            return response.status(404).json({ message: 'No portfolios found' });
+            if (!results) {
+                return response.status(404).json({ error: 'Portfolio not found' });
+            }
+
+            return response.status(200).json(results);
+        } catch (error) {
+            console.error('Error fetching portfolio:', error.message);
+            return response.status(500).json({ message: 'Error fetching portfolio', error: error.message });
+        }
+    },
+
+    createPortfolio: async (request, response) => {
+        const { portName, balance } = request.body;
+
+        if (!portName || typeof balance !== 'number') {
+            return response.status(400).json({ error: 'Invalid input data' });
         }
 
-        return response.status(200).json(results.rows);
-    } catch (error) {
-        return response.status(500).json({ message: 'Error fetching portfolios', error: error.message})
-    }
-}
-
-const getPortfolio = async (request, response) => {
-    const { id } = request.params
-    try {
-        const results = await pool.query('SELECT * FROM portfolios WHERE id = $1', [id]);
-        if (results.rows.length === 0) {
-            return response.status(404).json({ message: 'Portfolio not found' });
+        try {
+            const result = await PortfolioService.createPortfolio(portName, balance);
+            return response.status(201).json(result);
+        } catch (error) {
+            console.error('Error creating portfolio:', error.message);
+            return response.status(500).json({ error: 'Internal Server Error', message: error.message });
         }
-        return response.status(200).json(results.rows[0]);
-    } catch (error) {
-        console.error('Error fetching portfolio:', error.message);
-        return response.status(500).json({ message: 'Error fetching portfolio', error: error.message });
-    }
-}
+    },
 
-const createPortfolio = async (request, response) => {
-    const { portName, balance } = request.body;
+    updateBalance: async (request, response) => {
+        const { id, incrementValue } = request.body;
 
-    if (!portName || typeof balance !== 'number') {
-        return response.status(400).json({ error: 'Invalid input data' });
-    }
+        try {
+            const results = await PortfolioService.updateBalance(id, incrementValue);
 
-    try {
-        const result = await pool.query(
-            'INSERT INTO portfolios (portName, balance) VALUES ($1, $2) RETURNING *',
-            [portName, balance]
-        );
-        
-        if (result.rows.length === 0) {
-            return response.status(500).json({ error: 'Failed to create portfolio' });
+            if (!results) {
+                return response.status(404).json({ error: 'Portfolio not found' });
+            }
+
+            return response.status(200).json(results);
+        } catch (error) {
+            console.error('Error updating balance:', error.message);
+            return response.status(500).json({ message: 'Error updating balance', error: error.message });
         }
+    },
 
-        return response.status(201).json(result.rows[0]);
-    } catch (error) {
-        console.error('Error creating portfolio:', error.message);
-        response.status(500).json({ error: 'Internal Server Error' });
-    }
-}
+    rebateBalance: async (request, response) => {
+        const { id } = request.params;
+        const { decrementValue } = request.body;
 
-const updateBalance = async (request, response) => {
-    const { id, incrementValue } = request.body;
+        try {
+            const results = await PortfolioService.rebateBalance(id, decrementValue);
 
-    try {
-        const results = await pool.query(
-            'UPDATE Portfolio SET balance = balance + $1 WHERE id = $2 RETURNING *',
-            [incrementValue, id]
-        );
+            if (!results) {
+                return response.status(404).json({ error: 'No such portfolio' });
+            }
 
-        if (results.rows.length === 0) { 
-            return response.status(404).json({ error: 'No such portfolio' });
+            return response.status(200).json(results);
+        } catch (error) {
+            console.error('Error rebating balance:', error.message);
+            return response.status(500).json({ error: 'An error occurred', message: error.message });
         }
+    },
 
-        return response.status(200).json(results.rows[0]);
-    } catch (error) {
-        console.error('Error updating balance:', error);
-        response.status(500).json({ error: 'An error occurred' });
+    deletePortfolio: async (request, response) => {
+        const { id } = request.params;
+
+        try {
+            const results = await PortfolioService.deletePortfolio(id);
+
+            if (!results || (Array.isArray(results) && results.length === 0)) {
+                return response.status(404).json({ error: 'Portfolio not found' });
+            }
+
+            return response.status(200).json({ message: 'Portfolio deleted successfully' });
+        } catch (error) {
+            console.error('Error deleting portfolio:', error.message);
+            return response.status(400).json({ error: 'Error deleting portfolio', message: error.message });
+        }
     }
 };
-
-const rebateBalance = async (request, response) => {
-    const { id } = request.params
-    const { decrementValue } = request.body
-
-    try {
-        const results = await pool.query(
-            'UPDATE portfolios SET balance = balance - $1 WHERE id = $2 RETURNING *',
-            [decrementValue, id]
-        );
-
-        if (results.rows.length === 0) {
-            return response.status(404).json({ error: 'No such portfolio' });
-        }
-
-        return response.status(200).json(results.rows[0]);
-    } catch (error) {
-        response.status(500).json({ error: 'An error occurred' });
-    }
-}
-
-const deletePortfolio = async (request, response) => {
-    const { id } = request.params
-    
-    try {
-       const results = await pool.query(
-            'DELETE FROM portfolios WHERE id = $1 RETURNING *',
-            [id]
-       );
-
-       if (results.rows.length === 0) {
-            return response.status(404).json({ error: 'Portfolio not found' });
-       }
-
-       return response.status(200).json({ message: 'Portfolio deleted successfully' });
-    } catch (error) {
-        return response.sendStatus(400);
-    }
-}
-
-export { getPortfolios, getPortfolio, createPortfolio, updateBalance, rebateBalance, deletePortfolio }
