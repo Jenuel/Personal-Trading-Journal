@@ -1,22 +1,17 @@
 import express from 'express'
-import { getTrades, getTrade, createTrade, updateTrade, deleteTrade } from '../controllers/tradeController.js'
+import { TradeController } from '../controllers/tradeController.js'
 
 const router = express.Router()
 
-//get all trades based on the given port id
-router.get('/trades/port/:id', getTrades)
+router.get('/trades/port/:id', TradeController.getTrades)
 
-//get a specific trade
-router.get('/trades/:id', getTrade)
+router.get('/trades/:id', TradeController.getTrade)
 
-//create a trade
-router.post('/trades', createTrade)
+router.post('/trades', TradeController.createTrade)
 
-//update a trade
-router.put('/trades/:id', updateTrade)
+router.put('/trades/:id', TradeController.updateTrade)
 
-//delete a trade
-router.delete('/trades/:id', deleteTrade)
+router.delete('/trades/:id', TradeController.deleteTrade)
 
 
 export default router;
