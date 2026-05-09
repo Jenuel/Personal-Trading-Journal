@@ -34,7 +34,7 @@ export const PortfolioRepository = {
     createPortfolio: async (portfolio) => {
         const { data, error } = await supabase
             .from(TABLE_NAME)
-            .insert([portfolio])
+            .insert(portfolio)
             .select('*');
 
         if (error) {

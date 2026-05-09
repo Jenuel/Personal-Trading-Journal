@@ -2,7 +2,8 @@ import { PortfolioRepository as portfolioRepository } from "../repositories/port
 
 export const PortfolioService = {
     createPortfolio: async (name, balance) => {
-        const results = await portfolioRepository.createPortfolio(name, balance);
+        const portfolio = { name, balance };
+        const results = await portfolioRepository.createPortfolio(portfolio);
 
         if (!results) {
             throw new Error('Failed to create portfolio');
@@ -22,7 +23,7 @@ export const PortfolioService = {
     },
 
     getPortfolio: async (id) => {
-        const results = await portfolioRepository.getPortfolio(id);
+        const results = await portfolioRepository.getPortfolioById(id);
 
         if (!results) {
             throw new Error('Failed to fetch portfolio');
@@ -31,8 +32,30 @@ export const PortfolioService = {
         return results;
     },
 
-    updateBalance: async (id, balance) => {
-        const results = await portfolioRepository.updateBalance(id, balance);
+    updateBalance: async (id, incrementValue) => {
+        const currentPortfolio = await portfolioRepository.getPortfolioById(id);
+        if (!currentPortfolio) {
+            throw new Error('Portfolio not found');
+        }
+
+        const newBalance = Number(currentPortfolio.balance) + Number(incrementValue);
+        const results = await portfolioRepository.updatePortfolio(id, { balance: newBalance });
+
+        if (!results) {
+            throw new Error('Failed to update balance');
+        }
+
+        return results;
+    },
+
+    rebateBalance: async (id, decrementValue) => {
+        const currentPortfolio = await portfolioRepository.getPortfolioById(id);
+        if (!currentPortfolio) {
+            throw new Error('Portfolio not found');
+        }
+
+        const newBalance = Number(currentPortfolio.balance) - Number(decrementValue);
+        const results = await portfolioRepository.updatePortfolio(id, { balance: newBalance });
 
         if (!results) {
             throw new Error('Failed to update balance');
