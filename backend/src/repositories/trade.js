@@ -1,4 +1,4 @@
-import { supabase } from "../config/client";
+import { supabase } from "../config/client.js";
 
 const TABLE_NAME = "trades"
 

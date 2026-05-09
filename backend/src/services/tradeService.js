@@ -1,4 +1,4 @@
-import { tradeRepository } from "../repositories/tradeRepo.js";
+import { TradeRepository as tradeRepository } from "../repositories/trade.js";
 
 export const TradeService = {
     createTrade: async (trade) => {

@@ -1,4 +1,4 @@
-import { portfolioRepository } from "../repositories/portRepo.js";
+import { PortfolioRepository as portfolioRepository } from "../repositories/portfolio.js";
 
 export const PortfolioService = {
     createPortfolio: async (name, balance) => {

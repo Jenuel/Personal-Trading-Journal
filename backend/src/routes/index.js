@@ -1,5 +1,5 @@
-import tradeRoutes from "./tradeRoute";
-import portRoutes from "./portRoute";
+import tradeRoutes from "./tradeRoute.js";
+import portRoutes from "./portRoute.js";
 
 import { Router } from "express";
 
