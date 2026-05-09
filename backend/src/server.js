@@ -19,9 +19,10 @@ app.use(routes)
 try {
     await checkSupabaseConnection();
     console.log("Supabase connection successful")
-    app.listen(process.env.PORT, () => {
-        console.log("Listening on port", process.env.PORT || 3000)
-    })
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+        console.log("Listening on port", PORT);
+    });
 } catch (error) {
     console.error("Error in server.js", error)
     process.exit(1);
