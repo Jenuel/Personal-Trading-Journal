@@ -2,8 +2,8 @@ import { supabase } from "./client.js";
 
 export async function checkSupabaseConnection() {
     const { error } = await supabase
-        .from('_health')
-        .select('1')
+        .from('portfolios')
+        .select('id')
         .limit(1)
 
     if (error) {
