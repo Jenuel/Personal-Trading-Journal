@@ -21,7 +21,7 @@ export const TradeRepository = {
             .from(TABLE_NAME)
             .select('*')
             .eq('id', id)
-            .single();
+            .maybeSingle();
 
         if (error) {
             throw error;
@@ -47,7 +47,7 @@ export const TradeRepository = {
     createTrade: async (trade) => {
         const { data, error } = await supabase
             .from(TABLE_NAME)
-            .insert([trade])
+            .insert(trade)
             .select('*');
 
         if (error) {

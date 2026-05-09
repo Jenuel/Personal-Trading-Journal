@@ -22,7 +22,7 @@ export const TradeService = {
     },
 
     getTrade: async (id) => {
-        const results = await tradeRepository.getTrade(id);
+        const results = await tradeRepository.getTradeById(id);
 
         if (!results) {
             throw new Error('Failed to fetch trade');
@@ -31,8 +31,8 @@ export const TradeService = {
         return results;
     },
 
-    updateTrade: async (id, trade) => {
-        const results = await tradeRepository.updateTrade(id, trade);
+    updateTrade: async (id, updates) => {
+        const results = await tradeRepository.updateTrade(id, updates);
 
         if (!results) {
             throw new Error('Failed to update trade');

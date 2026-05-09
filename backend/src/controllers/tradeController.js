@@ -20,13 +20,13 @@ export const TradeController = {
     getTrade: async (request, response) => {
         const { id } = request.params
         try {
-            const results = await TradeService.getTrade(id);
+            const result = await TradeService.getTrade(id);
 
-            if (results.length === 0) {
+            if (!result) {
                 return response.status(404).json({ message: 'Trade not found' });
             }
 
-            response.status(200).json(results.rows[0]);
+            response.status(200).json(result);
         } catch (error) {
             response.status(500).send({ message: 'Error fetching trade', error: error.message })
         }
@@ -39,7 +39,16 @@ export const TradeController = {
 
             const { portId, symbol, quantity, price, type, date } = body;
 
-            const result = await TradeService.createTrade(portId, symbol, quantity, price, type, date);
+            const trade = {
+                portfolio_id: portId,
+                symbol,
+                quantity,
+                price,
+                type,
+                date
+            };
+
+            const result = await TradeService.createTrade(trade);
 
             console.log("Result:", result);
             response.status(201).json(result);
@@ -55,7 +64,16 @@ export const TradeController = {
         try {
             const { portId, symbol, quantity, price, type, date } = request.body;
 
-            const result = await TradeService.updateTrade(id, portId, symbol, quantity, price, type, date);
+            const updates = {
+                portfolio_id: portId,
+                symbol,
+                quantity,
+                price,
+                type,
+                date
+            };
+
+            const result = await TradeService.updateTrade(id, updates);
 
             if (result.length === 0) {
                 return response.status(404).json({ message: 'Trade not found' });
@@ -72,11 +90,11 @@ export const TradeController = {
         try {
             const result = await TradeService.deleteTrade(id);
 
-            if (result.length === 0) {
+            if (!result || result.length === 0) {
                 return response.status(404).json({ message: 'Trade not found' });
             }
 
-            response.status(200).json({ message: 'Trade deleted successfully', trade: result.rows[0] });
+            response.status(200).json({ message: 'Trade deleted successfully', trade: result[0] });
         } catch (error) {
             return response.sendStatus(400);
         }
