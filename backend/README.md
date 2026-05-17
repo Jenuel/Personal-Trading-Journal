@@ -91,4 +91,23 @@ Base path: `/trade`
 You can run the following scripts using `npm run <script_name>`:
 
 - `npm start`: Starts the application using Node.js (`node src/server.js`).
-- `npm run dev`: Starts the application in development mode using `nodemon` for hot-reloading (`nodemon src/server.js`).
+
+## Docker Setup
+
+The backend can be containerized and run using Docker. A `Dockerfile` is included in the project for this purpose.
+
+### Build the Docker Image
+Navigate to the `backend` directory and run:
+
+```bash
+docker build -t trading-journal-backend .
+```
+
+### Run the Docker Container
+Once the image is built, you can run it. Make sure to provide your environment variables, typically via the `.env` file.
+
+```bash
+docker run -p 3001:3001 --env-file .env trading-journal-backend
+```
+
+This maps port 3001 inside the container to port 3001 on your local machine.
