@@ -32,3 +32,26 @@ export interface CashTransaction {
     createdAt: string;
 }
 
+export interface PortfolioStats {
+    totalValue: number;
+    totalGain: number;
+    totalGainPercent: number;
+    realizedGain: number;
+    unrealizedGain: number;
+    availableCash: number;
+    winRate: number;
+}
+
+export interface Position {
+    symbol: string;
+    quantity: number;
+    averageCost: number;
+    currentPrice: number;
+    unrealizedPL: number;
+    unrealizedPLPercent: number;
+}
+
+export interface TradeDetail extends Trade {
+    realizedPL?: number;
+    realizedPLPercent?: number;
+}
