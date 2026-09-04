@@ -28,18 +28,20 @@ const ACCOUNT_TYPES: { value: AccountType; label: string }[] = [
     { value: 'PROP', label: '🟡 Prop Firm' },
 ];
 
+export interface PortfolioFormData {
+    name: string;
+    description?: string;
+    initialBalance: number;
+    currency: AccountCurrency;
+    broker?: string;
+    accountType: AccountType;
+}
+
 interface PortfolioDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     portfolio?: Portfolio;
-    onSubmit: (data: {
-        name: string;
-        description?: string;
-        initialBalance: number;
-        currency: AccountCurrency;
-        broker?: string;
-        accountType: AccountType;
-    }) => void;
+    onSubmit: (data: PortfolioFormData) => void;
     isLoading?: boolean;
 }
 

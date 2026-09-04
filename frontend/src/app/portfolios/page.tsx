@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { PortfoliosList } from '@/components/portfolios-list';
-import { PortfolioDialog } from '@/components/portfolios-dialog';
+import { PortfolioDialog, PortfolioFormData } from '@/components/portfolios-dialog';
 import {
     usePortfolios,
     useCreatePortfolio,
@@ -31,8 +31,7 @@ export default function PortfoliosPage() {
         setDialogOpen(false);
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleSubmit = (data: any) => {
+    const handleSubmit = (data: PortfolioFormData) => {
         if (editingPortfolio) {
             updatePortfolio.mutate({ id: editingPortfolio.id, data });
         } else {
