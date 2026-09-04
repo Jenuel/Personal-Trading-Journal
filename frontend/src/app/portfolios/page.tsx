@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Nav from '@/components/nav';
 import { PortfoliosList } from '@/components/portfolios-list';
 import { PortfolioDialog } from '@/components/portfolios-dialog';
 import {
@@ -11,8 +10,7 @@ import {
     useDeletePortfolio,
 } from '@/hooks/use-portfolios';
 import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Plus } from 'lucide-react';
+import { Plus, Briefcase } from 'lucide-react';
 import { Portfolio } from '@/types/types';
 
 export default function PortfoliosPage() {
@@ -33,12 +31,10 @@ export default function PortfoliosPage() {
         setDialogOpen(false);
     };
 
-    const handleSubmit = (data: Parameters<typeof createPortfolio.mutateAsync>[0]) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handleSubmit = (data: any) => {
         if (editingPortfolio) {
-            updatePortfolio.mutate({
-                id: editingPortfolio.id,
-                data,
-            });
+            updatePortfolio.mutate({ id: editingPortfolio.id, data });
         } else {
             createPortfolio.mutate(data);
         }
@@ -47,52 +43,58 @@ export default function PortfoliosPage() {
 
     if (isLoading) {
         return (
-            <div>
-                <Nav />
-                <div className="mx-auto max-w-7xl space-y-8 px-4 py-8 sm:px-6 lg:px-8">
-                    <Skeleton className="h-8 w-32" />
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                        {[...Array(6)].map((_, i) => (
-                            <Skeleton key={i} className="h-64" />
-                        ))}
-                    </div>
+            <div className="page-container space-y-8">
+                <div className="h-8 w-40 rounded-lg animate-pulse" style={{ background: 'var(--muted)' }} />
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    {[...Array(3)].map((_, i) => (
+                        <div key={i} className="h-56 rounded-xl animate-pulse" style={{ background: 'var(--muted)' }} />
+                    ))}
                 </div>
             </div>
         );
     }
 
     return (
-        <div>
-            <Nav />
-            <main className="mx-auto max-w-7xl space-y-8 px-4 py-8 sm:px-6 lg:px-8">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-3xl font-bold">Portfolios</h1>
-                        <p className="text-muted-foreground">
-                            Manage your trading accounts and portfolios
-                        </p>
+        <div className="page-container space-y-8">
+            <div className="flex items-center justify-between animate-slide-up">
+                <div>
+                    <div className="flex items-center gap-2 mb-1">
+                        <Briefcase size={16} style={{ color: 'var(--fx-accent)' }} />
+                        <span className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'var(--fx-accent)', letterSpacing: '0.12em' }}>
+                            Accounts
+                        </span>
                     </div>
-                    <Button onClick={() => handleOpenDialog()} size="lg">
-                        <Plus className="mr-2 h-4 w-4" />
-                        New Portfolio
-                    </Button>
+                    <h1 className="text-3xl font-bold" style={{ color: 'var(--foreground)', letterSpacing: '-0.02em' }}>
+                        Trading Accounts
+                    </h1>
+                    <p className="mt-1 text-sm" style={{ color: 'var(--muted-foreground)' }}>
+                        Manage your brokers, live accounts, demo accounts, and prop firm challenges.
+                    </p>
                 </div>
+                <Button
+                    onClick={() => handleOpenDialog()}
+                    className="btn-fx"
+                    style={{ border: 'none', gap: '6px' }}
+                >
+                    <Plus size={16} />
+                    New Account
+                </Button>
+            </div>
 
-                <PortfoliosList
-                    portfolios={portfolios || []}
-                    onEdit={handleOpenDialog}
-                    onDelete={(id) => deletePortfolio.mutate(id)}
-                    isDeleting={deletePortfolio.isPending}
-                />
+            <PortfoliosList
+                portfolios={portfolios || []}
+                onEdit={handleOpenDialog}
+                onDelete={(id) => deletePortfolio.mutate(id)}
+                isDeleting={deletePortfolio.isPending}
+            />
 
-                <PortfolioDialog
-                    open={dialogOpen}
-                    onOpenChange={handleCloseDialog}
-                    portfolio={editingPortfolio}
-                    onSubmit={handleSubmit}
-                    isLoading={createPortfolio.isPending || updatePortfolio.isPending}
-                />
-            </main>
+            <PortfolioDialog
+                open={dialogOpen}
+                onOpenChange={handleCloseDialog}
+                portfolio={editingPortfolio}
+                onSubmit={handleSubmit}
+                isLoading={createPortfolio.isPending || updatePortfolio.isPending}
+            />
         </div>
     );
 }
