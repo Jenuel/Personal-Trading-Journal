@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api';
-import { Portfolio, Trade, CashTransaction } from '@/types/types';
+import { Portfolio, ForexTrade } from '@/types/types';
 import { toast } from 'sonner';
 
 export function usePortfolios() {
@@ -91,7 +91,7 @@ export function useCreateTrade() {
 export function useUpdateTrade() {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: ({ id, data }: { id: string; data: Partial<Trade> }) =>
+        mutationFn: ({ id, data }: { id: string; data: Partial<ForexTrade> }) =>
             apiClient.updateTrade(id, data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['trades'] });
