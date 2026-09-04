@@ -215,39 +215,39 @@ export function TradesTable({ trades, onDelete, isDeleting, currency = 'USD' }: 
 
                                 return (
                                     <tr key={trade.id} style={{ background: rowBg }}>
-                                        <td style={{ ...TD, color: '#7b8fa8', fontFamily: "'JetBrains Mono', monospace", fontSize: 12 }}>
+                                        <td style={{ ...TD, color: '#7b8fa8', fontFamily: 'var(--fx-font-mono)', fontSize: 12 }}>
                                             {new Date(trade.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' })}
                                         </td>
                                         <td style={TD}>
-                                            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: 13, color: '#e2e8f0' }}>
+                                            <span style={{ fontFamily: 'var(--fx-font-mono)', fontWeight: 600, fontSize: 13, color: '#e2e8f0' }}>
                                                 {trade.pair}
                                             </span>
                                         </td>
                                         <td style={TD}><DirectionBadge direction={trade.direction} /></td>
-                                        <td style={{ ...TD, textAlign: 'right', fontFamily: "'JetBrains Mono', monospace", color: '#e2e8f0' }}>
+                                        <td style={{ ...TD, textAlign: 'right', fontFamily: 'var(--fx-font-mono)', color: '#e2e8f0' }}>
                                             {trade.lots.toFixed(2)}
                                         </td>
-                                        <td style={{ ...TD, textAlign: 'right', fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: '#7b8fa8' }}>
+                                        <td style={{ ...TD, textAlign: 'right', fontFamily: 'var(--fx-font-mono)', fontSize: 12, color: '#7b8fa8' }}>
                                             {trade.entryPrice.toFixed(dec)}
                                         </td>
-                                        <td style={{ ...TD, textAlign: 'right', fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: '#7b8fa8' }}>
+                                        <td style={{ ...TD, textAlign: 'right', fontFamily: 'var(--fx-font-mono)', fontSize: 12, color: '#7b8fa8' }}>
                                             {trade.exitPrice ? trade.exitPrice.toFixed(dec) : '—'}
                                         </td>
-                                        <td style={{ ...TD, textAlign: 'right', fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: '#ef4444', opacity: 0.8 }}>
+                                        <td style={{ ...TD, textAlign: 'right', fontFamily: 'var(--fx-font-mono)', fontSize: 12, color: '#ef4444', opacity: 0.8 }}>
                                             {trade.stopLoss ? trade.stopLoss.toFixed(dec) : '—'}
                                         </td>
-                                        <td style={{ ...TD, textAlign: 'right', fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: '#10b981', opacity: 0.8 }}>
+                                        <td style={{ ...TD, textAlign: 'right', fontFamily: 'var(--fx-font-mono)', fontSize: 12, color: '#10b981', opacity: 0.8 }}>
                                             {trade.takeProfit ? trade.takeProfit.toFixed(dec) : '—'}
                                         </td>
-                                        <td style={{ ...TD, textAlign: 'right', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: trade.pips !== undefined ? pipColor : '#7b8fa8' }}>
+                                        <td style={{ ...TD, textAlign: 'right', fontFamily: 'var(--fx-font-mono)', fontWeight: 700, color: trade.pips !== undefined ? pipColor : '#7b8fa8' }}>
                                             {trade.pips !== undefined ? `${trade.pips > 0 ? '+' : ''}${trade.pips.toFixed(1)}` : '—'}
                                         </td>
-                                        <td style={{ ...TD, textAlign: 'right', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: trade.result !== undefined ? plColor : '#7b8fa8' }}>
+                                        <td style={{ ...TD, textAlign: 'right', fontFamily: 'var(--fx-font-mono)', fontWeight: 700, color: trade.result !== undefined ? plColor : '#7b8fa8' }}>
                                             {trade.result !== undefined
                                                 ? `${trade.result >= 0 ? '+' : ''}${formatCurrency(trade.result, currency as 'USD')}`
                                                 : '—'}
                                         </td>
-                                        <td style={{ ...TD, textAlign: 'right', fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: trade.rr !== undefined ? rrColor : '#7b8fa8' }}>
+                                        <td style={{ ...TD, textAlign: 'right', fontFamily: 'var(--fx-font-mono)', fontWeight: 700, color: trade.rr !== undefined ? rrColor : '#7b8fa8' }}>
                                             {trade.rr !== undefined ? formatRR(trade.rr) : '—'}
                                         </td>
                                         <td style={TD}><SessionPill session={trade.session} /></td>

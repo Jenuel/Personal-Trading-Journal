@@ -75,7 +75,7 @@ export function StatsCard({
                 <span style={{
                     fontSize: '24px',
                     fontWeight: 700,
-                    fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+                    fontFamily: 'var(--fx-font-mono)',
                     letterSpacing: '-0.03em',
                     color: '#e2e8f0',
                 }}>
@@ -86,7 +86,7 @@ export function StatsCard({
                         marginLeft: '8px',
                         fontSize: '13px',
                         fontWeight: 600,
-                        fontFamily: "'JetBrains Mono', monospace",
+                        fontFamily: 'var(--fx-font-mono)',
                         color: changeColor,
                     }}>
                         {change}

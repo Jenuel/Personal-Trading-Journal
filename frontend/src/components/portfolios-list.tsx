@@ -101,7 +101,7 @@ export function PortfoliosList({ portfolios, onEdit, onDelete, isDeleting }: Por
 
                         <div style={{ marginBottom: 12 }}>
                             <p style={{ color: '#7b8fa8', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 2px' }}>Balance</p>
-                            <p style={{ color: '#e2e8f0', fontSize: 22, fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", letterSpacing: '-0.02em', margin: 0 }}>
+                            <p style={{ color: '#e2e8f0', fontSize: 22, fontWeight: 700, fontFamily: 'var(--fx-font-mono)', letterSpacing: '-0.02em', margin: 0 }}>
                                 {formatCurrency(portfolio.currentBalance, portfolio.currency)}
                             </p>
                         </div>
@@ -121,14 +121,14 @@ export function PortfoliosList({ portfolios, onEdit, onDelete, isDeleting }: Por
                             <div style={{ textAlign: 'right' }}>
                                 <span style={{
                                     color: isProfit ? '#10b981' : '#ef4444',
-                                    fontFamily: "'JetBrains Mono', monospace",
+                                    fontFamily: 'var(--fx-font-mono)',
                                     fontWeight: 700, fontSize: 14,
                                 }}>
                                     {gain >= 0 ? '+' : ''}{formatCurrency(gain, portfolio.currency)}
                                 </span>
                                 <span style={{
                                     color: isProfit ? '#10b981' : '#ef4444',
-                                    fontFamily: "'JetBrains Mono', monospace",
+                                    fontFamily: 'var(--fx-font-mono)',
                                     fontSize: 12, opacity: 0.8, marginLeft: 6,
                                 }}>
                                     ({gainPercent >= 0 ? '+' : ''}{gainPercent.toFixed(2)}%)
@@ -151,7 +151,7 @@ export function PortfoliosList({ portfolios, onEdit, onDelete, isDeleting }: Por
                                         borderRight: i < 2 ? '1px solid #2a3347' : 'none',
                                     }}>
                                         <p style={{ color: '#7b8fa8', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.06em', margin: '0 0 2px' }}>{label}</p>
-                                        <p style={{ color, fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 14, margin: 0 }}>{value}</p>
+                                        <p style={{ color, fontFamily: 'var(--fx-font-mono)', fontWeight: 700, fontSize: 14, margin: 0 }}>{value}</p>
                                     </div>
                                 ))}
                             </div>
