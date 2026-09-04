@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
+import Link from 'next/link';
 import { StatsCard } from '@/components/stats-card';
 import { TradesTable } from '@/components/trades-table';
 import { usePortfolios } from '@/hooks/use-portfolios';
@@ -141,7 +142,7 @@ export default function Dashboard() {
                     <p style={{ color: '#7b8fa8', fontSize: 14, margin: '0 0 20px' }}>
                         Create your first trading account to start tracking FOREX trades.
                     </p>
-                    <a href="/portfolios" className="btn-fx">Create Account</a>
+                    <Link href="/portfolios" className="btn-fx">Create Account</Link>
                 </div>
             )}
         </div>
