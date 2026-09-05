@@ -1,7 +1,8 @@
 'use client';
 
 import { useMemo } from 'react';
-import { usePortfolios } from '@/hooks/use-portfolios';
+import { useAccount } from '@/lib/account-context';
+import { usePortfolioTrades } from '@/hooks/use-portfolios';
 import {
     formatCurrency,
     calculateFxStats,
@@ -258,17 +259,17 @@ function MonthlyPL({ trades }: { trades: Array<{ date: string; result?: number }
 }
 
 export default function AnalyticsPage() {
-    const { data: portfolios, isLoading } = usePortfolios();
+    const { activePortfolio, isLoading: accountLoading } = useAccount();
+    const { data: allTrades = [], isLoading: tradesLoading } = usePortfolioTrades(activePortfolio?.id ?? '');
 
-    const allTrades = useMemo(() => portfolios?.flatMap(p => p.trades ?? []) ?? [], [portfolios]);
+    const isLoading = accountLoading || tradesLoading;
+
     const stats = useMemo(() => calculateFxStats(allTrades), [allTrades]);
 
     const equityCurve = useMemo(() => {
-        if (!portfolios) return [];
-        const firstPortfolio = portfolios[0];
-        if (!firstPortfolio) return [];
-        return buildEquityCurve(firstPortfolio.initialBalance, firstPortfolio.trades ?? []);
-    }, [portfolios]);
+        if (!activePortfolio) return [];
+        return buildEquityCurve(activePortfolio.initialBalance, allTrades, activePortfolio.cashTransactions ?? []);
+    }, [activePortfolio, allTrades]);
 
     if (isLoading) {
         return (
@@ -293,10 +294,11 @@ export default function AnalyticsPage() {
                     </span>
                 </div>
                 <h1 className="text-3xl font-bold" style={{ color: 'var(--foreground)', letterSpacing: '-0.02em' }}>
-                    Analytics
+                    {activePortfolio?.name ?? 'Analytics'}
                 </h1>
                 <p className="mt-1 text-sm" style={{ color: 'var(--muted-foreground)' }}>
-                    {stats.closedTrades} closed trades analyzed
+                    {activePortfolio?.broker && <span>{activePortfolio.broker} · </span>}
+                    {stats.closedTrades} closed trade{stats.closedTrades !== 1 ? 's' : ''} analyzed
                 </p>
             </div>
 
