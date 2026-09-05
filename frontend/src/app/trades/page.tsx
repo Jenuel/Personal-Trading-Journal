@@ -1,48 +1,42 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import { TradesTable } from '@/components/trades-table';
 import { TradeDialog } from '@/components/trade-dialog';
-import {
-    usePortfolios,
-    useCreateTrade,
-    useDeleteTrade,
-} from '@/hooks/use-portfolios';
+import { useAccount } from '@/lib/account-context';
+import { usePortfolioTrades, useCreateTrade, useDeleteTrade } from '@/hooks/use-portfolios';
 import { Button } from '@/components/ui/button';
-import { Plus, ScrollText } from 'lucide-react';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
+import { Plus, ScrollText, Target, TrendingUp, BarChart2, Activity } from 'lucide-react';
+import { formatCurrency, calculateFxStats, calculatePortfolioGain } from '@/lib/portfolio-utils';
+import { useState } from 'react';
 
 export default function TradesPage() {
     const [dialogOpen, setDialogOpen] = useState(false);
-    const [selectedPortfolioId, setSelectedPortfolioId] = useState<string>('all');
 
-    const { data: portfolios, isLoading } = usePortfolios();
+    const { activePortfolio, portfolios, isLoading: accountLoading } = useAccount();
     const createTrade = useCreateTrade();
     const deleteTrade = useDeleteTrade();
 
-    const allTrades = useMemo(() => {
-        if (!portfolios) return [];
-        if (selectedPortfolioId === 'all') {
-            return portfolios
-                .flatMap(p => p.trades ?? [])
-                .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-        }
-        const p = portfolios.find(p => p.id === selectedPortfolioId);
-        return (p?.trades ?? []).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    }, [portfolios, selectedPortfolioId]);
+    // Fetch trades scoped to the active portfolio only
+    const { data: rawTrades = [], isLoading: tradesLoading } = usePortfolioTrades(activePortfolio?.id ?? '');
 
-    const activePortfolio = useMemo(() => {
-        if (!portfolios || selectedPortfolioId === 'all') return portfolios?.[0];
-        return portfolios.find(p => p.id === selectedPortfolioId);
-    }, [portfolios, selectedPortfolioId]);
+    const trades = useMemo(() =>
+        [...rawTrades].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
+        [rawTrades]
+    );
 
-    if (isLoading) {
+    const stats = useMemo(() => {
+        if (!trades.length) return null;
+        return calculateFxStats(trades);
+    }, [trades]);
+
+    const { gain, gainPercent } = useMemo(() => {
+        if (!activePortfolio) return { gain: 0, gainPercent: 0 };
+        return calculatePortfolioGain(activePortfolio);
+    }, [activePortfolio]);
+
+    // ─── Loading skeleton ─────────────────────────────────────────────────────
+    if (accountLoading) {
         return (
             <div className="page-container space-y-6">
                 <div className="h-8 w-40 rounded-lg animate-pulse" style={{ background: 'var(--muted)' }} />
@@ -51,64 +45,137 @@ export default function TradesPage() {
         );
     }
 
+    // ─── No accounts ─────────────────────────────────────────────────────────
+    if (!portfolios || portfolios.length === 0) {
+        return (
+            <div className="page-container">
+                <div style={{
+                    borderRadius: 16, padding: '72px 32px', textAlign: 'center',
+                    border: '2px dashed #2a3347', background: '#141824', marginTop: 24,
+                }}>
+                    <ScrollText size={40} style={{ color: '#2a3347', margin: '0 auto 16px' }} />
+                    <h2 style={{ color: '#e2e8f0', fontSize: 18, fontWeight: 600, margin: '0 0 8px' }}>
+                        No Trading Accounts Yet
+                    </h2>
+                    <p style={{ color: '#7b8fa8', fontSize: 14, margin: '0 0 20px' }}>
+                        Create a trading account first to start logging trades.
+                    </p>
+                    <a href="/portfolios" className="btn-fx" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, textDecoration: 'none' }}>
+                        <Plus size={15} /> Create Account
+                    </a>
+                </div>
+            </div>
+        );
+    }
+
+    const isProfit = gain >= 0;
+
     return (
-        <div className="page-container space-y-8">
-            <div className="flex items-center justify-between animate-slide-up">
+        <div className="page-container space-y-6">
+
+            {/* ─── Page Header ──────────────────────────────────────────────── */}
+            <div className="animate-slide-up" style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16 }}>
                 <div>
-                    <div className="flex items-center gap-2 mb-1">
-                        <ScrollText size={16} style={{ color: 'var(--fx-accent)' }} />
-                        <span className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'var(--fx-accent)', letterSpacing: '0.12em' }}>
-                            Journal
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
+                        <ScrollText size={14} style={{ color: 'var(--fx-accent)' }} />
+                        <span style={{
+                            color: 'var(--fx-accent)', fontSize: 11, fontWeight: 600,
+                            textTransform: 'uppercase', letterSpacing: '0.12em',
+                        }}>
+                            Trade Log
                         </span>
                     </div>
-                    <h1 className="text-3xl font-bold" style={{ color: 'var(--foreground)', letterSpacing: '-0.02em' }}>
-                        Trade Log
+                    <h1 style={{ color: 'var(--foreground)', fontSize: 28, fontWeight: 800, letterSpacing: '-0.02em', margin: 0 }}>
+                        {activePortfolio?.name ?? 'Trades'}
                     </h1>
-                    <p className="mt-1 text-sm" style={{ color: 'var(--muted-foreground)' }}>
-                        {allTrades.length} trade{allTrades.length !== 1 ? 's' : ''} logged
+                    <p style={{ color: 'var(--muted-foreground)', fontSize: 13, marginTop: 3 }}>
+                        {activePortfolio?.broker && <span>{activePortfolio.broker} · </span>}
+                        <span>{tradesLoading ? '…' : `${trades.length} trade${trades.length !== 1 ? 's' : ''}`}</span>
                     </p>
                 </div>
-                <div className="flex items-center gap-3">
-                    {portfolios && portfolios.length > 1 && (
-                        <Select
-                            value={selectedPortfolioId}
-                            onValueChange={setSelectedPortfolioId}
-                        >
-                            <SelectTrigger
-                                className="w-44 text-sm"
-                                style={{ background: 'var(--input)', borderColor: 'var(--border)' }}
-                            >
-                                <SelectValue placeholder="All accounts" />
-                            </SelectTrigger>
-                            <SelectContent style={{ background: 'var(--popover)', borderColor: 'var(--border)' }}>
-                                <SelectItem value="all">All Accounts</SelectItem>
-                                {portfolios.map(p => (
-                                    <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    )}
-                    <Button
-                        onClick={() => setDialogOpen(true)}
-                        disabled={!activePortfolio}
-                        className="btn-fx"
-                        style={{ border: 'none', gap: '6px' }}
-                    >
-                        <Plus size={16} />
-                        Log Trade
-                    </Button>
+
+                <Button
+                    onClick={() => setDialogOpen(true)}
+                    disabled={!activePortfolio}
+                    className="btn-fx"
+                    style={{ border: 'none', gap: 6, flexShrink: 0, marginTop: 4 }}
+                >
+                    <Plus size={15} />
+                    Log Trade
+                </Button>
+            </div>
+
+            {/* ─── Per-Account Stats Mini-Bar ───────────────────────────────── */}
+            {stats && stats.closedTrades > 0 && !tradesLoading && (
+                <div className="animate-slide-up stagger-1" style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(4, 1fr)',
+                    gap: 10,
+                }}>
+                    {[
+                        {
+                            icon: <Target size={13} />,
+                            label: 'Win Rate',
+                            value: `${stats.winRate.toFixed(1)}%`,
+                            sub: `${stats.winCount}W · ${stats.lossCount}L · ${stats.beCount}BE`,
+                            color: stats.winRate >= 50 ? '#10b981' : '#ef4444',
+                        },
+                        {
+                            icon: isProfit ? <TrendingUp size={13} /> : <TrendingUp size={13} style={{ transform: 'scaleY(-1)' }} />,
+                            label: 'Total P&L',
+                            value: `${gain >= 0 ? '+' : ''}${formatCurrency(gain, activePortfolio?.currency)}`,
+                            sub: `${gainPercent >= 0 ? '+' : ''}${gainPercent.toFixed(2)}%`,
+                            color: isProfit ? '#10b981' : '#ef4444',
+                        },
+                        {
+                            icon: <BarChart2 size={13} />,
+                            label: 'Profit Factor',
+                            value: stats.profitFactor === Infinity ? '∞' : stats.profitFactor.toFixed(2),
+                            sub: `Avg R:R ${stats.avgRR.toFixed(2)}`,
+                            color: stats.profitFactor >= 1.5 ? '#10b981' : stats.profitFactor >= 1 ? '#f59e0b' : '#ef4444',
+                        },
+                        {
+                            icon: <Activity size={13} />,
+                            label: 'Total Pips',
+                            value: `${stats.totalPips >= 0 ? '+' : ''}${stats.totalPips.toFixed(1)}`,
+                            sub: `${stats.closedTrades} closed`,
+                            color: stats.totalPips >= 0 ? '#00d4ff' : '#ef4444',
+                        },
+                    ].map(({ icon, label, value, sub, color }) => (
+                        <div key={label} style={{
+                            background: '#141824', border: '1px solid #2a3347', borderRadius: 10, padding: '12px 14px',
+                        }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 6 }}>
+                                <span style={{ color: '#7b8fa8' }}>{icon}</span>
+                                <span style={{ color: '#7b8fa8', fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                                    {label}
+                                </span>
+                            </div>
+                            <p style={{ color, fontFamily: 'var(--fx-font-mono)', fontWeight: 700, fontSize: 18, letterSpacing: '-0.02em', margin: '0 0 2px' }}>
+                                {value}
+                            </p>
+                            <p style={{ color: '#7b8fa8', fontSize: 11, margin: 0 }}>{sub}</p>
+                        </div>
+                    ))}
                 </div>
+            )}
+
+            {/* ─── Trades Table ─────────────────────────────────────────────── */}
+            <div className="animate-slide-up stagger-2">
+                {tradesLoading ? (
+                    <div style={{ borderRadius: 12, height: 200, background: 'var(--muted)', animation: 'pulse 1.5s infinite' }} />
+                ) : (
+                    <TradesTable
+                        trades={trades}
+                        onDelete={(id) => deleteTrade.mutate(id)}
+                        isDeleting={deleteTrade.isPending}
+                        currency={activePortfolio?.currency}
+                        accountName={activePortfolio?.name}
+                    />
+                )}
             </div>
 
-            <div className="animate-slide-up stagger-1">
-                <TradesTable
-                    trades={allTrades}
-                    onDelete={(id) => deleteTrade.mutate(id)}
-                    isDeleting={deleteTrade.isPending}
-                    currency={activePortfolio?.currency}
-                />
-            </div>
-
+            {/* ─── Trade Dialog ─────────────────────────────────────────────── */}
             {activePortfolio && (
                 <TradeDialog
                     open={dialogOpen}
