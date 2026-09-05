@@ -10,6 +10,7 @@ interface TradesTableProps {
     onDelete?: (id: string) => void;
     isDeleting?: boolean;
     currency?: string;
+    accountName?: string;
 }
 
 type SortKey = 'date' | 'pair' | 'pips' | 'result' | 'rr' | 'lots';
@@ -97,7 +98,7 @@ const TD: React.CSSProperties = {
     borderBottom: '1px solid rgba(42,51,71,0.5)',
 };
 
-export function TradesTable({ trades, onDelete, isDeleting, currency = 'USD' }: TradesTableProps) {
+export function TradesTable({ trades, onDelete, isDeleting, currency = 'USD', accountName }: TradesTableProps) {
     const [sortKey, setSortKey] = useState<SortKey>('date');
     const [sortDir, setSortDir] = useState<SortDir>('desc');
     const [filterOutcome, setFilterOutcome] = useState<'ALL' | 'WIN' | 'LOSS' | 'BE'>('ALL');
@@ -105,11 +106,26 @@ export function TradesTable({ trades, onDelete, isDeleting, currency = 'USD' }: 
     if (!trades || trades.length === 0) {
         return (
             <div style={{
-                borderRadius: 12, padding: 48, textAlign: 'center',
+                borderRadius: 12, padding: '52px 32px', textAlign: 'center',
                 border: '1px dashed #2a3347', background: '#141824',
             }}>
-                <p style={{ color: '#7b8fa8', fontSize: 14, margin: 0 }}>
-                    No trades recorded yet. Log your first FOREX trade to get started.
+                <div style={{
+                    width: 48, height: 48, borderRadius: 12,
+                    background: 'rgba(0,212,255,0.07)', border: '1px solid rgba(0,212,255,0.15)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    margin: '0 auto 14px',
+                }}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00d4ff" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M3 3l18 18M10.5 10.677a2 2 0 0 0 2.823 2.823" />
+                        <path d="M13.843 13.625A3.5 3.5 0 0 0 9.35 9.137m-1.357 5.07A8 8 0 0 0 12 20c4.418 0 8-3.582 8-8a8 8 0 0 0-.136-1.499" />
+                        <path d="M6.5 6.343A8 8 0 0 0 4 12c0 4.418 3.582 8 8 8" />
+                    </svg>
+                </div>
+                <p style={{ color: '#e2e8f0', fontSize: 14, fontWeight: 600, margin: '0 0 6px' }}>
+                    {accountName ? `No trades for ${accountName} yet` : 'No trades recorded yet'}
+                </p>
+                <p style={{ color: '#7b8fa8', fontSize: 13, margin: 0 }}>
+                    Log your first trade to start tracking your performance.
                 </p>
             </div>
         );
