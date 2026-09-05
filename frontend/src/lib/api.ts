@@ -165,8 +165,22 @@ class ApiClient {
             return MOCK_PORTFOLIOS.find(p => p.id === id) || MOCK_PORTFOLIOS[0];
         }
         if (endpoint.includes('/trades')) {
-            const trades = MOCK_PORTFOLIOS.flatMap(p => p.trades || []);
-            return trades;
+            // /trades/port/:id  → filter by portfolio
+            const portMatch = endpoint.match(/\/trades\/port\/([\w-]+)/);
+            if (portMatch) {
+                const pid = portMatch[1];
+                const portfolio = MOCK_PORTFOLIOS.find(p => p.id === pid);
+                return portfolio?.trades ?? [];
+            }
+            // /trades?portfolioId=:id → filter by query param
+            const qpMatch = endpoint.match(/[?&]portfolioId=([\w-]+)/);
+            if (qpMatch) {
+                const pid = qpMatch[1];
+                const portfolio = MOCK_PORTFOLIOS.find(p => p.id === pid);
+                return portfolio?.trades ?? [];
+            }
+            // /trades (no filter) → all trades
+            return MOCK_PORTFOLIOS.flatMap(p => p.trades || []);
         }
         if (endpoint.includes('/transactions')) {
             return MOCK_PORTFOLIOS.flatMap(p => p.cashTransactions || []);
