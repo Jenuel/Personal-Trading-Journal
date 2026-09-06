@@ -4,6 +4,7 @@ import { useState } from 'react';
 import {
     Dialog,
     DialogContent,
+    DialogDescription,
     DialogHeader,
     DialogTitle,
     DialogFooter,
@@ -62,6 +63,9 @@ export function PortfolioDialog({
                     <DialogTitle style={{ color: 'var(--foreground)', fontSize: '16px', fontWeight: 700 }}>
                         {portfolio ? 'Edit Account' : 'New Trading Account'}
                     </DialogTitle>
+                    <DialogDescription className="sr-only">
+                        {portfolio ? 'Edit your trading account details.' : 'Create a new trading account to track your portfolio.'}
+                    </DialogDescription>
                 </DialogHeader>
 
                 {/* Radix unmounts DialogContent when closed, so the form remounts

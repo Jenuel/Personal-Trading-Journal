@@ -4,6 +4,7 @@ import { useState } from 'react';
 import {
     Dialog,
     DialogContent,
+    DialogDescription,
     DialogHeader,
     DialogTitle,
     DialogFooter,
@@ -72,6 +73,9 @@ export function CashDialog({
                     <DialogTitle>
                         {formData.type === 'DEPOSIT' ? 'Deposit Funds' : 'Withdraw Funds'}
                     </DialogTitle>
+                    <DialogDescription className="sr-only">
+                        {formData.type === 'DEPOSIT' ? 'Record a deposit into your trading account.' : 'Record a withdrawal from your trading account.'}
+                    </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>

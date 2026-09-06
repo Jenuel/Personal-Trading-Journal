@@ -3,11 +3,12 @@
 import { useState } from 'react';
 import { ForexTrade } from '@/types/types';
 import { formatCurrency, formatRR } from '@/lib/portfolio-utils';
-import { TrendingUp, TrendingDown, ChevronUp, ChevronDown, Trash2 } from 'lucide-react';
+import { TrendingUp, TrendingDown, ChevronUp, ChevronDown, Trash2, Pencil } from 'lucide-react';
 
 interface TradesTableProps {
     trades: ForexTrade[];
     onDelete?: (id: string) => void;
+    onEdit?: (trade: ForexTrade) => void;
     isDeleting?: boolean;
     currency?: string;
     accountName?: string;
@@ -98,7 +99,7 @@ const TD: React.CSSProperties = {
     borderBottom: '1px solid rgba(42,51,71,0.5)',
 };
 
-export function TradesTable({ trades, onDelete, isDeleting, currency = 'USD', accountName }: TradesTableProps) {
+export function TradesTable({ trades, onDelete, onEdit, isDeleting, currency = 'USD', accountName }: TradesTableProps) {
     const [sortKey, setSortKey] = useState<SortKey>('date');
     const [sortDir, setSortDir] = useState<SortDir>('desc');
     const [filterOutcome, setFilterOutcome] = useState<'ALL' | 'WIN' | 'LOSS' | 'BE'>('ALL');
@@ -202,7 +203,7 @@ export function TradesTable({ trades, onDelete, isDeleting, currency = 'USD', ac
                                     { key: 'rr', label: 'R:R' },
                                     { key: null, label: 'Session' },
                                     { key: null, label: 'Outcome' },
-                                    ...(onDelete ? [{ key: null, label: '' }] : []),
+                                    ...(onDelete || onEdit ? [{ key: null, label: '' }] : []),
                                 ].map(({ key, label }, i) => (
                                     <th
                                         key={i}
@@ -268,17 +269,34 @@ export function TradesTable({ trades, onDelete, isDeleting, currency = 'USD', ac
                                         </td>
                                         <td style={TD}><SessionPill session={trade.session} /></td>
                                         <td style={TD}><OutcomeBadge outcome={trade.outcome} /></td>
-                                        {onDelete && (
+                                        {(onDelete || onEdit) && (
                                             <td style={{ ...TD, textAlign: 'right' }}>
-                                                <button
-                                                    onClick={() => onDelete(trade.id)}
-                                                    disabled={isDeleting}
-                                                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', opacity: 0.5, padding: '2px 4px' }}
-                                                    onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
-                                                    onMouseLeave={e => (e.currentTarget.style.opacity = '0.5')}
-                                                >
-                                                    <Trash2 size={14} />
-                                                </button>
+                                                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                                                    {onEdit && (
+                                                        <button
+                                                            onClick={() => onEdit(trade)}
+                                                            disabled={isDeleting}
+                                                            title="Edit trade"
+                                                            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#00d4ff', opacity: 0.5, padding: '2px 4px' }}
+                                                            onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
+                                                            onMouseLeave={e => (e.currentTarget.style.opacity = '0.5')}
+                                                        >
+                                                            <Pencil size={13} />
+                                                        </button>
+                                                    )}
+                                                    {onDelete && (
+                                                        <button
+                                                            onClick={() => onDelete(trade.id)}
+                                                            disabled={isDeleting}
+                                                            title="Delete trade"
+                                                            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', opacity: 0.5, padding: '2px 4px' }}
+                                                            onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
+                                                            onMouseLeave={e => (e.currentTarget.style.opacity = '0.5')}
+                                                        >
+                                                            <Trash2 size={14} />
+                                                        </button>
+                                                    )}
+                                                </div>
                                             </td>
                                         )}
                                     </tr>
