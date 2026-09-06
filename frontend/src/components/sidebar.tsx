@@ -51,8 +51,8 @@ export default function Sidebar() {
                 style={{
                     width: sidebarWidth,
                     minHeight: '100vh',
-                    background: '#09111f',
-                    borderRight: '1px solid #1e2636',
+                    background: '#060b14',
+                    borderRight: '1px solid rgba(74, 96, 128, 0.08)',
                     display: 'flex',
                     flexDirection: 'column',
                     position: 'fixed',
@@ -69,26 +69,29 @@ export default function Sidebar() {
                     alignItems: 'center',
                     gap: 12,
                     padding: '18px 16px',
-                    borderBottom: '1px solid #1e2636',
+                    borderBottom: '1px solid rgba(74, 96, 128, 0.08)',
                     minHeight: 64,
                     overflow: 'hidden',
                 }}>
                     <div style={{
-                        width: 34, height: 34, borderRadius: 9,
-                        background: 'linear-gradient(135deg, #00d4ff, #0099bb)',
+                        width: 32, height: 32, borderRadius: 8,
+                        background: 'rgba(200,216,236,0.08)',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         flexShrink: 0,
-                        boxShadow: '0 0 14px rgba(0,212,255,0.4)',
                     }}>
-                        <TrendingUp size={17} color="#0b0f1a" strokeWidth={2.5} />
+                        <svg width="17" height="17" viewBox="0 0 16 16" fill="none">
+                            <polyline points="1,12 5,7 8,9 11,4 15,6"
+                                stroke="#c8d8ec" strokeWidth="1.8"
+                                strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
                     </div>
                     {!collapsed && (
                         <div style={{ overflow: 'hidden' }}>
-                            <p style={{ color: '#e2e8f0', fontWeight: 700, fontSize: 14, lineHeight: 1.2, whiteSpace: 'nowrap' }}>
+                            <p style={{ color: '#c8ddef', fontWeight: 700, fontSize: 14, lineHeight: 1.2, whiteSpace: 'nowrap', margin: 0 }}>
                                 FX Journal
                             </p>
-                            <p style={{ color: '#7b8fa8', fontSize: 11, whiteSpace: 'nowrap' }}>
-                                FOREX Trading
+                            <p style={{ color: '#4a6080', fontSize: 11, whiteSpace: 'nowrap', margin: 0 }}>
+                                Serious Trading
                             </p>
                         </div>
                     )}
@@ -97,7 +100,7 @@ export default function Sidebar() {
                 {/* ── Account Switcher ──────────────────────────────────── */}
                 {!isLoading && portfolios.length > 0 && (
                     <div style={{
-                        borderBottom: '1px solid #1e2636',
+                        borderBottom: '1px solid rgba(74, 96, 128, 0.08)',
                         position: 'relative',
                     }}>
                         <button
@@ -116,7 +119,7 @@ export default function Sidebar() {
                                 transition: 'background 0.15s',
                             }}
                             onMouseEnter={e => {
-                                if (!collapsed) (e.currentTarget as HTMLButtonElement).style.background = '#111827';
+                                if (!collapsed) (e.currentTarget as HTMLButtonElement).style.background = '#0d1524';
                             }}
                             onMouseLeave={e => {
                                 (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
@@ -127,12 +130,11 @@ export default function Sidebar() {
                                 <div style={{
                                     width: 8, height: 8, borderRadius: '50%', flexShrink: 0,
                                     background: ACCOUNT_TYPE_COLOR[activePortfolio?.accountType ?? 'DEMO'],
-                                    boxShadow: `0 0 6px ${ACCOUNT_TYPE_COLOR[activePortfolio?.accountType ?? 'DEMO']}`,
                                 }} />
                                 {!collapsed && (
                                     <div style={{ minWidth: 0 }}>
                                         <p style={{
-                                            color: '#e2e8f0', fontSize: 12, fontWeight: 600,
+                                            color: '#c8ddef', fontSize: 12, fontWeight: 600,
                                             whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
                                             margin: 0, lineHeight: 1.3,
                                         }}>
@@ -158,7 +160,7 @@ export default function Sidebar() {
                                 <ChevronDown
                                     size={14}
                                     style={{
-                                        color: '#7b8fa8', flexShrink: 0,
+                                        color: '#4a6080', flexShrink: 0,
                                         transform: switcherOpen ? 'rotate(180deg)' : 'rotate(0deg)',
                                         transition: 'transform 0.2s',
                                     }}
@@ -172,8 +174,8 @@ export default function Sidebar() {
                                 position: 'absolute',
                                 top: '100%',
                                 left: 8, right: 8,
-                                background: '#111827',
-                                border: '1px solid #1e2636',
+                                background: '#0d1524',
+                                border: '1px solid rgba(74, 96, 128, 0.12)',
                                 borderRadius: 10,
                                 overflow: 'hidden',
                                 zIndex: 50,
@@ -192,15 +194,15 @@ export default function Sidebar() {
                                             }}
                                             style={{
                                                 width: '100%', border: 'none', cursor: 'pointer',
-                                                background: isActive ? 'rgba(0,212,255,0.07)' : 'transparent',
+                                                background: isActive ? '#1a2d47' : 'transparent',
                                                 padding: '10px 12px',
                                                 display: 'flex', alignItems: 'center', gap: 9,
                                                 textAlign: 'left',
-                                                borderBottom: '1px solid #1e2636',
+                                                borderBottom: '1px solid rgba(74, 96, 128, 0.08)',
                                                 transition: 'background 0.12s',
                                             }}
                                             onMouseEnter={e => {
-                                                if (!isActive) (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.04)';
+                                                if (!isActive) (e.currentTarget as HTMLButtonElement).style.background = '#111d30';
                                             }}
                                             onMouseLeave={e => {
                                                 if (!isActive) (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
@@ -212,7 +214,7 @@ export default function Sidebar() {
                                             }} />
                                             <div style={{ flex: 1, minWidth: 0 }}>
                                                 <p style={{
-                                                    color: isActive ? '#00d4ff' : '#e2e8f0',
+                                                    color: isActive ? '#c8ddef' : '#8fa8c4',
                                                     fontSize: 12, fontWeight: 600, margin: 0,
                                                     whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
                                                 }}>
@@ -230,7 +232,7 @@ export default function Sidebar() {
                                                 </p>
                                             </div>
                                             {isActive && (
-                                                <Check size={13} style={{ color: '#00d4ff', flexShrink: 0 }} />
+                                                <Check size={13} style={{ color: '#7aA8cc', flexShrink: 0 }} />
                                             )}
                                         </button>
                                     );
@@ -260,9 +262,8 @@ export default function Sidebar() {
                                     padding: '9px 14px',
                                     margin: '2px 8px',
                                     borderRadius: 8,
-                                    color: isActive ? '#00d4ff' : '#7b8fa8',
-                                    background: isActive ? 'rgba(0,212,255,0.10)' : 'transparent',
-                                    border: isActive ? '1px solid rgba(0,212,255,0.18)' : '1px solid transparent',
+                                    color: isActive ? '#c8ddef' : '#4a6080',
+                                    background: isActive ? '#1a2d47' : 'transparent',
                                     textDecoration: 'none',
                                     fontSize: 13.5,
                                     fontWeight: isActive ? 600 : 500,
@@ -273,7 +274,7 @@ export default function Sidebar() {
                             >
                                 <Icon
                                     size={18}
-                                    style={{ flexShrink: 0, color: isActive ? '#00d4ff' : '#7b8fa8' }}
+                                    style={{ flexShrink: 0, color: isActive ? '#c8ddef' : '#4a6080' }}
                                     strokeWidth={isActive ? 2 : 1.75}
                                 />
                                 {!collapsed && (
@@ -282,8 +283,8 @@ export default function Sidebar() {
                                 {isActive && !collapsed && (
                                     <div style={{
                                         marginLeft: 'auto',
-                                        width: 6, height: 6, borderRadius: '50%',
-                                        background: '#00d4ff', flexShrink: 0,
+                                        width: 5, height: 5, borderRadius: '50%',
+                                        background: '#7a9ab8', flexShrink: 0,
                                     }} />
                                 )}
                             </Link>
@@ -292,26 +293,26 @@ export default function Sidebar() {
                 </nav>
 
                 {/* ── Collapse toggle ───────────────────────────────────── */}
-                <div style={{ padding: '12px 0', borderTop: '1px solid #1e2636' }}>
+                <div style={{ padding: '12px 0', borderTop: '1px solid rgba(74, 96, 128, 0.08)' }}>
                     <button
                         onClick={() => { setCollapsed(!collapsed); setSwitcherOpen(false); }}
                         style={{
                             display: 'flex', alignItems: 'center', gap: 10,
                             padding: '9px 14px', margin: '0 8px', borderRadius: 8,
-                            color: '#7b8fa8', background: 'transparent',
-                            border: '1px solid transparent', cursor: 'pointer',
+                            color: '#4a6080', background: 'transparent',
+                            border: 'none', cursor: 'pointer',
                             fontSize: 13.5, fontWeight: 500, whiteSpace: 'nowrap',
                             width: 'calc(100% - 16px)', textAlign: 'left',
                             transition: 'all 0.15s ease',
                             justifyContent: collapsed ? 'center' : 'flex-start',
                         }}
                         onMouseEnter={e => {
-                            (e.currentTarget as HTMLButtonElement).style.background = '#1e2636';
-                            (e.currentTarget as HTMLButtonElement).style.color = '#e2e8f0';
+                            (e.currentTarget as HTMLButtonElement).style.background = '#0e1628';
+                            (e.currentTarget as HTMLButtonElement).style.color = '#8fa8c4';
                         }}
                         onMouseLeave={e => {
                             (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
-                            (e.currentTarget as HTMLButtonElement).style.color = '#7b8fa8';
+                            (e.currentTarget as HTMLButtonElement).style.color = '#4a6080';
                         }}
                     >
                         {collapsed
