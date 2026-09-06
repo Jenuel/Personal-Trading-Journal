@@ -4,7 +4,8 @@ import { useMemo } from 'react';
 import { TradesTable } from '@/components/trades-table';
 import { TradeDialog } from '@/components/trade-dialog';
 import { useAccount } from '@/lib/account-context';
-import { usePortfolioTrades, useCreateTrade, useDeleteTrade } from '@/hooks/use-portfolios';
+import { usePortfolioTrades, useCreateTrade, useUpdateTrade, useDeleteTrade } from '@/hooks/use-portfolios';
+import { ForexTrade } from '@/types/types';
 import { Button } from '@/components/ui/button';
 import { Plus, ScrollText, Target, TrendingUp, BarChart2, Activity } from 'lucide-react';
 import { formatCurrency, calculateFxStats, calculatePortfolioGain } from '@/lib/portfolio-utils';
@@ -12,10 +13,22 @@ import { useState } from 'react';
 
 export default function TradesPage() {
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [editingTrade, setEditingTrade] = useState<ForexTrade | undefined>();
 
     const { activePortfolio, portfolios, isLoading: accountLoading } = useAccount();
     const createTrade = useCreateTrade();
+    const updateTrade = useUpdateTrade();
     const deleteTrade = useDeleteTrade();
+
+    const handleOpenEdit = (trade: ForexTrade) => {
+        setEditingTrade(trade);
+        setDialogOpen(true);
+    };
+
+    const handleDialogClose = (open: boolean) => {
+        setDialogOpen(open);
+        if (!open) setEditingTrade(undefined);
+    };
 
     // Fetch trades scoped to the active portfolio only
     const { data: rawTrades = [], isLoading: tradesLoading } = usePortfolioTrades(activePortfolio?.id ?? '');
@@ -167,6 +180,7 @@ export default function TradesPage() {
                 ) : (
                     <TradesTable
                         trades={trades}
+                        onEdit={handleOpenEdit}
                         onDelete={(id) => deleteTrade.mutate(id)}
                         isDeleting={deleteTrade.isPending}
                         currency={activePortfolio?.currency}
@@ -179,10 +193,15 @@ export default function TradesPage() {
             {activePortfolio && (
                 <TradeDialog
                     open={dialogOpen}
-                    onOpenChange={setDialogOpen}
+                    onOpenChange={handleDialogClose}
                     portfolioId={activePortfolio.id}
-                    onSubmit={(data) => createTrade.mutate(data)}
-                    isLoading={createTrade.isPending}
+                    editTrade={editingTrade}
+                    onSubmit={(data) =>
+                        editingTrade
+                            ? updateTrade.mutate({ id: editingTrade.id, data })
+                            : createTrade.mutate(data)
+                    }
+                    isLoading={createTrade.isPending || updateTrade.isPending}
                 />
             )}
         </div>

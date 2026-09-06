@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { ForexTrade } from '@/types/types';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { StatsCard } from '@/components/stats-card';
@@ -10,6 +11,7 @@ import {
     usePortfolio,
     usePortfolioTrades,
     useCreateTrade,
+    useUpdateTrade,
     useDeleteTrade,
 } from '@/hooks/use-portfolios';
 import {
@@ -40,12 +42,24 @@ export default function PortfolioPage() {
     const params = useParams();
     const portfolioId = params.id as string;
     const [tradeDialogOpen, setTradeDialogOpen] = useState(false);
+    const [editingTrade, setEditingTrade] = useState<ForexTrade | undefined>();
 
     const { data: portfolio, isLoading } = usePortfolio(portfolioId);
     const { data: trades } = usePortfolioTrades(portfolioId);
 
     const createTrade = useCreateTrade();
+    const updateTrade = useUpdateTrade();
     const deleteTrade = useDeleteTrade();
+
+    const handleOpenEdit = (trade: ForexTrade) => {
+        setEditingTrade(trade);
+        setTradeDialogOpen(true);
+    };
+
+    const handleDialogClose = (open: boolean) => {
+        setTradeDialogOpen(open);
+        if (!open) setEditingTrade(undefined);
+    };
 
     if (isLoading) {
         return (
@@ -202,6 +216,7 @@ export default function PortfolioPage() {
                 </h2>
                 <TradesTable
                     trades={allTrades}
+                    onEdit={handleOpenEdit}
                     onDelete={(id) => deleteTrade.mutate(id)}
                     isDeleting={deleteTrade.isPending}
                     currency={portfolio.currency}
@@ -210,10 +225,15 @@ export default function PortfolioPage() {
 
             <TradeDialog
                 open={tradeDialogOpen}
-                onOpenChange={setTradeDialogOpen}
+                onOpenChange={handleDialogClose}
                 portfolioId={portfolioId}
-                onSubmit={(data) => createTrade.mutate(data)}
-                isLoading={createTrade.isPending}
+                editTrade={editingTrade}
+                onSubmit={(data) =>
+                    editingTrade
+                        ? updateTrade.mutate({ id: editingTrade.id, data })
+                        : createTrade.mutate(data)
+                }
+                isLoading={createTrade.isPending || updateTrade.isPending}
             />
         </div>
     );
