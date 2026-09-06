@@ -19,5 +19,5 @@ COPY src ./src
 COPY package.json ./
 USER appuser
 
-EXPOSE 3000
+EXPOSE 5000
 CMD ["node", "src/server.js"]
