@@ -13,20 +13,20 @@ interface PortfoliosListProps {
 }
 
 const ACCOUNT_TYPE_STYLE: Record<string, { bg: string; color: string }> = {
-    LIVE: { bg: 'rgba(16,185,129,0.15)', color: '#10b981' },
-    DEMO: { bg: 'rgba(123,143,168,0.15)', color: '#7b8fa8' },
-    PROP: { bg: 'rgba(245,158,11,0.15)', color: '#f59e0b' },
+    LIVE: { bg: 'rgba(16,185,129,0.12)', color: '#34d399' },
+    DEMO: { bg: 'rgba(122,154,184,0.12)', color: '#7a9ab8' },
+    PROP: { bg: 'rgba(245,158,11,0.12)', color: '#f59e0b' },
 };
 
 export function PortfoliosList({ portfolios, onEdit, onDelete, isDeleting }: PortfoliosListProps) {
     if (!portfolios || portfolios.length === 0) {
         return (
             <div style={{
-                borderRadius: 16, padding: '64px 32px', textAlign: 'center',
-                border: '2px dashed #2a3347', background: '#141824',
+                borderRadius: 14, padding: '64px 32px', textAlign: 'center',
+                background: '#0d1524',
             }}>
-                <TrendingUp size={36} style={{ color: '#2a3347', margin: '0 auto 12px' }} />
-                <p style={{ color: '#7b8fa8', fontSize: 14, margin: 0 }}>
+                <TrendingUp size={36} style={{ color: '#3a5c7a', margin: '0 auto 12px' }} />
+                <p style={{ color: '#4a6080', fontSize: 14, margin: 0 }}>
                     No trading accounts yet. Create one to start tracking your FOREX trades.
                 </p>
             </div>
@@ -34,7 +34,7 @@ export function PortfoliosList({ portfolios, onEdit, onDelete, isDeleting }: Por
     }
 
     return (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 20 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16 }}>
             {portfolios.map((portfolio) => {
                 const { gain, gainPercent } = calculatePortfolioGain(portfolio);
                 const trades = portfolio.trades ?? [];
@@ -46,18 +46,17 @@ export function PortfoliosList({ portfolios, onEdit, onDelete, isDeleting }: Por
                     <div
                         key={portfolio.id}
                         style={{
-                            background: '#141824',
-                            border: '1px solid #2a3347',
-                            borderRadius: 12,
+                            background: '#0d1524',
+                            borderRadius: 14,
                             padding: 20,
-                            transition: 'border-color 0.2s, box-shadow 0.2s',
+                            transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
                         }}
                         onMouseEnter={e => {
-                            (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(0,212,255,0.3)';
-                            (e.currentTarget as HTMLDivElement).style.boxShadow = '0 0 24px rgba(0,212,255,0.07)';
+                            (e.currentTarget as HTMLDivElement).style.background = '#111d30';
+                            (e.currentTarget as HTMLDivElement).style.boxShadow = '0 12px 32px rgba(0,0,0,0.3)';
                         }}
                         onMouseLeave={e => {
-                            (e.currentTarget as HTMLDivElement).style.borderColor = '#2a3347';
+                            (e.currentTarget as HTMLDivElement).style.background = '#0d1524';
                             (e.currentTarget as HTMLDivElement).style.boxShadow = 'none';
                         }}
                     >
@@ -65,43 +64,43 @@ export function PortfoliosList({ portfolios, onEdit, onDelete, isDeleting }: Por
                             <div style={{ flex: 1, minWidth: 0 }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                                     <span style={{
-                                        fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 4,
+                                        fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 4,
                                         background: typeStyle.bg, color: typeStyle.color,
-                                        textTransform: 'uppercase', letterSpacing: '0.05em',
+                                        textTransform: 'uppercase', letterSpacing: '0.06em',
                                     }}>
                                         {portfolio.accountType}
                                     </span>
-                                    <span style={{ color: '#7b8fa8', fontSize: 12 }}>{portfolio.currency}</span>
+                                    <span style={{ color: '#4a6080', fontSize: 12 }}>{portfolio.currency}</span>
                                 </div>
-                                <h3 style={{ color: '#e2e8f0', fontWeight: 700, fontSize: 15, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                <h3 style={{ color: '#c8ddef', fontWeight: 700, fontSize: 15, margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                     {portfolio.name}
                                 </h3>
                                 {portfolio.broker && (
-                                    <p style={{ color: '#7b8fa8', fontSize: 12, margin: '2px 0 0' }}>{portfolio.broker}</p>
+                                    <p style={{ color: '#4a6080', fontSize: 12, margin: '2px 0 0' }}>{portfolio.broker}</p>
                                 )}
                             </div>
-                            <div style={{ display: 'flex', gap: 2, marginLeft: 8 }}>
+                            <div style={{ display: 'flex', gap: 4, marginLeft: 8 }}>
                                 <button
                                     onClick={() => onEdit(portfolio)}
-                                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#7b8fa8', padding: '4px 6px', borderRadius: 6 }}
+                                    style={{ background: '#111d30', border: 'none', cursor: 'pointer', color: '#7aA8cc', padding: '6px', borderRadius: 6 }}
                                     title="Edit"
                                 >
-                                    <Pencil size={14} />
+                                    <Pencil size={13} />
                                 </button>
                                 <button
                                     onClick={() => onDelete(portfolio.id)}
                                     disabled={isDeleting}
-                                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#ef4444', opacity: 0.6, padding: '4px 6px', borderRadius: 6 }}
+                                    style={{ background: 'rgba(239, 68, 68, 0.1)', border: 'none', cursor: 'pointer', color: '#f87171', padding: '6px', borderRadius: 6 }}
                                     title="Delete"
                                 >
-                                    <Trash2 size={14} />
+                                    <Trash2 size={13} />
                                 </button>
                             </div>
                         </div>
 
                         <div style={{ marginBottom: 12 }}>
-                            <p style={{ color: '#7b8fa8', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 2px' }}>Balance</p>
-                            <p style={{ color: '#e2e8f0', fontSize: 22, fontWeight: 700, fontFamily: 'var(--fx-font-mono)', letterSpacing: '-0.02em', margin: 0 }}>
+                            <p style={{ color: '#3a5c7a', fontSize: 10.5, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.12em', margin: '0 0 2px' }}>Balance</p>
+                            <p style={{ color: '#c8ddef', fontSize: 22, fontWeight: 700, fontFamily: 'var(--fx-font-mono)', letterSpacing: '-0.02em', margin: 0 }}>
                                 {formatCurrency(portfolio.currentBalance, portfolio.currency)}
                             </p>
                         </div>
@@ -116,7 +115,7 @@ export function PortfoliosList({ portfolios, onEdit, onDelete, isDeleting }: Por
                                     ? <TrendingUp size={14} color="#10b981" />
                                     : <TrendingDown size={14} color="#ef4444" />
                                 }
-                                <span style={{ color: '#7b8fa8', fontSize: 12 }}>P&L</span>
+                                <span style={{ color: '#4a6080', fontSize: 12 }}>P&L</span>
                             </div>
                             <div style={{ textAlign: 'right' }}>
                                 <span style={{
@@ -139,19 +138,19 @@ export function PortfoliosList({ portfolios, onEdit, onDelete, isDeleting }: Por
                         {trades.length > 0 && (
                             <div style={{
                                 display: 'grid', gridTemplateColumns: '1fr 1fr 1fr',
-                                background: '#1a2030', borderRadius: 8, padding: '8px 0', marginBottom: 14,
+                                background: '#0b1220', borderRadius: 8, padding: '8px 0', marginBottom: 14,
                             }}>
                                 {[
                                     { label: 'Win Rate', value: `${stats.winRate.toFixed(0)}%`, color: stats.winRate >= 50 ? '#10b981' : '#ef4444' },
                                     { label: 'PF', value: stats.profitFactor === Infinity ? '∞' : stats.profitFactor.toFixed(2), color: stats.profitFactor >= 1 ? '#10b981' : '#ef4444' },
-                                    { label: 'Trades', value: stats.closedTrades.toString(), color: '#e2e8f0' },
+                                    { label: 'Trades', value: stats.closedTrades.toString(), color: '#c8ddef' },
                                 ].map(({ label, value, color }, i) => (
                                     <div key={label} style={{
                                         textAlign: 'center',
-                                        borderRight: i < 2 ? '1px solid #2a3347' : 'none',
+                                        borderRight: i < 2 ? '1px solid rgba(74,96,128,0.1)' : 'none',
                                     }}>
-                                        <p style={{ color: '#7b8fa8', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.06em', margin: '0 0 2px' }}>{label}</p>
-                                        <p style={{ color, fontFamily: 'var(--fx-font-mono)', fontWeight: 700, fontSize: 14, margin: 0 }}>{value}</p>
+                                        <p style={{ color: '#3a5c7a', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 2px', fontWeight: 600 }}>{label}</p>
+                                        <p style={{ color, fontFamily: 'var(--fx-font-mono)', fontWeight: 700, fontSize: 13, margin: 0 }}>{value}</p>
                                     </div>
                                 ))}
                             </div>
@@ -161,13 +160,19 @@ export function PortfoliosList({ portfolios, onEdit, onDelete, isDeleting }: Por
                             href={`/portfolios/${portfolio.id}`}
                             style={{
                                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                                width: '100%', padding: '8px 0', borderRadius: 8,
-                                color: '#00d4ff', fontSize: 12, fontWeight: 600, textDecoration: 'none',
-                                border: '1px solid rgba(0,212,255,0.2)',
-                                transition: 'background 0.15s',
+                                width: '100%', padding: '9px 0', borderRadius: 8,
+                                color: '#c8d8ec', fontSize: 12, fontWeight: 600, textDecoration: 'none',
+                                background: '#1a2d47',
+                                transition: 'background 0.15s ease',
+                            }}
+                            onMouseEnter={e => {
+                                (e.currentTarget as HTMLElement).style.background = '#223b5d';
+                            }}
+                            onMouseLeave={e => {
+                                (e.currentTarget as HTMLElement).style.background = '#1a2d47';
                             }}
                         >
-                            View Account <ExternalLink size={11} />
+                            View Account <ExternalLink size={12} />
                         </Link>
                     </div>
                 );

@@ -57,11 +57,20 @@ export function PortfolioDialog({
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent
                 className="max-w-md"
-                style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
+                style={{
+                    background: '#0d1524',
+                    border: 'none',
+                    boxShadow: '0 24px 64px rgba(0, 0, 0, 0.6)',
+                }}
             >
                 <DialogHeader>
-                    <DialogTitle style={{ color: 'var(--foreground)', fontSize: '16px', fontWeight: 700 }}>
-                        {portfolio ? 'Edit Account' : 'New Trading Account'}
+                    <DialogTitle>
+                        <span style={{ fontSize: '10.5px', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#3a5c7a', display: 'block', marginBottom: '2px', fontWeight: 600 }}>
+                            Trading Account
+                        </span>
+                        <span style={{ fontSize: '17px', fontWeight: 700, color: '#c8ddef' }}>
+                            {portfolio ? 'Edit Account' : 'New Trading Account'}
+                        </span>
                     </DialogTitle>
                     <DialogDescription className="sr-only">
                         {portfolio ? 'Edit your trading account details.' : 'Create a new trading account to track your portfolio.'}
@@ -116,7 +125,7 @@ function PortfolioForm({ portfolio, onSubmit, onClose, isLoading }: PortfolioFor
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-                <Label htmlFor="name" className="text-xs font-semibold" style={{ color: 'var(--muted-foreground)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                <Label htmlFor="name" className="text-xs font-semibold" style={{ color: '#4a6080', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                     Account Name
                 </Label>
                 <Input
@@ -126,36 +135,39 @@ function PortfolioForm({ portfolio, onSubmit, onClose, isLoading }: PortfolioFor
                     placeholder="e.g. IC Markets Live"
                     required
                     className="mt-1"
-                    style={{ background: 'var(--input)', borderColor: 'var(--border)' }}
+                    style={{ background: '#0b1220', border: 'none', color: '#c8ddef' }}
                 />
             </div>
 
             <div>
-                <Label className="text-xs font-semibold" style={{ color: 'var(--muted-foreground)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                <Label className="text-xs font-semibold" style={{ color: '#4a6080', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                     Account Type
                 </Label>
                 <div className="mt-1 flex gap-2">
-                    {ACCOUNT_TYPES.map(t => (
-                        <button
-                            key={t.value}
-                            type="button"
-                            onClick={() => setForm(prev => ({ ...prev, accountType: t.value }))}
-                            className="flex-1 py-2 px-3 rounded-lg border text-sm font-semibold transition-all"
-                            style={{
-                                background: form.accountType === t.value ? 'var(--primary)' : 'var(--input)',
-                                color: form.accountType === t.value ? 'var(--primary-foreground)' : 'var(--muted-foreground)',
-                                borderColor: form.accountType === t.value ? 'var(--primary)' : 'var(--border)',
-                            }}
-                        >
-                            {t.label}
-                        </button>
-                    ))}
+                    {ACCOUNT_TYPES.map(t => {
+                        const isSelected = form.accountType === t.value;
+                        return (
+                            <button
+                                key={t.value}
+                                type="button"
+                                onClick={() => setForm(prev => ({ ...prev, accountType: t.value }))}
+                                className="flex-1 py-2 px-3 rounded-lg text-sm font-semibold transition-all"
+                                style={{
+                                    background: isSelected ? '#1a2d47' : '#0b1220',
+                                    color: isSelected ? '#dce8f5' : '#4a6080',
+                                    border: 'none',
+                                }}
+                            >
+                                {t.label}
+                            </button>
+                        );
+                    })}
                 </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
                 <div>
-                    <Label htmlFor="broker" className="text-xs font-semibold" style={{ color: 'var(--muted-foreground)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                    <Label htmlFor="broker" className="text-xs font-semibold" style={{ color: '#4a6080', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                         Broker
                     </Label>
                     <Input
@@ -164,21 +176,21 @@ function PortfolioForm({ portfolio, onSubmit, onClose, isLoading }: PortfolioFor
                         onChange={e => setForm(prev => ({ ...prev, broker: e.target.value }))}
                         placeholder="e.g. IC Markets"
                         className="mt-1"
-                        style={{ background: 'var(--input)', borderColor: 'var(--border)' }}
+                        style={{ background: '#0b1220', border: 'none', color: '#c8ddef' }}
                     />
                 </div>
                 <div>
-                    <Label className="text-xs font-semibold" style={{ color: 'var(--muted-foreground)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                    <Label className="text-xs font-semibold" style={{ color: '#4a6080', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                         Currency
                     </Label>
                     <Select
                         value={form.currency}
                         onValueChange={v => setForm(prev => ({ ...prev, currency: v as AccountCurrency }))}
                     >
-                        <SelectTrigger className="mt-1" style={{ background: 'var(--input)', borderColor: 'var(--border)' }}>
+                        <SelectTrigger className="mt-1" style={{ background: '#0b1220', border: 'none', color: '#c8ddef' }}>
                             <SelectValue />
                         </SelectTrigger>
-                        <SelectContent style={{ background: 'var(--popover)', borderColor: 'var(--border)' }}>
+                        <SelectContent style={{ background: '#111d30', border: 'none', color: '#c8ddef', boxShadow: '0 12px 36px rgba(0,0,0,0.5)' }}>
                             {CURRENCIES.map(c => (
                                 <SelectItem key={c} value={c}>{c}</SelectItem>
                             ))}
@@ -188,7 +200,7 @@ function PortfolioForm({ portfolio, onSubmit, onClose, isLoading }: PortfolioFor
             </div>
 
             <div>
-                <Label htmlFor="initialBalance" className="text-xs font-semibold" style={{ color: 'var(--muted-foreground)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                <Label htmlFor="initialBalance" className="text-xs font-semibold" style={{ color: '#4a6080', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                     Initial Balance ({form.currency})
                 </Label>
                 <Input
@@ -202,17 +214,17 @@ function PortfolioForm({ portfolio, onSubmit, onClose, isLoading }: PortfolioFor
                     placeholder="10000.00"
                     required
                     disabled={isEdit}
-                    style={{ background: 'var(--input)', borderColor: 'var(--border)' }}
+                    style={{ background: '#0b1220', border: 'none', color: '#c8ddef' }}
                 />
                 {isEdit && (
-                    <p className="mt-1 text-xs" style={{ color: 'var(--muted-foreground)' }}>
+                    <p className="mt-1 text-xs" style={{ color: '#4a6080' }}>
                         Initial balance cannot be changed after creation.
                     </p>
                 )}
             </div>
 
             <div>
-                <Label htmlFor="description" className="text-xs font-semibold" style={{ color: 'var(--muted-foreground)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                <Label htmlFor="description" className="text-xs font-semibold" style={{ color: '#4a6080', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                     Notes (optional)
                 </Label>
                 <Textarea
@@ -222,7 +234,7 @@ function PortfolioForm({ portfolio, onSubmit, onClose, isLoading }: PortfolioFor
                     placeholder="Account notes, goals, strategy..."
                     className="mt-1 resize-none"
                     rows={2}
-                    style={{ background: 'var(--input)', borderColor: 'var(--border)' }}
+                    style={{ background: '#0b1220', border: 'none', color: '#c8ddef' }}
                 />
             </div>
 
@@ -232,7 +244,7 @@ function PortfolioForm({ portfolio, onSubmit, onClose, isLoading }: PortfolioFor
                     variant="outline"
                     onClick={onClose}
                     disabled={isLoading}
-                    style={{ borderColor: 'var(--border)' }}
+                    style={{ background: '#111d30', border: 'none', color: '#8fa8c4' }}
                 >
                     Cancel
                 </Button>

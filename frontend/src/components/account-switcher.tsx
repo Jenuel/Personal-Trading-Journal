@@ -5,9 +5,9 @@ import { formatCurrency, calculatePortfolioGain, calculateFxStats } from '@/lib/
 import { TrendingUp, TrendingDown } from 'lucide-react';
 
 const ACCOUNT_TYPE_STYLE: Record<string, { bg: string; color: string; dot: string }> = {
-    LIVE: { bg: 'rgba(16,185,129,0.14)', color: '#10b981', dot: '#10b981' },
-    DEMO: { bg: 'rgba(123,143,168,0.14)', color: '#7b8fa8', dot: '#7b8fa8' },
-    PROP: { bg: 'rgba(245,158,11,0.14)', color: '#f59e0b', dot: '#f59e0b' },
+    LIVE: { bg: 'rgba(16,185,129,0.12)', color: '#34d399', dot: '#34d399' },
+    DEMO: { bg: 'rgba(122,154,184,0.12)', color: '#7a9ab8', dot: '#7a9ab8' },
+    PROP: { bg: 'rgba(245,158,11,0.12)', color: '#f59e0b', dot: '#f59e0b' },
 };
 
 interface AccountSwitcherStripProps {
@@ -20,9 +20,7 @@ export function AccountSwitcherStrip({ portfolios, activeId, onSelect }: Account
     if (!portfolios || portfolios.length === 0) return null;
 
     return (
-        <div style={{
-            position: 'relative',
-        }}>
+        <div style={{ position: 'relative' }}>
             {/* Scrollable strip */}
             <div style={{
                 display: 'flex',
@@ -45,33 +43,25 @@ export function AccountSwitcherStrip({ portfolios, activeId, onSelect }: Account
                             style={{
                                 flexShrink: 0,
                                 width: 220,
-                                background: isActive
-                                    ? 'linear-gradient(135deg, rgba(0,212,255,0.08) 0%, rgba(0,212,255,0.04) 100%)'
-                                    : '#141824',
-                                border: isActive
-                                    ? '1px solid rgba(0,212,255,0.45)'
-                                    : '1px solid #2a3347',
+                                background: isActive ? '#162438' : '#0d1524',
+                                border: 'none',
                                 borderRadius: 12,
                                 padding: '14px 16px',
                                 cursor: 'pointer',
                                 textAlign: 'left',
-                                transition: 'all 0.2s ease',
-                                boxShadow: isActive
-                                    ? '0 0 20px rgba(0,212,255,0.12), 0 0 40px rgba(0,212,255,0.04)'
-                                    : 'none',
+                                transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+                                boxShadow: isActive ? '0 8px 24px rgba(0,0,0,0.4)' : 'none',
                                 position: 'relative',
                                 overflow: 'hidden',
                             }}
                             onMouseEnter={e => {
                                 if (!isActive) {
-                                    (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(0,212,255,0.25)';
-                                    (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 12px rgba(0,212,255,0.06)';
+                                    (e.currentTarget as HTMLButtonElement).style.background = '#111d30';
                                 }
                             }}
                             onMouseLeave={e => {
                                 if (!isActive) {
-                                    (e.currentTarget as HTMLButtonElement).style.borderColor = '#2a3347';
-                                    (e.currentTarget as HTMLButtonElement).style.boxShadow = 'none';
+                                    (e.currentTarget as HTMLButtonElement).style.background = '#0d1524';
                                 }
                             }}
                         >
@@ -83,7 +73,7 @@ export function AccountSwitcherStrip({ portfolios, activeId, onSelect }: Account
                                     left: 0,
                                     right: 0,
                                     height: 2,
-                                    background: 'linear-gradient(90deg, #00d4ff, #0099bb)',
+                                    background: '#7aA8cc',
                                     borderRadius: '12px 12px 0 0',
                                 }} />
                             )}
@@ -101,15 +91,14 @@ export function AccountSwitcherStrip({ portfolios, activeId, onSelect }: Account
                                     <div style={{
                                         width: 6, height: 6, borderRadius: '50%',
                                         background: typeStyle.dot,
-                                        boxShadow: isActive ? `0 0 6px ${typeStyle.dot}` : 'none',
                                     }} />
-                                    <span style={{ color: '#7b8fa8', fontSize: 11 }}>{portfolio.currency}</span>
+                                    <span style={{ color: '#4a6080', fontSize: 11 }}>{portfolio.currency}</span>
                                 </div>
                             </div>
 
                             {/* Account name */}
                             <p style={{
-                                color: isActive ? '#e2e8f0' : '#c8d3e0',
+                                color: isActive ? '#dce8f5' : '#c8ddef',
                                 fontWeight: 700, fontSize: 13,
                                 margin: '0 0 2px',
                                 whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
@@ -119,7 +108,7 @@ export function AccountSwitcherStrip({ portfolios, activeId, onSelect }: Account
 
                             {/* Broker */}
                             {portfolio.broker && (
-                                <p style={{ color: '#7b8fa8', fontSize: 11, margin: '0 0 10px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                <p style={{ color: '#4a6080', fontSize: 11, margin: '0 0 10px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                     {portfolio.broker}
                                 </p>
                             )}
@@ -127,7 +116,7 @@ export function AccountSwitcherStrip({ portfolios, activeId, onSelect }: Account
 
                             {/* Balance */}
                             <p style={{
-                                color: isActive ? '#e2e8f0' : '#c8d3e0',
+                                color: '#c8ddef',
                                 fontFamily: 'var(--fx-font-mono)',
                                 fontWeight: 700, fontSize: 16,
                                 letterSpacing: '-0.02em',
@@ -158,7 +147,7 @@ export function AccountSwitcherStrip({ portfolios, activeId, onSelect }: Account
                                         ({gainPercent >= 0 ? '+' : ''}{gainPercent.toFixed(1)}%)
                                     </span>
                                 </div>
-                                <span style={{ color: '#7b8fa8', fontSize: 11 }}>
+                                <span style={{ color: '#4a6080', fontSize: 11 }}>
                                     {stats.closedTrades}t
                                 </span>
                             </div>

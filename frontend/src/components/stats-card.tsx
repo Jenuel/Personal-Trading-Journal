@@ -20,51 +20,50 @@ export function StatsCard({
     change,
     changeType,
     icon,
-    accentColor = '#00d4ff',
+    accentColor = '#7aA8cc',
     className = '',
 }: StatsCardProps) {
     const changeColor =
         changeType === 'positive' ? '#10b981' :
         changeType === 'negative' ? '#ef4444' :
-        '#7b8fa8';
+        '#4a6080';
 
     return (
         <div
             className={`animate-slide-up ${className}`}
             style={{
-                background: '#141824',
-                border: `1px solid #2a3347`,
-                borderTop: `2px solid ${accentColor}`,
+                background: '#0d1524',
                 borderRadius: '12px',
                 padding: '20px',
-                transition: 'transform 0.2s, box-shadow 0.2s',
+                transition: 'background 0.15s, transform 0.15s',
             }}
             onMouseEnter={e => {
+                (e.currentTarget as HTMLDivElement).style.background = '#101a2c';
                 (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)';
-                (e.currentTarget as HTMLDivElement).style.boxShadow = '0 8px 24px rgba(0,0,0,0.35)';
             }}
             onMouseLeave={e => {
+                (e.currentTarget as HTMLDivElement).style.background = '#0d1524';
                 (e.currentTarget as HTMLDivElement).style.transform = '';
-                (e.currentTarget as HTMLDivElement).style.boxShadow = '';
             }}
         >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
                 <span style={{
-                    fontSize: '11px',
+                    fontSize: '10.5px',
                     fontWeight: 600,
                     textTransform: 'uppercase',
-                    letterSpacing: '0.1em',
-                    color: '#7b8fa8',
+                    letterSpacing: '0.12em',
+                    color: '#3a5c7a',
                 }}>
                     {label}
                 </span>
                 {icon && (
                     <div style={{
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        width: '30px', height: '30px',
-                        borderRadius: '8px',
-                        background: `${accentColor}18`,
+                        width: '28px', height: '28px',
+                        borderRadius: '7px',
+                        background: 'rgba(90, 120, 150, 0.10)',
                         color: accentColor,
+                        flexShrink: 0,
                     }}>
                         {icon}
                     </div>
@@ -76,8 +75,8 @@ export function StatsCard({
                     fontSize: '24px',
                     fontWeight: 700,
                     fontFamily: 'var(--fx-font-mono)',
-                    letterSpacing: '-0.03em',
-                    color: '#e2e8f0',
+                    letterSpacing: '-0.025em',
+                    color: '#c8ddef',
                 }}>
                     {value}
                 </span>
@@ -95,7 +94,7 @@ export function StatsCard({
             </div>
 
             {subtext && (
-                <p style={{ fontSize: '12px', color: '#7b8fa8', margin: 0 }}>
+                <p style={{ fontSize: '12px', color: '#4a6080', margin: 0, lineHeight: 1.5 }}>
                     {subtext}
                 </p>
             )}

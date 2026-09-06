@@ -91,15 +91,21 @@ export function TradeDialog({
             <DialogContent
                 className="max-w-lg"
                 style={{
-                    background: 'var(--card)',
-                    border: '1px solid var(--border)',
+                    background: '#0d1524',
+                    border: 'none',
+                    boxShadow: '0 24px 64px rgba(0, 0, 0, 0.6)',
                     maxHeight: '90vh',
                     overflowY: 'auto',
                 }}
             >
                 <DialogHeader>
-                    <DialogTitle style={{ color: 'var(--foreground)', fontSize: '16px', fontWeight: 700 }}>
-                        {editTrade ? 'Edit Trade' : 'Log FOREX Trade'}
+                    <DialogTitle>
+                        <span style={{ fontSize: '10.5px', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#3a5c7a', display: 'block', marginBottom: '2px', fontWeight: 600 }}>
+                            Forex Journal
+                        </span>
+                        <span style={{ fontSize: '17px', fontWeight: 700, color: '#c8ddef' }}>
+                            {editTrade ? 'Edit Trade' : 'Log FOREX Trade'}
+                        </span>
                     </DialogTitle>
                     <DialogDescription className="sr-only">
                         {editTrade ? 'Edit the details of your existing trade.' : 'Log a new FOREX trade into your journal.'}
@@ -190,31 +196,31 @@ function TradeForm({ portfolioId, editTrade, onSubmit, onClose, isLoading }: Tra
         <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
                 <div className="relative">
-                    <Label className="text-xs font-semibold" style={{ color: 'var(--muted-foreground)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                    <Label className="text-xs font-semibold" style={{ color: '#4a6080', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                         Pair
                     </Label>
                     <button
                         type="button"
                         onClick={() => setPairOpen(!pairOpen)}
-                        className="mt-1 w-full flex items-center justify-between px-3 py-2 rounded-lg border text-sm font-mono font-bold"
-                        style={{ background: 'var(--input)', borderColor: 'var(--border)', color: 'var(--foreground)' }}
+                        className="mt-1 w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-mono font-bold transition-colors"
+                        style={{ background: '#0b1220', border: 'none', color: '#c8ddef' }}
                     >
                         {form.pair}
-                        <ChevronDown size={14} />
+                        <ChevronDown size={14} style={{ color: '#4a6080' }} />
                     </button>
                     {pairOpen && (
                         <div
-                            className="absolute top-full left-0 right-0 z-50 mt-1 rounded-lg border overflow-hidden"
-                            style={{ background: 'var(--popover)', borderColor: 'var(--border)', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}
+                            className="absolute top-full left-0 right-0 z-50 mt-1 rounded-lg overflow-hidden"
+                            style={{ background: '#111d30', border: 'none', boxShadow: '0 12px 36px rgba(0,0,0,0.5)' }}
                         >
-                            <div className="p-2 border-b" style={{ borderColor: 'var(--border)' }}>
+                            <div className="p-2" style={{ borderBottom: '1px solid rgba(74,96,128,0.1)' }}>
                                 <input
                                     autoFocus
                                     value={pairSearch}
                                     onChange={e => setPairSearch(e.target.value)}
                                     placeholder="Search pairs..."
-                                    className="w-full px-2 py-1 text-sm rounded"
-                                    style={{ background: 'var(--input)', border: '1px solid var(--border)', color: 'var(--foreground)', outline: 'none' }}
+                                    className="w-full px-2 py-1.5 text-sm rounded outline-none"
+                                    style={{ background: '#0b1220', border: 'none', color: '#c8ddef' }}
                                 />
                             </div>
                             <div className="max-h-48 overflow-y-auto">
@@ -223,14 +229,14 @@ function TradeForm({ portfolioId, editTrade, onSubmit, onClose, isLoading }: Tra
                                         key={pair}
                                         type="button"
                                         onClick={() => { setForm(prev => ({ ...prev, pair })); setPairOpen(false); setPairSearch(''); }}
-                                        className="w-full text-left px-3 py-2 text-sm font-mono hover:bg-muted/50 flex justify-between items-center"
+                                        className="w-full text-left px-3 py-2 text-sm font-mono flex justify-between items-center transition-colors"
                                         style={{
-                                            background: form.pair === pair ? 'var(--accent)' : undefined,
-                                            color: form.pair === pair ? 'var(--accent-foreground)' : 'var(--foreground)',
+                                            background: form.pair === pair ? '#1a2d47' : 'transparent',
+                                            color: form.pair === pair ? '#dce8f5' : '#8fa8c4',
                                         }}
                                     >
                                         {pair}
-                                        <span className="text-xs" style={{ color: 'var(--muted-foreground)' }}>{group}</span>
+                                        <span className="text-xs" style={{ color: '#4a6080' }}>{group}</span>
                                     </button>
                                 ))}
                             </div>
@@ -239,18 +245,17 @@ function TradeForm({ portfolioId, editTrade, onSubmit, onClose, isLoading }: Tra
                 </div>
 
                 <div>
-                    <Label className="text-xs font-semibold" style={{ color: 'var(--muted-foreground)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                    <Label className="text-xs font-semibold" style={{ color: '#4a6080', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                         Direction
                     </Label>
-                    <div className="mt-1 flex rounded-lg overflow-hidden border" style={{ borderColor: 'var(--border)' }}>
+                    <div className="mt-1 flex rounded-lg overflow-hidden" style={{ background: '#0b1220' }}>
                         <button
                             type="button"
                             onClick={() => setForm(prev => ({ ...prev, direction: 'LONG' }))}
                             className="flex-1 flex items-center justify-center gap-1.5 py-2 text-sm font-bold transition-all"
                             style={{
-                                background: isLong ? 'oklch(0.72 0.19 155 / 0.2)' : 'var(--input)',
-                                color: isLong ? 'var(--fx-profit)' : 'var(--muted-foreground)',
-                                borderRight: '1px solid var(--border)',
+                                background: isLong ? 'rgba(16, 185, 129, 0.15)' : 'transparent',
+                                color: isLong ? '#34d399' : '#4a6080',
                             }}
                         >
                             <TrendingUp size={14} />
@@ -261,8 +266,8 @@ function TradeForm({ portfolioId, editTrade, onSubmit, onClose, isLoading }: Tra
                             onClick={() => setForm(prev => ({ ...prev, direction: 'SHORT' }))}
                             className="flex-1 flex items-center justify-center gap-1.5 py-2 text-sm font-bold transition-all"
                             style={{
-                                background: !isLong ? 'oklch(0.65 0.22 25 / 0.2)' : 'var(--input)',
-                                color: !isLong ? 'var(--fx-loss)' : 'var(--muted-foreground)',
+                                background: !isLong ? 'rgba(239, 68, 68, 0.15)' : 'transparent',
+                                color: !isLong ? '#f87171' : '#4a6080',
                             }}
                         >
                             <TrendingDown size={14} />
@@ -274,7 +279,7 @@ function TradeForm({ portfolioId, editTrade, onSubmit, onClose, isLoading }: Tra
 
             <div className="grid grid-cols-2 gap-3">
                 <div>
-                    <Label htmlFor="lots" className="text-xs font-semibold" style={{ color: 'var(--muted-foreground)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                    <Label htmlFor="lots" className="text-xs font-semibold" style={{ color: '#4a6080', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                         Lots
                     </Label>
                     <Input
@@ -287,11 +292,11 @@ function TradeForm({ portfolioId, editTrade, onSubmit, onClose, isLoading }: Tra
                         className="mt-1 font-mono"
                         placeholder="0.10"
                         required
-                        style={{ background: 'var(--input)', borderColor: 'var(--border)' }}
+                        style={{ background: '#0b1220', border: 'none', color: '#c8ddef' }}
                     />
                 </div>
                 <div>
-                    <Label htmlFor="date" className="text-xs font-semibold" style={{ color: 'var(--muted-foreground)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                    <Label htmlFor="date" className="text-xs font-semibold" style={{ color: '#4a6080', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                         Date
                     </Label>
                     <Input
@@ -301,14 +306,14 @@ function TradeForm({ portfolioId, editTrade, onSubmit, onClose, isLoading }: Tra
                         onChange={e => setForm(prev => ({ ...prev, date: e.target.value }))}
                         className="mt-1"
                         required
-                        style={{ background: 'var(--input)', borderColor: 'var(--border)' }}
+                        style={{ background: '#0b1220', border: 'none', color: '#c8ddef' }}
                     />
                 </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
                 <div>
-                    <Label htmlFor="entryPrice" className="text-xs font-semibold" style={{ color: 'var(--muted-foreground)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                    <Label htmlFor="entryPrice" className="text-xs font-semibold" style={{ color: '#4a6080', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                         Entry Price
                     </Label>
                     <Input
@@ -320,11 +325,11 @@ function TradeForm({ portfolioId, editTrade, onSubmit, onClose, isLoading }: Tra
                         className="mt-1 font-mono"
                         placeholder="1.08450"
                         required
-                        style={{ background: 'var(--input)', borderColor: 'var(--border)' }}
+                        style={{ background: '#0b1220', border: 'none', color: '#c8ddef' }}
                     />
                 </div>
                 <div>
-                    <Label htmlFor="exitPrice" className="text-xs font-semibold" style={{ color: 'var(--muted-foreground)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                    <Label htmlFor="exitPrice" className="text-xs font-semibold" style={{ color: '#4a6080', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                         Exit Price
                     </Label>
                     <Input
@@ -335,14 +340,14 @@ function TradeForm({ portfolioId, editTrade, onSubmit, onClose, isLoading }: Tra
                         onChange={e => setForm(prev => ({ ...prev, exitPrice: parseFloat(e.target.value) || undefined }))}
                         className="mt-1 font-mono"
                         placeholder="1.09120"
-                        style={{ background: 'var(--input)', borderColor: 'var(--border)' }}
+                        style={{ background: '#0b1220', border: 'none', color: '#c8ddef' }}
                     />
                 </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
                 <div>
-                    <Label htmlFor="stopLoss" className="text-xs font-semibold" style={{ color: 'var(--fx-loss)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                    <Label htmlFor="stopLoss" className="text-xs font-semibold" style={{ color: '#f87171', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                         Stop Loss
                     </Label>
                     <Input
@@ -353,11 +358,11 @@ function TradeForm({ portfolioId, editTrade, onSubmit, onClose, isLoading }: Tra
                         onChange={e => setForm(prev => ({ ...prev, stopLoss: parseFloat(e.target.value) || undefined }))}
                         className="mt-1 font-mono"
                         placeholder="1.08100"
-                        style={{ background: 'var(--input)', borderColor: 'oklch(0.65 0.22 25 / 0.4)' }}
+                        style={{ background: '#0b1220', border: 'none', color: '#f87171' }}
                     />
                 </div>
                 <div>
-                    <Label htmlFor="takeProfit" className="text-xs font-semibold" style={{ color: 'var(--fx-profit)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                    <Label htmlFor="takeProfit" className="text-xs font-semibold" style={{ color: '#34d399', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                         Take Profit
                     </Label>
                     <Input
@@ -368,7 +373,7 @@ function TradeForm({ portfolioId, editTrade, onSubmit, onClose, isLoading }: Tra
                         onChange={e => setForm(prev => ({ ...prev, takeProfit: parseFloat(e.target.value) || undefined }))}
                         className="mt-1 font-mono"
                         placeholder="1.09200"
-                        style={{ background: 'var(--input)', borderColor: 'oklch(0.72 0.19 155 / 0.4)' }}
+                        style={{ background: '#0b1220', border: 'none', color: '#34d399' }}
                     />
                 </div>
             </div>
@@ -376,27 +381,27 @@ function TradeForm({ portfolioId, editTrade, onSubmit, onClose, isLoading }: Tra
             {calc && (
                 <div
                     className="rounded-lg px-4 py-3 text-sm animate-slide-up"
-                    style={{ background: 'var(--muted)', border: '1px solid var(--border)' }}
+                    style={{ background: '#111d30', border: 'none' }}
                 >
-                    <p className="text-xs font-semibold mb-2" style={{ color: 'var(--muted-foreground)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                    <p className="text-xs font-semibold mb-2" style={{ color: '#3a5c7a', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                         Auto-Calculated
                     </p>
                     <div className="grid grid-cols-3 gap-3">
                         <div>
-                            <p className="text-xs" style={{ color: 'var(--muted-foreground)' }}>Pips</p>
+                            <p className="text-xs" style={{ color: '#4a6080' }}>Pips</p>
                             <p className="font-mono font-bold text-sm" style={{ color: calc.pips >= 0 ? 'var(--fx-profit)' : 'var(--fx-loss)' }}>
                                 {formatPips(calc.pips)}
                             </p>
                         </div>
                         <div>
-                            <p className="text-xs" style={{ color: 'var(--muted-foreground)' }}>Est. P&L</p>
+                            <p className="text-xs" style={{ color: '#4a6080' }}>Est. P&L</p>
                             <p className="font-mono font-bold text-sm" style={{ color: calc.result >= 0 ? 'var(--fx-profit)' : 'var(--fx-loss)' }}>
                                 {`$${calc.result.toFixed(2)}`}
                             </p>
                         </div>
                         <div>
-                            <p className="text-xs" style={{ color: 'var(--muted-foreground)' }}>R:R</p>
-                            <p className="font-mono font-bold text-sm" style={{ color: 'var(--fx-accent)' }}>
+                            <p className="text-xs" style={{ color: '#4a6080' }}>R:R</p>
+                            <p className="font-mono font-bold text-sm" style={{ color: '#7aA8cc' }}>
                                 {calc.rr !== undefined ? `${calc.rr.toFixed(2)}R` : '—'}
                             </p>
                         </div>
@@ -405,7 +410,7 @@ function TradeForm({ portfolioId, editTrade, onSubmit, onClose, isLoading }: Tra
             )}
 
             <div>
-                <Label className="text-xs font-semibold" style={{ color: 'var(--muted-foreground)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                <Label className="text-xs font-semibold" style={{ color: '#4a6080', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                     Session
                 </Label>
                 <div className="mt-2 flex flex-wrap gap-2">
@@ -430,7 +435,7 @@ function TradeForm({ portfolioId, editTrade, onSubmit, onClose, isLoading }: Tra
             </div>
 
             <div>
-                <Label htmlFor="setup" className="text-xs font-semibold" style={{ color: 'var(--muted-foreground)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                <Label htmlFor="setup" className="text-xs font-semibold" style={{ color: '#4a6080', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                     Setup / Strategy
                 </Label>
                 <Input
@@ -439,7 +444,7 @@ function TradeForm({ portfolioId, editTrade, onSubmit, onClose, isLoading }: Tra
                     onChange={e => setForm(prev => ({ ...prev, setup: e.target.value }))}
                     placeholder="e.g. Break & Retest, ICT Order Block..."
                     className="mt-1"
-                    style={{ background: 'var(--input)', borderColor: 'var(--border)' }}
+                    style={{ background: '#0b1220', border: 'none', color: '#c8ddef' }}
                 />
                 <div className="mt-1.5 flex flex-wrap gap-1">
                     {QUICK_SETUPS.slice(0, 5).map(s => (
@@ -447,11 +452,11 @@ function TradeForm({ portfolioId, editTrade, onSubmit, onClose, isLoading }: Tra
                             key={s}
                             type="button"
                             onClick={() => setForm(prev => ({ ...prev, setup: s }))}
-                            className="text-xs px-2 py-0.5 rounded"
+                            className="text-xs px-2 py-0.5 rounded transition-colors"
                             style={{
-                                background: form.setup === s ? 'var(--primary)' : 'var(--muted)',
-                                color: form.setup === s ? 'var(--primary-foreground)' : 'var(--muted-foreground)',
-                                border: '1px solid var(--border)',
+                                background: form.setup === s ? '#1a2d47' : '#0b1220',
+                                color: form.setup === s ? '#c8ddef' : '#4a6080',
+                                border: 'none',
                             }}
                         >
                             {s}
@@ -461,7 +466,7 @@ function TradeForm({ portfolioId, editTrade, onSubmit, onClose, isLoading }: Tra
             </div>
 
             <div>
-                <Label htmlFor="notes" className="text-xs font-semibold" style={{ color: 'var(--muted-foreground)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                <Label htmlFor="notes" className="text-xs font-semibold" style={{ color: '#4a6080', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                     Notes
                 </Label>
                 <Textarea
@@ -471,7 +476,7 @@ function TradeForm({ portfolioId, editTrade, onSubmit, onClose, isLoading }: Tra
                     placeholder="Trade reasoning, market context, mistakes..."
                     className="mt-1 resize-none"
                     rows={3}
-                    style={{ background: 'var(--input)', borderColor: 'var(--border)' }}
+                    style={{ background: '#0b1220', border: 'none', color: '#c8ddef' }}
                 />
             </div>
 
@@ -481,7 +486,7 @@ function TradeForm({ portfolioId, editTrade, onSubmit, onClose, isLoading }: Tra
                     variant="outline"
                     onClick={onClose}
                     disabled={isLoading}
-                    style={{ borderColor: 'var(--border)' }}
+                    style={{ background: '#111d30', border: 'none', color: '#8fa8c4' }}
                 >
                     Cancel
                 </Button>
