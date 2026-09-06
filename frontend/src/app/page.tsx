@@ -24,12 +24,12 @@ import {
 } from 'lucide-react';
 
 const PAGE_STYLE = { padding: '32px 36px', maxWidth: 1440, margin: '0 auto' };
-const LABEL_STYLE = { color: '#00d4ff', fontSize: 11, fontWeight: 600, textTransform: 'uppercase' as const, letterSpacing: '0.12em' };
+const LABEL_STYLE = { color: '#3a5c7a', fontSize: 11, fontWeight: 600, textTransform: 'uppercase' as const, letterSpacing: '0.14em' };
 
 const ACCOUNT_TYPE_STYLE: Record<string, { bg: string; color: string }> = {
-    LIVE: { bg: 'rgba(16,185,129,0.15)', color: '#10b981' },
-    DEMO: { bg: 'rgba(123,143,168,0.15)', color: '#7b8fa8' },
-    PROP: { bg: 'rgba(245,158,11,0.15)', color: '#f59e0b' },
+    LIVE: { bg: 'rgba(16,185,129,0.12)', color: '#10b981' },
+    DEMO: { bg: 'rgba(90,120,150,0.12)', color: '#7a9ab8' },
+    PROP: { bg: 'rgba(245,158,11,0.12)', color: '#f59e0b' },
 };
 
 export default function Dashboard() {
@@ -59,7 +59,7 @@ export default function Dashboard() {
             <div style={PAGE_STYLE}>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginTop: 32 }}>
                     {[...Array(4)].map((_, i) => (
-                        <div key={i} style={{ height: 110, borderRadius: 12, background: '#1e2636', animation: 'pulse 1.5s infinite' }} />
+                        <div key={i} style={{ height: 110, borderRadius: 12, background: '#0d1524', animation: 'pulse 1.5s infinite' }} />
                     ))}
                 </div>
             </div>
@@ -72,11 +72,11 @@ export default function Dashboard() {
             <div style={PAGE_STYLE}>
                 <div style={{
                     borderRadius: 16, padding: '64px 32px', textAlign: 'center',
-                    border: '2px dashed #2a3347', background: '#141824',
+                    background: '#0d1524',
                 }}>
-                    <TrendingUp size={40} style={{ color: '#2a3347', margin: '0 auto 16px' }} />
-                    <h2 style={{ color: '#e2e8f0', fontSize: 18, fontWeight: 600, margin: '0 0 8px' }}>Welcome to FX Journal</h2>
-                    <p style={{ color: '#7b8fa8', fontSize: 14, margin: '0 0 20px' }}>
+                    <TrendingUp size={36} style={{ color: '#3a5c7a', margin: '0 auto 16px' }} />
+                    <h2 style={{ color: '#c8ddef', fontSize: 18, fontWeight: 600, margin: '0 0 8px' }}>Welcome to FX Journal</h2>
+                    <p style={{ color: '#4a6080', fontSize: 14, margin: '0 0 20px' }}>
                         Create your first trading account to start tracking FOREX trades.
                     </p>
                     <Link href="/portfolios" className="btn-fx">Create Account</Link>
@@ -94,16 +94,16 @@ export default function Dashboard() {
             {/* ─── Page Header ─────────────────────────────────────────────── */}
             <div style={{ marginBottom: 32 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                    <Activity size={14} color="#00d4ff" />
+                    <Activity size={14} color="#3a5c7a" />
                     <span style={LABEL_STYLE}>Dashboard</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-                    <h1 style={{ color: '#e2e8f0', fontSize: 30, fontWeight: 800, letterSpacing: '-0.02em', margin: 0 }}>
+                    <h1 style={{ color: '#c8ddef', fontSize: 28, fontWeight: 800, letterSpacing: '-0.025em', margin: 0 }}>
                         {activePortfolio?.name ?? 'Dashboard'}
                     </h1>
                     {activePortfolio && (
                         <span style={{
-                            fontSize: 11, fontWeight: 700, padding: '3px 8px', borderRadius: 5,
+                            fontSize: 10.5, fontWeight: 700, padding: '3px 8px', borderRadius: 5,
                             background: typeStyle.bg, color: typeStyle.color,
                             textTransform: 'uppercase', letterSpacing: '0.06em',
                         }}>
@@ -111,7 +111,7 @@ export default function Dashboard() {
                         </span>
                     )}
                 </div>
-                <p style={{ color: '#7b8fa8', fontSize: 13, marginTop: 4 }}>
+                <p style={{ color: '#4a6080', fontSize: 13, marginTop: 4 }}>
                     {activePortfolio?.broker && <span>{activePortfolio.broker} · </span>}
                     {activePortfolio?.currency}
                     <span style={{ margin: '0 6px', opacity: 0.4 }}>·</span>
@@ -127,7 +127,7 @@ export default function Dashboard() {
                         value={formatCurrency(activePortfolio.currentBalance, activePortfolio.currency)}
                         subtext={`Initial: ${formatCurrency(activePortfolio.initialBalance, activePortfolio.currency)}`}
                         icon={<Wallet size={16} />}
-                        accentColor="#00d4ff"
+                        accentColor="#7aA8cc"
                         className="stagger-1"
                     />
                     <StatsCard
@@ -165,25 +165,25 @@ export default function Dashboard() {
                     <StatsCard label="Avg Win" value={formatCurrency(stats.avgWin, activePortfolio?.currency)} icon={<Zap size={16} />} accentColor="#10b981" className="stagger-1" />
                     <StatsCard label="Avg Loss" value={formatCurrency(stats.avgLoss, activePortfolio?.currency)} icon={<Zap size={16} />} accentColor="#ef4444" className="stagger-2" />
                     <StatsCard label="Best Pair" value={stats.bestPair ?? '—'} subtext="By total P&L" icon={<Layers size={16} />} accentColor="#f59e0b" className="stagger-3" />
-                    <StatsCard label="Best Session" value={stats.bestSession?.replace('_', ' ') ?? '—'} subtext="Highest win rate" icon={<Activity size={16} />} accentColor="#00d4ff" className="stagger-4" />
+                    <StatsCard label="Best Session" value={stats.bestSession?.replace('_', ' ') ?? '—'} subtext="Highest win rate" icon={<Activity size={16} />} accentColor="#7aA8cc" className="stagger-4" />
                 </div>
             )}
 
             {/* ─── Recent Trades ────────────────────────────────────────────── */}
             <div>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-                    <h2 style={{ color: '#e2e8f0', fontSize: 16, fontWeight: 700, margin: 0 }}>
+                    <h2 style={{ color: '#c8ddef', fontSize: 16, fontWeight: 700, margin: 0 }}>
                         Recent Trades
                     </h2>
-                    <a href="/trades" style={{ color: '#00d4ff', fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>
+                    <a href="/trades" style={{ color: '#7aA8cc', fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>
                         View all →
                     </a>
                 </div>
 
                 {tradesLoading ? (
-                    <div style={{ height: 180, borderRadius: 12, background: '#1e2636', animation: 'pulse 1.5s infinite' }} />
+                    <div style={{ height: 180, borderRadius: 12, background: '#0d1524', animation: 'pulse 1.5s infinite' }} />
                 ) : (
-                    <div style={{ background: '#141824', border: '1px solid #2a3347', borderRadius: 12, overflow: 'hidden' }}>
+                    <div style={{ background: '#0d1524', borderRadius: 12, overflow: 'hidden' }}>
                         <TradesTable
                             trades={recentTrades}
                             currency={activePortfolio?.currency}

@@ -43,10 +43,10 @@ export default function PortfoliosPage() {
     if (isLoading) {
         return (
             <div className="page-container space-y-8">
-                <div className="h-8 w-40 rounded-lg animate-pulse" style={{ background: 'var(--muted)' }} />
+                <div className="h-8 w-40 rounded-lg animate-pulse" style={{ background: '#0d1524' }} />
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                     {[...Array(3)].map((_, i) => (
-                        <div key={i} className="h-56 rounded-xl animate-pulse" style={{ background: 'var(--muted)' }} />
+                        <div key={i} className="h-56 rounded-xl animate-pulse" style={{ background: '#0d1524' }} />
                     ))}
                 </div>
             </div>
@@ -58,15 +58,15 @@ export default function PortfoliosPage() {
             <div className="flex items-center justify-between animate-slide-up">
                 <div>
                     <div className="flex items-center gap-2 mb-1">
-                        <Briefcase size={16} style={{ color: 'var(--fx-accent)' }} />
-                        <span className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'var(--fx-accent)', letterSpacing: '0.12em' }}>
+                        <Briefcase size={14} style={{ color: '#3a5c7a' }} />
+                        <span className="text-xs font-semibold uppercase tracking-widest" style={{ color: '#3a5c7a', letterSpacing: '0.14em' }}>
                             Accounts
                         </span>
                     </div>
-                    <h1 className="text-3xl font-bold" style={{ color: 'var(--foreground)', letterSpacing: '-0.02em' }}>
+                    <h1 className="text-3xl font-bold" style={{ color: '#c8ddef', letterSpacing: '-0.02em' }}>
                         Trading Accounts
                     </h1>
-                    <p className="mt-1 text-sm" style={{ color: 'var(--muted-foreground)' }}>
+                    <p className="mt-1 text-sm" style={{ color: '#4a6080' }}>
                         Manage your brokers, live accounts, demo accounts, and prop firm challenges.
                     </p>
                 </div>

@@ -33,9 +33,9 @@ import {
 } from 'lucide-react';
 
 const ACCOUNT_TYPE_BADGE: Record<string, { bg: string; color: string }> = {
-    LIVE:  { bg: 'oklch(0.72 0.19 155 / 0.15)', color: 'var(--fx-profit)' },
-    DEMO:  { bg: 'oklch(0.60 0.015 230 / 0.15)', color: 'var(--muted-foreground)' },
-    PROP:  { bg: 'oklch(0.80 0.18 75 / 0.15)', color: 'var(--fx-gold)' },
+    LIVE:  { bg: 'rgba(16,185,129,0.12)', color: '#34d399' },
+    DEMO:  { bg: 'rgba(122,154,184,0.12)', color: '#7a9ab8' },
+    PROP:  { bg: 'rgba(245,158,11,0.12)', color: '#f59e0b' },
 };
 
 export default function PortfolioPage() {
@@ -64,10 +64,10 @@ export default function PortfolioPage() {
     if (isLoading) {
         return (
             <div className="page-container space-y-8">
-                <div className="h-8 w-48 rounded-lg animate-pulse" style={{ background: 'var(--muted)' }} />
+                <div className="h-8 w-48 rounded-lg animate-pulse" style={{ background: '#0d1524' }} />
                 <div className="grid gap-4 md:grid-cols-4">
                     {[...Array(4)].map((_, i) => (
-                        <div key={i} className="h-28 rounded-xl animate-pulse" style={{ background: 'var(--muted)' }} />
+                        <div key={i} className="h-28 rounded-xl animate-pulse" style={{ background: '#0d1524' }} />
                     ))}
                 </div>
             </div>
@@ -77,9 +77,9 @@ export default function PortfolioPage() {
     if (!portfolio) {
         return (
             <div className="page-container">
-                <div className="rounded-xl p-8 text-center" style={{ border: '1px solid var(--border)', background: 'var(--card)' }}>
-                    <p style={{ color: 'var(--muted-foreground)' }}>Account not found.</p>
-                    <Link href="/portfolios" className="mt-4 inline-block text-sm" style={{ color: 'var(--fx-accent)' }}>
+                <div className="rounded-xl p-8 text-center" style={{ background: '#0d1524' }}>
+                    <p style={{ color: '#4a6080' }}>Account not found.</p>
+                    <Link href="/portfolios" className="mt-4 inline-block text-sm" style={{ color: '#7aA8cc' }}>
                         ← Back to Accounts
                     </Link>
                 </div>
@@ -99,8 +99,10 @@ export default function PortfolioPage() {
             <div className="animate-slide-up">
                 <Link
                     href="/portfolios"
-                    className="inline-flex items-center gap-1.5 text-xs font-medium mb-4 transition-opacity hover:opacity-100"
-                    style={{ color: 'var(--muted-foreground)', opacity: 0.7 }}
+                    className="inline-flex items-center gap-1.5 text-xs font-medium mb-4 transition-colors"
+                    style={{ color: '#4a6080' }}
+                    onMouseEnter={e => (e.currentTarget.style.color = '#7aA8cc')}
+                    onMouseLeave={e => (e.currentTarget.style.color = '#4a6080')}
                 >
                     <ArrowLeft size={13} />
                     Trading Accounts
@@ -115,20 +117,20 @@ export default function PortfolioPage() {
                             >
                                 {portfolio.accountType}
                             </span>
-                            <span className="text-xs" style={{ color: 'var(--muted-foreground)' }}>
+                            <span className="text-xs" style={{ color: '#4a6080' }}>
                                 {portfolio.currency}
                             </span>
                             {portfolio.broker && (
-                                <span className="text-xs" style={{ color: 'var(--muted-foreground)' }}>
+                                <span className="text-xs" style={{ color: '#4a6080' }}>
                                     · {portfolio.broker}
                                 </span>
                             )}
                         </div>
-                        <h1 className="text-3xl font-bold" style={{ color: 'var(--foreground)', letterSpacing: '-0.02em' }}>
+                        <h1 className="text-3xl font-bold" style={{ color: '#c8ddef', letterSpacing: '-0.02em' }}>
                             {portfolio.name}
                         </h1>
                         {portfolio.description && (
-                            <p className="mt-1 text-sm" style={{ color: 'var(--muted-foreground)' }}>
+                            <p className="mt-1 text-sm" style={{ color: '#4a6080' }}>
                                 {portfolio.description}
                             </p>
                         )}
@@ -211,7 +213,7 @@ export default function PortfolioPage() {
             )}
 
             <div className="space-y-3 animate-slide-up">
-                <h2 className="text-base font-bold" style={{ color: 'var(--foreground)' }}>
+                <h2 className="text-base font-bold" style={{ color: '#c8ddef' }}>
                     Trade History
                 </h2>
                 <TradesTable

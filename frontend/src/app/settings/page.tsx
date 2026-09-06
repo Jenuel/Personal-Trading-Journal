@@ -17,9 +17,9 @@ import { Portfolio } from '@/types/types';
 import { formatCurrency, calculatePortfolioGain } from '@/lib/portfolio-utils';
 
 const ACCOUNT_TYPE_STYLE: Record<string, { bg: string; color: string }> = {
-    LIVE: { bg: 'rgba(16,185,129,0.14)', color: '#10b981' },
-    DEMO: { bg: 'rgba(123,143,168,0.14)', color: '#7b8fa8' },
-    PROP: { bg: 'rgba(245,158,11,0.14)', color: '#f59e0b' },
+    LIVE: { bg: 'rgba(16,185,129,0.12)', color: '#10b981' },
+    DEMO: { bg: 'rgba(90,120,150,0.12)', color: '#7a9ab8' },
+    PROP: { bg: 'rgba(245,158,11,0.12)', color: '#f59e0b' },
 };
 
 function AccountRow({ portfolio, onEdit, onDelete, isDeleting }: {
@@ -36,44 +36,42 @@ function AccountRow({ portfolio, onEdit, onDelete, isDeleting }: {
     return (
         <div style={{
             display: 'flex', alignItems: 'center', gap: 16,
-            background: '#141824',
-            border: '1px solid #2a3347',
+            background: '#0d1524',
             borderRadius: 12,
             padding: '16px 20px',
-            transition: 'border-color 0.2s',
+            transition: 'background 0.15s',
         }}
-            onMouseEnter={e => (e.currentTarget.style.borderColor = '#3a4560')}
-            onMouseLeave={e => (e.currentTarget.style.borderColor = '#2a3347')}
+            onMouseEnter={e => (e.currentTarget.style.background = '#111d30')}
+            onMouseLeave={e => (e.currentTarget.style.background = '#0d1524')}
         >
             {/* Color dot */}
             <div style={{
-                width: 10, height: 10, borderRadius: '50%', flexShrink: 0,
+                width: 8, height: 8, borderRadius: '50%', flexShrink: 0,
                 background: typeStyle.color,
-                boxShadow: `0 0 6px ${typeStyle.color}80`,
             }} />
 
             {/* Account info */}
             <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
-                    <span style={{ color: '#e2e8f0', fontWeight: 700, fontSize: 14, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    <span style={{ color: '#c8ddef', fontWeight: 700, fontSize: 14, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {portfolio.name}
                     </span>
                     <span style={{
-                        fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 4,
+                        fontSize: 10, fontWeight: 700, padding: '2px 6px', borderRadius: 4,
                         background: typeStyle.bg, color: typeStyle.color,
                         textTransform: 'uppercase', letterSpacing: '0.06em', flexShrink: 0,
                     }}>
                         {portfolio.accountType}
                     </span>
                 </div>
-                <p style={{ color: '#7b8fa8', fontSize: 12, margin: 0 }}>
+                <p style={{ color: '#4a6080', fontSize: 12, margin: 0 }}>
                     {portfolio.broker ?? '—'} · {portfolio.currency} · {tradeCount} trade{tradeCount !== 1 ? 's' : ''}
                 </p>
             </div>
 
             {/* Balance */}
             <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                <p style={{ color: '#e2e8f0', fontFamily: 'var(--fx-font-mono)', fontWeight: 700, fontSize: 15, margin: '0 0 2px' }}>
+                <p style={{ color: '#c8ddef', fontFamily: 'var(--fx-font-mono)', fontWeight: 700, fontSize: 15, margin: '0 0 2px' }}>
                     {formatCurrency(portfolio.currentBalance, portfolio.currency)}
                 </p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 4, justifyContent: 'flex-end' }}>
@@ -94,42 +92,42 @@ function AccountRow({ portfolio, onEdit, onDelete, isDeleting }: {
             </div>
 
             {/* Actions */}
-            <div style={{ display: 'flex', gap: 4, flexShrink: 0, marginLeft: 8 }}>
+            <div style={{ display: 'flex', gap: 6, flexShrink: 0, marginLeft: 8 }}>
                 <button
                     onClick={() => onEdit(portfolio)}
                     title="Edit account"
                     style={{
-                        background: 'rgba(0,212,255,0.07)', border: '1px solid rgba(0,212,255,0.15)',
-                        borderRadius: 7, cursor: 'pointer', color: '#00d4ff',
-                        padding: '7px 9px', transition: 'all 0.15s', display: 'flex', alignItems: 'center',
+                        background: '#1a2d47', border: 'none',
+                        borderRadius: 7, cursor: 'pointer', color: '#c8d8ec',
+                        padding: '7px 10px', transition: 'all 0.15s', display: 'flex', alignItems: 'center',
                     }}
                     onMouseEnter={e => {
-                        (e.currentTarget as HTMLButtonElement).style.background = 'rgba(0,212,255,0.15)';
+                        (e.currentTarget as HTMLButtonElement).style.background = '#223b5d';
                     }}
                     onMouseLeave={e => {
-                        (e.currentTarget as HTMLButtonElement).style.background = 'rgba(0,212,255,0.07)';
+                        (e.currentTarget as HTMLButtonElement).style.background = '#1a2d47';
                     }}
                 >
-                    <Pencil size={14} />
+                    <Pencil size={13} />
                 </button>
                 <button
                     onClick={() => onDelete(portfolio.id)}
                     disabled={isDeleting}
                     title="Delete account"
                     style={{
-                        background: 'rgba(239,68,68,0.07)', border: '1px solid rgba(239,68,68,0.15)',
+                        background: 'rgba(239,68,68,0.10)', border: 'none',
                         borderRadius: 7, cursor: 'pointer', color: '#ef4444',
-                        padding: '7px 9px', transition: 'all 0.15s', display: 'flex', alignItems: 'center',
+                        padding: '7px 10px', transition: 'all 0.15s', display: 'flex', alignItems: 'center',
                         opacity: isDeleting ? 0.5 : 1,
                     }}
                     onMouseEnter={e => {
-                        (e.currentTarget as HTMLButtonElement).style.background = 'rgba(239,68,68,0.15)';
+                        (e.currentTarget as HTMLButtonElement).style.background = 'rgba(239,68,68,0.18)';
                     }}
                     onMouseLeave={e => {
-                        (e.currentTarget as HTMLButtonElement).style.background = 'rgba(239,68,68,0.07)';
+                        (e.currentTarget as HTMLButtonElement).style.background = 'rgba(239,68,68,0.10)';
                     }}
                 >
-                    <Trash2 size={14} />
+                    <Trash2 size={13} />
                 </button>
             </div>
         </div>
@@ -171,18 +169,18 @@ export default function SettingsPage() {
             <div className="animate-slide-up" style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
                 <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-                        <Settings size={14} style={{ color: 'var(--fx-accent)' }} />
+                        <Settings size={14} color="#3a5c7a" />
                         <span style={{
-                            color: 'var(--fx-accent)', fontSize: 11, fontWeight: 600,
-                            textTransform: 'uppercase', letterSpacing: '0.12em',
+                            color: '#3a5c7a', fontSize: 11, fontWeight: 600,
+                            textTransform: 'uppercase', letterSpacing: '0.14em',
                         }}>
                             Settings
                         </span>
                     </div>
-                    <h1 style={{ color: 'var(--foreground)', fontSize: 28, fontWeight: 800, letterSpacing: '-0.02em', margin: 0 }}>
+                    <h1 style={{ color: '#c8ddef', fontSize: 28, fontWeight: 800, letterSpacing: '-0.025em', margin: 0 }}>
                         Manage Accounts
                     </h1>
-                    <p style={{ color: 'var(--muted-foreground)', fontSize: 13, marginTop: 3 }}>
+                    <p style={{ color: '#4a6080', fontSize: 13, marginTop: 3 }}>
                         Add, edit, or remove your trading accounts.
                     </p>
                 </div>
@@ -201,16 +199,16 @@ export default function SettingsPage() {
                 {isLoading ? (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                         {[1, 2, 3].map(i => (
-                            <div key={i} style={{ height: 74, borderRadius: 12, background: 'var(--muted)', animation: 'pulse 1.5s infinite' }} />
+                            <div key={i} style={{ height: 74, borderRadius: 12, background: '#0d1524', animation: 'pulse 1.5s infinite' }} />
                         ))}
                     </div>
                 ) : portfolios.length === 0 ? (
                     <div style={{
                         borderRadius: 16, padding: '64px 32px', textAlign: 'center',
-                        border: '2px dashed #2a3347', background: '#141824',
+                        background: '#0d1524',
                     }}>
-                        <Wallet size={36} style={{ color: '#2a3347', margin: '0 auto 12px' }} />
-                        <p style={{ color: '#7b8fa8', fontSize: 14, margin: '0 0 16px' }}>
+                        <Wallet size={36} style={{ color: '#3a5c7a', margin: '0 auto 12px' }} />
+                        <p style={{ color: '#4a6080', fontSize: 14, margin: '0 0 16px' }}>
                             No trading accounts yet.
                         </p>
                         <Button onClick={() => handleOpenDialog()} className="btn-fx" style={{ border: 'none', gap: 6 }}>

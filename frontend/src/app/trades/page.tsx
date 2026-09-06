@@ -52,8 +52,8 @@ export default function TradesPage() {
     if (accountLoading) {
         return (
             <div className="page-container space-y-6">
-                <div className="h-8 w-40 rounded-lg animate-pulse" style={{ background: 'var(--muted)' }} />
-                <div className="h-64 rounded-xl animate-pulse" style={{ background: 'var(--muted)' }} />
+                <div className="h-8 w-40 rounded-lg animate-pulse" style={{ background: '#0d1524' }} />
+                <div className="h-64 rounded-xl animate-pulse" style={{ background: '#0d1524' }} />
             </div>
         );
     }
@@ -64,13 +64,13 @@ export default function TradesPage() {
             <div className="page-container">
                 <div style={{
                     borderRadius: 16, padding: '72px 32px', textAlign: 'center',
-                    border: '2px dashed #2a3347', background: '#141824', marginTop: 24,
+                    background: '#0d1524', marginTop: 24,
                 }}>
-                    <ScrollText size={40} style={{ color: '#2a3347', margin: '0 auto 16px' }} />
-                    <h2 style={{ color: '#e2e8f0', fontSize: 18, fontWeight: 600, margin: '0 0 8px' }}>
+                    <ScrollText size={40} style={{ color: '#3a5c7a', margin: '0 auto 16px' }} />
+                    <h2 style={{ color: '#c8ddef', fontSize: 18, fontWeight: 600, margin: '0 0 8px' }}>
                         No Trading Accounts Yet
                     </h2>
-                    <p style={{ color: '#7b8fa8', fontSize: 14, margin: '0 0 20px' }}>
+                    <p style={{ color: '#4a6080', fontSize: 14, margin: '0 0 20px' }}>
                         Create a trading account first to start logging trades.
                     </p>
                     <a href="/portfolios" className="btn-fx" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, textDecoration: 'none' }}>
@@ -90,18 +90,18 @@ export default function TradesPage() {
             <div className="animate-slide-up" style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16 }}>
                 <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-                        <ScrollText size={14} style={{ color: 'var(--fx-accent)' }} />
+                        <ScrollText size={14} color="#3a5c7a" />
                         <span style={{
-                            color: 'var(--fx-accent)', fontSize: 11, fontWeight: 600,
-                            textTransform: 'uppercase', letterSpacing: '0.12em',
+                            color: '#3a5c7a', fontSize: 11, fontWeight: 600,
+                            textTransform: 'uppercase', letterSpacing: '0.14em',
                         }}>
                             Trade Log
                         </span>
                     </div>
-                    <h1 style={{ color: 'var(--foreground)', fontSize: 28, fontWeight: 800, letterSpacing: '-0.02em', margin: 0 }}>
+                    <h1 style={{ color: '#c8ddef', fontSize: 28, fontWeight: 800, letterSpacing: '-0.025em', margin: 0 }}>
                         {activePortfolio?.name ?? 'Trades'}
                     </h1>
-                    <p style={{ color: 'var(--muted-foreground)', fontSize: 13, marginTop: 3 }}>
+                    <p style={{ color: '#4a6080', fontSize: 13, marginTop: 3 }}>
                         {activePortfolio?.broker && <span>{activePortfolio.broker} · </span>}
                         <span>{tradesLoading ? '…' : `${trades.length} trade${trades.length !== 1 ? 's' : ''}`}</span>
                     </p>
@@ -152,22 +152,22 @@ export default function TradesPage() {
                             label: 'Total Pips',
                             value: `${stats.totalPips >= 0 ? '+' : ''}${stats.totalPips.toFixed(1)}`,
                             sub: `${stats.closedTrades} closed`,
-                            color: stats.totalPips >= 0 ? '#00d4ff' : '#ef4444',
+                            color: stats.totalPips >= 0 ? '#10b981' : '#ef4444',
                         },
                     ].map(({ icon, label, value, sub, color }) => (
                         <div key={label} style={{
-                            background: '#141824', border: '1px solid #2a3347', borderRadius: 10, padding: '12px 14px',
+                            background: '#0d1524', borderRadius: 10, padding: '14px 16px',
                         }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 6 }}>
-                                <span style={{ color: '#7b8fa8' }}>{icon}</span>
-                                <span style={{ color: '#7b8fa8', fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                                <span style={{ color: '#3a5c7a' }}>{icon}</span>
+                                <span style={{ color: '#3a5c7a', fontSize: 10.5, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.10em' }}>
                                     {label}
                                 </span>
                             </div>
                             <p style={{ color, fontFamily: 'var(--fx-font-mono)', fontWeight: 700, fontSize: 18, letterSpacing: '-0.02em', margin: '0 0 2px' }}>
                                 {value}
                             </p>
-                            <p style={{ color: '#7b8fa8', fontSize: 11, margin: 0 }}>{sub}</p>
+                            <p style={{ color: '#4a6080', fontSize: 11, margin: 0 }}>{sub}</p>
                         </div>
                     ))}
                 </div>
@@ -176,7 +176,7 @@ export default function TradesPage() {
             {/* ─── Trades Table ─────────────────────────────────────────────── */}
             <div className="animate-slide-up stagger-2">
                 {tradesLoading ? (
-                    <div style={{ borderRadius: 12, height: 200, background: 'var(--muted)', animation: 'pulse 1.5s infinite' }} />
+                    <div style={{ borderRadius: 12, height: 200, background: '#0d1524', animation: 'pulse 1.5s infinite' }} />
                 ) : (
                     <TradesTable
                         trades={trades}
