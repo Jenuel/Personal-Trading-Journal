@@ -3,16 +3,14 @@ import { PortfolioController } from '../controllers/portController.js'
 
 const router = express.Router()
 
-router.get('/ports', PortfolioController.getPortfolios)
+router.get('/portfolios', PortfolioController.getPortfolios)
 
-router.get('/ports/:id', PortfolioController.getPortfolio)
+router.get('/portfolios/:id', PortfolioController.getPortfolio)
 
-router.post('/ports', PortfolioController.createPortfolio)
+router.post('/portfolios', PortfolioController.createPortfolio)
 
-router.patch('/ports', PortfolioController.updateBalance)
+router.put('/portfolios/:id', PortfolioController.updatePortfolio)
 
-router.patch('/ports/:id', PortfolioController.rebateBalance)
-
-router.delete('/ports/:id', PortfolioController.deletePortfolio)
+router.delete('/portfolios/:id', PortfolioController.deletePortfolio)
 
 export default router;

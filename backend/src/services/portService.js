@@ -1,9 +1,16 @@
 import { PortfolioRepository as portfolioRepository } from "../repositories/portfolio.js";
 
+function roundMoney(value) {
+    return Math.round(value * 100) / 100;
+}
+
 export const PortfolioService = {
-    createPortfolio: async (name, balance) => {
-        const portfolio = { name, balance };
-        const results = await portfolioRepository.createPortfolio(portfolio);
+    createPortfolio: async (portfolio) => {
+        // A new account starts out at whatever it was funded with.
+        const results = await portfolioRepository.createPortfolio({
+            ...portfolio,
+            current_balance: portfolio.initial_balance,
+        });
 
         if (!results) {
             throw new Error('Failed to create portfolio');
@@ -25,37 +32,56 @@ export const PortfolioService = {
     getPortfolio: async (id) => {
         const results = await portfolioRepository.getPortfolioById(id);
 
-        if (!results) {
+        if (results === undefined) {
             throw new Error('Failed to fetch portfolio');
         }
 
         return results;
     },
 
-    updateBalance: async (id, incrementValue) => {
-        const currentPortfolio = await portfolioRepository.getPortfolioById(id);
-        if (!currentPortfolio) {
-            throw new Error('Portfolio not found');
-        }
-
-        const newBalance = Number(currentPortfolio.balance) + Number(incrementValue);
-        const results = await portfolioRepository.updatePortfolio(id, { balance: newBalance });
+    updatePortfolio: async (id, updates) => {
+        const results = await portfolioRepository.updatePortfolio(id, {
+            ...updates,
+            updated_at: new Date().toISOString(),
+        });
 
         if (!results) {
-            throw new Error('Failed to update balance');
+            throw new Error('Failed to update portfolio');
         }
 
         return results;
     },
 
-    rebateBalance: async (id, decrementValue) => {
-        const currentPortfolio = await portfolioRepository.getPortfolioById(id);
-        if (!currentPortfolio) {
+    // The balance is derived, never set by the client: it is the funded amount
+    // plus realized P&L plus net deposits. Called after every write that can
+    // move it.
+    recalculateBalance: async (portfolioId) => {
+        const portfolio = await portfolioRepository.getPortfolioById(portfolioId);
+
+        if (!portfolio) {
             throw new Error('Portfolio not found');
         }
 
-        const newBalance = Number(currentPortfolio.balance) - Number(decrementValue);
-        const results = await portfolioRepository.updatePortfolio(id, { balance: newBalance });
+        const realized = (portfolio.trades ?? []).reduce(
+            (sum, trade) => sum + Number(trade.result ?? 0),
+            0
+        );
+
+        const netDeposits = (portfolio.cash_transactions ?? []).reduce(
+            (sum, transaction) => transaction.type === 'DEPOSIT'
+                ? sum + Number(transaction.amount)
+                : sum - Number(transaction.amount),
+            0
+        );
+
+        const currentBalance = roundMoney(
+            Number(portfolio.initial_balance) + realized + netDeposits
+        );
+
+        const results = await portfolioRepository.updatePortfolio(portfolioId, {
+            current_balance: currentBalance,
+            updated_at: new Date().toISOString(),
+        });
 
         if (!results) {
             throw new Error('Failed to update balance');
