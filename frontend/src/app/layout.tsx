@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { Providers } from './providers'
-import Sidebar from '@/components/sidebar'
+import { AppShell } from '@/components/app-shell'
 import './globals.css'
 
 const inter = Inter({
@@ -29,15 +29,12 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
+    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`} data-scroll-behavior="smooth">
       <body style={{ margin: 0, padding: 0, background: '#0b0f1a', color: '#e2e8f0', fontFamily: 'var(--fx-font-sans)' }}>
         <Providers>
-          <div style={{ display: 'flex', minHeight: '100vh' }}>
-            <Sidebar />
-            <main style={{ flex: 1, minHeight: '100vh', background: '#0b0f1a', overflow: 'auto' }}>
-              {children}
-            </main>
-          </div>
+          <AppShell>
+            {children}
+          </AppShell>
         </Providers>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
