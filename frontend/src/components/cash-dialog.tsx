@@ -68,10 +68,22 @@ export function CashDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent>
+            <DialogContent
+                className="max-w-md"
+                style={{
+                    background: '#0d1524',
+                    border: 'none',
+                    boxShadow: '0 24px 64px rgba(0, 0, 0, 0.6)',
+                }}
+            >
                 <DialogHeader>
                     <DialogTitle>
-                        {formData.type === 'DEPOSIT' ? 'Deposit Funds' : 'Withdraw Funds'}
+                        <span style={{ fontSize: '10.5px', textTransform: 'uppercase', letterSpacing: '0.14em', color: '#3a5c7a', display: 'block', marginBottom: '2px', fontWeight: 600 }}>
+                            Cash Transaction
+                        </span>
+                        <span style={{ fontSize: '17px', fontWeight: 700, color: '#c8ddef' }}>
+                            {formData.type === 'DEPOSIT' ? 'Deposit Funds' : 'Withdraw Funds'}
+                        </span>
                     </DialogTitle>
                     <DialogDescription className="sr-only">
                         {formData.type === 'DEPOSIT' ? 'Record a deposit into your trading account.' : 'Record a withdrawal from your trading account.'}
@@ -79,30 +91,46 @@ export function CashDialog({
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <Label htmlFor="type">Type</Label>
-                        <Select
-                            value={formData.type}
-                            onValueChange={(value) =>
-                                setFormData({ ...formData, type: value as 'DEPOSIT' | 'WITHDRAWAL' })
-                            }
-                        >
-                            <SelectTrigger id="type">
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="DEPOSIT">Deposit</SelectItem>
-                                <SelectItem value="WITHDRAWAL">Withdrawal</SelectItem>
-                            </SelectContent>
-                        </Select>
+                        <Label className="text-xs font-semibold" style={{ color: '#4a6080', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                            Transaction Type
+                        </Label>
+                        <div className="mt-1 flex rounded-lg overflow-hidden" style={{ background: '#0b1220' }}>
+                            <button
+                                type="button"
+                                onClick={() => setFormData(prev => ({ ...prev, type: 'DEPOSIT' }))}
+                                className="flex-1 py-2 text-sm font-bold transition-all"
+                                style={{
+                                    background: formData.type === 'DEPOSIT' ? 'rgba(16, 185, 129, 0.15)' : 'transparent',
+                                    color: formData.type === 'DEPOSIT' ? '#34d399' : '#4a6080',
+                                    border: 'none',
+                                }}
+                            >
+                                Deposit
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setFormData(prev => ({ ...prev, type: 'WITHDRAWAL' }))}
+                                className="flex-1 py-2 text-sm font-bold transition-all"
+                                style={{
+                                    background: formData.type === 'WITHDRAWAL' ? 'rgba(239, 68, 68, 0.15)' : 'transparent',
+                                    color: formData.type === 'WITHDRAWAL' ? '#f87171' : '#4a6080',
+                                    border: 'none',
+                                }}
+                            >
+                                Withdrawal
+                            </button>
+                        </div>
                     </div>
 
                     <div>
-                        <Label htmlFor="amount">Amount</Label>
+                        <Label htmlFor="amount" className="text-xs font-semibold" style={{ color: '#4a6080', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                            Amount
+                        </Label>
                         <Input
                             id="amount"
                             type="number"
                             step="0.01"
-                            value={formData.amount}
+                            value={formData.amount || ''}
                             onChange={(e) =>
                                 setFormData({
                                     ...formData,
@@ -111,11 +139,15 @@ export function CashDialog({
                             }
                             placeholder="0.00"
                             required
+                            className="mt-1 font-mono"
+                            style={{ background: '#0b1220', border: 'none', color: '#c8ddef' }}
                         />
                     </div>
 
                     <div>
-                        <Label htmlFor="date">Date</Label>
+                        <Label htmlFor="date" className="text-xs font-semibold" style={{ color: '#4a6080', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                            Date
+                        </Label>
                         <Input
                             id="date"
                             type="date"
@@ -124,11 +156,15 @@ export function CashDialog({
                                 setFormData({ ...formData, date: e.target.value })
                             }
                             required
+                            className="mt-1"
+                            style={{ background: '#0b1220', border: 'none', color: '#c8ddef' }}
                         />
                     </div>
 
                     <div>
-                        <Label htmlFor="notes">Notes</Label>
+                        <Label htmlFor="notes" className="text-xs font-semibold" style={{ color: '#4a6080', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                            Notes
+                        </Label>
                         <Textarea
                             id="notes"
                             value={formData.notes}
@@ -136,8 +172,9 @@ export function CashDialog({
                                 setFormData({ ...formData, notes: e.target.value })
                             }
                             placeholder="Add notes about this transaction"
-                            className="resize-none"
+                            className="mt-1 resize-none"
                             rows={3}
+                            style={{ background: '#0b1220', border: 'none', color: '#c8ddef' }}
                         />
                     </div>
 
@@ -147,10 +184,11 @@ export function CashDialog({
                             variant="outline"
                             onClick={() => onOpenChange(false)}
                             disabled={isLoading}
+                            style={{ background: '#111d30', border: 'none', color: '#8fa8c4' }}
                         >
                             Cancel
                         </Button>
-                        <Button type="submit" disabled={isLoading}>
+                        <Button type="submit" disabled={isLoading} className="btn-fx" style={{ border: 'none' }}>
                             {formData.type === 'DEPOSIT' ? 'Deposit' : 'Withdraw'}
                         </Button>
                     </DialogFooter>
