@@ -5,7 +5,7 @@ import { Router } from "express";
 
 const router = Router()
 
-router.use("/trade", tradeRoutes);
-router.use("/port", portRoutes);
+router.use(portRoutes);
+router.use(tradeRoutes);
 
 export default router;

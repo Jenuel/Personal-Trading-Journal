@@ -30,6 +30,7 @@ backend/
 ├── src/
 │   ├── config/          # Configuration files (Supabase client, Health checks)
 │   ├── controllers/     # Request/Response handling logic
+│   ├── mappers/         # camelCase API objects <-> snake_case database rows
 │   ├── repositories/    # Data access layer (Supabase interactions)
 │   ├── routes/          # Express route definitions
 │   ├── services/        # Business logic layer
@@ -45,44 +46,52 @@ The application uses a **Controller-Service-Repository** pattern:
 2. **Controllers (`/controllers`)**: Extract parameters and body payloads from the `request` object. They handle HTTP responses, status codes, and error reporting, delegating the actual work to the Service layer.
 3. **Services (`/services`)**: Contain the core business logic. They orchestrate data between the controllers and repositories.
 4. **Repositories (`/repositories`)**: Encapsulate the direct interaction with the Supabase database. This layer is responsible for running queries (`insert`, `select`, `update`, `delete`).
+5. **Mappers (`/mappers`)**: Translate between the camelCase objects the API speaks and the snake_case rows the database stores. `toRow` deliberately omits any key the caller did not supply, so a partial update never overwrites a column it was not asked to touch.
 
 ## Environment Variables
 Create a `.env` file in the root of the `backend` directory with the following variables:
 
 ```env
-PORT=3001 # Or any preferred port
+PORT=5000 # Defaults to 5000, which is what the frontend expects
 SUPABASE_URL=your_supabase_project_url
 SUPABASE_ANON_KEY=your_supabase_anon_key
+CORS_ORIGIN=http://localhost:3000 # Optional; defaults to the Next.js dev server
 ```
 
 ---
 
 ## API Endpoints
 
-All endpoints assume the server is running on `http://localhost:<PORT>`. The Express app natively handles JSON requests and responses.
+All endpoints assume the server is running on `http://localhost:<PORT>` (5000 by default). The Express app
+natively handles JSON requests and responses, and every response — successes, errors and deletes alike —
+carries a JSON body.
+
+Requests and responses use camelCase throughout; the snake_case column names are an implementation detail
+of the database and never cross the API boundary.
 
 ### Portfolios
-Base path: `/port`
 
 | HTTP Method | Endpoint | Description | Request Body / Params |
 |-------------|----------|-------------|-----------------------|
-| `GET`       | `/port/ports` | Get a list of all portfolios. | None |
-| `GET`       | `/port/ports/:id` | Get a specific portfolio by ID. | **Params:** `id` |
-| `POST`      | `/port/ports` | Create a new portfolio. | **Body:** `{ portName: string, balance: number }` |
-| `PATCH`     | `/port/ports` | Increase the balance of a portfolio. | **Body:** `{ id: string, incrementValue: number }` |
-| `PATCH`     | `/port/ports/:id` | Rebate (decrease) the balance of a portfolio. | **Params:** `id`<br>**Body:** `{ decrementValue: number }` |
-| `DELETE`    | `/port/ports/:id` | Delete a portfolio by ID. | **Params:** `id` |
+| `GET`       | `/portfolios` | List all accounts, each with its `trades` and `cashTransactions` embedded. | None |
+| `GET`       | `/portfolios/:id` | Get one account, with the same embedded collections. | **Params:** `id` |
+| `POST`      | `/portfolios` | Create an account. | **Body:** `{ name: string, initialBalance: number, currency?: string, broker?: string, accountType?: 'LIVE' \| 'DEMO' \| 'PROP', description?: string }` |
+| `PUT`       | `/portfolios/:id` | Update account metadata. `initialBalance` is ignored — the funded amount is fixed once the account exists. | **Params:** `id`<br>**Body:** any subset of the create fields |
+| `DELETE`    | `/portfolios/:id` | Delete an account. Its trades and cash transactions cascade. | **Params:** `id` |
+
+`currentBalance` is derived, never written by a client: it is recalculated as
+`initialBalance + Σ trade.result + Σ deposits − Σ withdrawals` after every write that can move it.
 
 ### Trades
-Base path: `/trade`
 
 | HTTP Method | Endpoint | Description | Request Body / Params |
 |-------------|----------|-------------|-----------------------|
-| `GET`       | `/trade/trades/port/:id` | Get all trades associated with a specific portfolio. | **Params:** `id` |
-| `GET`       | `/trade/trades/:id` | Get a specific trade by its ID. | **Params:** `id` |
-| `POST`      | `/trade/trades` | Create a new trade. | **Body:** `{ portId: string, symbol: string, quantity: number, price: number, type: string, date: string }` |
-| `PUT`       | `/trade/trades/:id` | Update an existing trade. | **Params:** `id`<br>**Body:** `{ portId, symbol, quantity, price, type, date }` |
-| `DELETE`    | `/trade/trades/:id` | Delete a trade by its ID. | **Params:** `id` |
+| `GET`       | `/trades` | List trades, optionally filtered. | **Query:** `portfolioId` (optional) |
+| `GET`       | `/trades/port/:id` | List the trades for one account. Returns `200 []` when there are none. | **Params:** `id` |
+| `GET`       | `/trades/:id` | Get one trade. | **Params:** `id` |
+| `POST`      | `/trades` | Log a trade. | **Body:** `{ portfolioId, pair, direction: 'LONG' \| 'SHORT', lots, entryPrice, date }` plus optional `exitPrice`, `stopLoss`, `takeProfit`, `pips`, `result`, `rr`, `outcome`, `session`, `setup`, `notes` |
+| `PUT`       | `/trades/:id` | Update a trade. Only the fields present in the body are written. | **Params:** `id`<br>**Body:** any subset of the create fields |
+| `DELETE`    | `/trades/:id` | Delete a trade. | **Params:** `id` |
 
 ---
 
@@ -91,6 +100,8 @@ Base path: `/trade`
 You can run the following scripts using `npm run <script_name>`:
 
 - `npm start`: Starts the application using Node.js (`node src/server.js`).
+- `npm run dev`: Starts the application with auto-reload (requires `nodemon`, which is not currently installed).
+- `npm test`: Runs the unit tests with the Node.js test runner.
 
 ## Docker Setup
 
@@ -107,7 +118,7 @@ docker build -t trading-journal-backend .
 Once the image is built, you can run it. Make sure to provide your environment variables, typically via the `.env` file.
 
 ```bash
-docker run -p 3001:3001 --env-file .env trading-journal-backend
+docker run -p 5000:5000 --env-file .env trading-journal-backend
 ```
 
-This maps port 3001 inside the container to port 3001 on your local machine.
+This maps port 5000 inside the container to port 5000 on your local machine.

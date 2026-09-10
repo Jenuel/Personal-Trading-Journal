@@ -1,4 +1,10 @@
 import { TradeRepository as tradeRepository } from "../repositories/trade.js";
+import { PortfolioService } from "./portService.js";
+
+function portfolioIdOf(rows) {
+    const row = Array.isArray(rows) ? rows[0] : rows;
+    return row?.portfolio_id;
+}
 
 export const TradeService = {
     createTrade: async (trade) => {
@@ -8,11 +14,15 @@ export const TradeService = {
             throw new Error('Failed to create trade');
         }
 
+        await PortfolioService.recalculateBalance(trade.portfolio_id);
+
         return results;
     },
 
-    getAllTrades: async () => {
-        const results = await tradeRepository.getAllTrades();
+    getAllTrades: async (portfolioId) => {
+        const results = portfolioId
+            ? await tradeRepository.getTradesByPortfolioId(portfolioId)
+            : await tradeRepository.getAllTrades();
 
         if (!results) {
             throw new Error('Failed to fetch trades');
@@ -24,7 +34,7 @@ export const TradeService = {
     getTrade: async (id) => {
         const results = await tradeRepository.getTradeById(id);
 
-        if (!results) {
+        if (results === undefined) {
             throw new Error('Failed to fetch trade');
         }
 
@@ -38,6 +48,11 @@ export const TradeService = {
             throw new Error('Failed to update trade');
         }
 
+        const portfolioId = portfolioIdOf(results);
+        if (portfolioId) {
+            await PortfolioService.recalculateBalance(portfolioId);
+        }
+
         return results;
     },
 
@@ -46,6 +61,11 @@ export const TradeService = {
 
         if (!results) {
             throw new Error('Failed to delete trade');
+        }
+
+        const portfolioId = portfolioIdOf(results);
+        if (portfolioId) {
+            await PortfolioService.recalculateBalance(portfolioId);
         }
 
         return results;
