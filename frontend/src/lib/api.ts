@@ -3,8 +3,8 @@ import {
     Portfolio,
     ForexTrade,
     CashTransaction,
-    PortfolioStats,
-    TradeStats,
+    PortfolioAnalytics,
+    AccountAnalyticsSummary,
 } from '@/types/types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
@@ -29,13 +29,24 @@ export class ApiError extends Error {
     }
 }
 
+// Fixed rather than relative to now, so the analytics fixture below can line up
+// with these trades.
+const D = {
+    t1: '2026-09-04T09:15:00.000Z',
+    t2: '2026-09-06T01:40:00.000Z',
+    t3: '2026-09-08T14:05:00.000Z',
+    t4: '2026-09-05T08:00:00.000Z',
+    created: '2026-07-01T00:00:00.000Z',
+    updated: '2026-09-08T14:05:00.000Z',
+};
+
 const MOCK_PORTFOLIOS: Portfolio[] = [
     {
         id: '1',
         name: 'IC Markets Live',
         description: 'Primary live account',
         initialBalance: 10000,
-        currentBalance: 11240,
+        currentBalance: 10316.5,
         currency: 'USD',
         broker: 'IC Markets',
         accountType: 'LIVE',
@@ -56,9 +67,9 @@ const MOCK_PORTFOLIOS: Portfolio[] = [
                 outcome: 'WIN',
                 session: 'LONDON',
                 setup: 'Break & Retest',
-                date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+                date: D.t1,
                 notes: 'Clean break above H4 resistance. Entered on 15m retest.',
-                createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+                createdAt: D.t1,
             },
             {
                 id: 't2',
@@ -76,9 +87,9 @@ const MOCK_PORTFOLIOS: Portfolio[] = [
                 outcome: 'LOSS',
                 session: 'TOKYO',
                 setup: 'ICT Order Block',
-                date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+                date: D.t2,
                 notes: 'SL hit during Asian session spike.',
-                createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+                createdAt: D.t2,
             },
             {
                 id: 't3',
@@ -96,21 +107,21 @@ const MOCK_PORTFOLIOS: Portfolio[] = [
                 outcome: 'WIN',
                 session: 'NEW_YORK',
                 setup: 'Demand Zone Bounce',
-                date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+                date: D.t3,
                 notes: 'Perfect bounce off daily demand zone. NY open momentum.',
-                createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+                createdAt: D.t3,
             },
         ],
         cashTransactions: [],
-        createdAt: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
-        updatedAt: new Date().toISOString(),
+        createdAt: D.created,
+        updatedAt: D.updated,
     },
     {
         id: '2',
         name: 'FTMO Challenge',
         description: '100k prop firm challenge',
         initialBalance: 100000,
-        currentBalance: 102450,
+        currentBalance: 100000,
         currency: 'USD',
         broker: 'FTMO',
         accountType: 'PROP',
@@ -131,16 +142,80 @@ const MOCK_PORTFOLIOS: Portfolio[] = [
                 outcome: 'BE',
                 session: 'LONDON',
                 setup: 'London Open Grab',
-                date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+                date: D.t4,
                 notes: 'Moved to BE after hitting 1:1.',
-                createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+                createdAt: D.t4,
             },
         ],
         cashTransactions: [],
-        createdAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
-        updatedAt: new Date().toISOString(),
+        createdAt: D.created,
+        updatedAt: D.updated,
     },
 ];
+
+// Hand-written rather than computed from MOCK_PORTFOLIOS: re-deriving them here
+// would be the second source of truth this endpoint exists to remove. Change a
+// mock trade above and you must change these too.
+const MOCK_ANALYTICS: Record<string, PortfolioAnalytics> = {
+    '1': {
+        portfolioId: '1',
+        generatedAt: D.updated,
+        version: D.updated,
+        currency: 'USD',
+        initialBalance: 10000,
+        currentBalance: 10316.5,
+        summary: {
+            totalTrades: 3, closedTrades: 3, openTrades: 0,
+            winCount: 2, lossCount: 1, beCount: 0,
+            winRate: 66.6667, totalPL: 316.5, totalPips: 182.5,
+            grossProfit: 517.5, grossLoss: 201, profitFactor: 2.5746,
+            avgRR: 0.8667, avgWin: 258.75, avgLoss: -201,
+            largestWin: 335, largestLoss: -201,
+            bestPair: 'EURUSD', worstPair: 'GBPJPY', bestSession: 'LONDON',
+        },
+        equityCurve: [
+            { date: null, balance: 10000, pl: 0 },
+            { date: D.t1, balance: 10335, pl: 335 },
+            { date: D.t2, balance: 10134, pl: 134 },
+            { date: D.t3, balance: 10316.5, pl: 316.5 },
+        ],
+        byPair: [
+            { pair: 'EURUSD', pl: 335, count: 1, wins: 1, winRate: 100 },
+            { pair: 'XAUUSD', pl: 182.5, count: 1, wins: 1, winRate: 100 },
+            { pair: 'GBPJPY', pl: -201, count: 1, wins: 0, winRate: 0 },
+        ],
+        bySession: [
+            { session: 'LONDON', pl: 335, count: 1, wins: 1, winRate: 100 },
+            { session: 'NEW_YORK', pl: 182.5, count: 1, wins: 1, winRate: 100 },
+            { session: 'TOKYO', pl: -201, count: 1, wins: 0, winRate: 0 },
+        ],
+        monthly: [{ month: '2026-09', pl: 316.5, count: 3 }],
+    },
+    '2': {
+        portfolioId: '2',
+        generatedAt: D.updated,
+        version: D.updated,
+        currency: 'USD',
+        initialBalance: 100000,
+        currentBalance: 100000,
+        summary: {
+            totalTrades: 1, closedTrades: 1, openTrades: 0,
+            winCount: 0, lossCount: 0, beCount: 1,
+            winRate: 0, totalPL: 0, totalPips: 0,
+            grossProfit: 0, grossLoss: 0, profitFactor: 0,
+            avgRR: 0, avgWin: 0, avgLoss: 0,
+            largestWin: 0, largestLoss: 0,
+            bestPair: 'GBPUSD', worstPair: null, bestSession: 'LONDON',
+        },
+        equityCurve: [
+            { date: null, balance: 100000, pl: 0 },
+            { date: D.t4, balance: 100000, pl: 0 },
+        ],
+        byPair: [{ pair: 'GBPUSD', pl: 0, count: 1, wins: 0, winRate: 0 }],
+        bySession: [{ session: 'LONDON', pl: 0, count: 1, wins: 0, winRate: 0 }],
+        monthly: [{ month: '2026-09', pl: 0, count: 1 }],
+    },
+};
 
 class ApiClient {
     private async request<T>(
@@ -195,9 +270,9 @@ class ApiClient {
         return this.parseBody<T>(response);
     }
 
-    /** 204s and empty bodies are valid successes; `response.json()` alone would throw on them. */
+    /** 204s, 304s and empty bodies are valid successes; `response.json()` alone would throw on them. */
     private async parseBody<T>(response: Response): Promise<T> {
-        if (response.status === 204) return undefined as T;
+        if (response.status === 204 || response.status === 304) return undefined as T;
 
         const text = await response.text();
         if (!text) return undefined as T;
@@ -239,22 +314,15 @@ class ApiClient {
         if (endpoint.includes('/transactions')) {
             return MOCK_PORTFOLIOS.flatMap(p => p.cashTransactions || []);
         }
-        if (endpoint.includes('/stats')) {
-            return {
-                totalValue: 11240,
-                totalGain: 1240,
-                totalGainPercent: 12.4,
-                realizedGain: 1240,
-                unrealizedGain: 0,
-                availableCash: 11240,
-                winRate: 66.7,
-                profitFactor: 2.58,
-                avgRR: 1.8,
-                totalTrades: 3,
-                winCount: 2,
-                lossCount: 1,
-                beCount: 0,
-            } as PortfolioStats;
+        const analyticsMatch = endpoint.match(/^\/portfolios\/([\w-]+)\/analytics$/);
+        if (analyticsMatch) {
+            return MOCK_ANALYTICS[analyticsMatch[1]] ?? MOCK_ANALYTICS['1'];
+        }
+        if (endpoint.startsWith('/analytics')) {
+            const ids = endpoint.match(/[?&]portfolioIds=([^&]+)/)?.[1].split(',');
+            return Object.values(MOCK_ANALYTICS)
+                .filter(a => !ids || ids.includes(a.portfolioId))
+                .map(a => ({ portfolioId: a.portfolioId, version: a.version, summary: a.summary }));
         }
         throw new ApiError(`No mock fixture for GET ${endpoint}. Unset NEXT_PUBLIC_USE_MOCKS to use the real API.`);
     }
@@ -335,7 +403,8 @@ class ApiClient {
         });
     }
 
-    async deleteTrade(id: string): Promise<void> {
+    // The echoed row is how the mutation hook learns which account to invalidate.
+    async deleteTrade(id: string): Promise<{ message: string; trade: ForexTrade }> {
         return this.request(`/trades/${id}`, { method: 'DELETE' });
     }
 
@@ -361,13 +430,15 @@ class ApiClient {
         return this.request(`/transactions/${id}`, { method: 'DELETE' });
     }
 
-    async getPortfolioStats(portfolioId: string): Promise<PortfolioStats> {
-        return this.request(`/portfolios/${portfolioId}/stats`);
+    // The browser's HTTP cache does the If-None-Match round trip itself: on a
+    // 304 it replays the cached body here as a normal 200.
+    async getPortfolioAnalytics(portfolioId: string): Promise<PortfolioAnalytics> {
+        return this.request(`/portfolios/${portfolioId}/analytics`);
     }
 
-    async getTradeStats(portfolioId?: string): Promise<TradeStats> {
-        const params = portfolioId ? `?portfolioId=${portfolioId}` : '';
-        return this.request(`/stats${params}`);
+    async getAnalyticsSummaries(portfolioIds?: string[]): Promise<AccountAnalyticsSummary[]> {
+        const params = portfolioIds?.length ? `?portfolioIds=${portfolioIds.join(',')}` : '';
+        return this.request(`/analytics${params}`);
     }
 }
 

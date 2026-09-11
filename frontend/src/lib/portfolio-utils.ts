@@ -1,4 +1,4 @@
-import { ForexTrade, Portfolio, CashTransaction, AccountCurrency } from '@/types/types';
+import { ForexTrade, Portfolio, CashTransaction, AccountCurrency, ProfitFactor } from '@/types/types';
 
 const CURRENCY_LOCALES: Record<AccountCurrency, string> = {
     USD: 'en-US',
@@ -28,6 +28,16 @@ export function formatPercent(value: number): string {
 export function formatPips(pips: number): string {
     const sign = pips > 0 ? '+' : '';
     return `${sign}${pips.toFixed(1)} pips`;
+}
+
+/** The API sends 'Infinity' as a string; JSON cannot represent the number. */
+export function formatProfitFactor(pf: ProfitFactor): string {
+    return pf === 'Infinity' ? '∞' : pf.toFixed(2);
+}
+
+/** An infinite profit factor clears every threshold. */
+export function profitFactorAtLeast(pf: ProfitFactor, threshold: number): boolean {
+    return pf === 'Infinity' || pf >= threshold;
 }
 
 export function formatRR(rr: number): string {
