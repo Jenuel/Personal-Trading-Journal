@@ -35,6 +35,22 @@ export const PortfolioRepository = {
         return data;
     },
 
+    // Revalidation needs only the version stamp; SELECT_WITH_RELATIONS would
+    // drag every trade across the wire to answer it.
+    getPortfolioVersion: async (id) => {
+        const { data, error } = await supabase
+            .from(TABLE_NAME)
+            .select('id, updated_at')
+            .eq('id', id)
+            .maybeSingle();
+
+        if (error) {
+            throw error;
+        }
+
+        return data;
+    },
+
     createPortfolio: async (portfolio) => {
         const { data, error } = await supabase
             .from(TABLE_NAME)
