@@ -1,7 +1,24 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, keepPreviousData, QueryClient } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api';
 import { Portfolio, ForexTrade } from '@/types/types';
 import { toast } from 'sonner';
+
+/**
+ * Everything an account write can invalidate, in one place. ['portfolios'] is
+ * included because the sidebar switcher and settings rows read off that list and
+ * went stale after every trade write (CRUD-AUDIT F-14). Without a portfolioId,
+ * the keys are invalidated by prefix: broader, but never wrong.
+ */
+function invalidateAccountData(queryClient: QueryClient, portfolioId?: string) {
+    const scoped = (key: string) => ({ queryKey: portfolioId ? [key, portfolioId] : [key] });
+
+    queryClient.invalidateQueries(scoped('analytics'));
+    queryClient.invalidateQueries(scoped('trades'));
+    queryClient.invalidateQueries(scoped('transactions'));
+    queryClient.invalidateQueries(scoped('portfolio'));
+    queryClient.invalidateQueries({ queryKey: ['portfolios'] });
+    queryClient.invalidateQueries({ queryKey: ['analytics', 'summaries'] });
+}
 
 export function usePortfolios() {
     return useQuery({
@@ -26,6 +43,7 @@ export function useCreatePortfolio() {
             apiClient.createPortfolio(data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['portfolios'] });
+            queryClient.invalidateQueries({ queryKey: ['analytics', 'summaries'] });
             toast.success('Portfolio created successfully');
         },
         onError: (error: Error) => {
@@ -40,8 +58,7 @@ export function useUpdatePortfolio() {
         mutationFn: ({ id, data }: { id: string; data: Partial<Portfolio> }) =>
             apiClient.updatePortfolio(id, data),
         onSuccess: (_data, variables) => {
-            queryClient.invalidateQueries({ queryKey: ['portfolio', variables.id] });
-            queryClient.invalidateQueries({ queryKey: ['portfolios'] });
+            invalidateAccountData(queryClient, variables.id);
             toast.success('Portfolio updated successfully');
         },
         onError: (error: Error) => {
@@ -54,8 +71,12 @@ export function useDeletePortfolio() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: (id: string) => apiClient.deletePortfolio(id),
-        onSuccess: () => {
+        onSuccess: (_data, id) => {
+            // Drop the dead account rather than refetching a 404 for it.
+            queryClient.removeQueries({ queryKey: ['analytics', id] });
+            queryClient.removeQueries({ queryKey: ['portfolio', id] });
             queryClient.invalidateQueries({ queryKey: ['portfolios'] });
+            queryClient.invalidateQueries({ queryKey: ['analytics', 'summaries'] });
             toast.success('Portfolio deleted successfully');
         },
         onError: (error: Error) => {
@@ -72,14 +93,37 @@ export function usePortfolioTrades(portfolioId: string) {
     });
 }
 
+/**
+ * staleTime overrides the 5-minute global default in providers.tsx: the response
+ * carries an ETag, so a revalidation that hits costs a request with no body.
+ */
+export function useAnalytics(portfolioId: string) {
+    return useQuery({
+        queryKey: ['analytics', portfolioId],
+        queryFn: () => apiClient.getPortfolioAnalytics(portfolioId),
+        enabled: !!portfolioId,
+        staleTime: 0,
+        placeholderData: keepPreviousData,
+    });
+}
+
+/** One summary per account, so list rows do not fan out into a request each. */
+export function useAnalyticsSummaries() {
+    return useQuery({
+        queryKey: ['analytics', 'summaries'],
+        queryFn: () => apiClient.getAnalyticsSummaries(),
+        staleTime: 0,
+        placeholderData: keepPreviousData,
+    });
+}
+
 export function useCreateTrade() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: (data: Parameters<typeof apiClient.createTrade>[0]) =>
             apiClient.createTrade(data),
         onSuccess: (_data, variables) => {
-            queryClient.invalidateQueries({ queryKey: ['trades', variables.portfolioId] });
-            queryClient.invalidateQueries({ queryKey: ['portfolio', variables.portfolioId] });
+            invalidateAccountData(queryClient, variables.portfolioId);
             toast.success('Trade created successfully');
         },
         onError: (error: Error) => {
@@ -93,8 +137,10 @@ export function useUpdateTrade() {
     return useMutation({
         mutationFn: ({ id, data }: { id: string; data: Partial<ForexTrade> }) =>
             apiClient.updateTrade(id, data),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['trades'] });
+        // The API echoes the updated row, so the account can be scoped without
+        // threading a portfolioId through every caller.
+        onSuccess: (data) => {
+            invalidateAccountData(queryClient, data?.portfolioId);
             toast.success('Trade updated successfully');
         },
         onError: (error: Error) => {
@@ -107,8 +153,8 @@ export function useDeleteTrade() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: (id: string) => apiClient.deleteTrade(id),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['trades'] });
+        onSuccess: (data) => {
+            invalidateAccountData(queryClient, data?.trade?.portfolioId);
             toast.success('Trade deleted successfully');
         },
         onError: (error: Error) => {
@@ -131,8 +177,7 @@ export function useCreateCashTransaction() {
         mutationFn: (data: Parameters<typeof apiClient.createCashTransaction>[0]) =>
             apiClient.createCashTransaction(data),
         onSuccess: (_data, variables) => {
-            queryClient.invalidateQueries({ queryKey: ['transactions', variables.portfolioId] });
-            queryClient.invalidateQueries({ queryKey: ['portfolio', variables.portfolioId] });
+            invalidateAccountData(queryClient, variables.portfolioId);
             toast.success('Transaction created successfully');
         },
         onError: (error: Error) => {
@@ -145,8 +190,10 @@ export function useDeleteCashTransaction() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: (id: string) => apiClient.deleteCashTransaction(id),
+        // DELETE /transactions/:id answers with a message only: no account to
+        // scope to.
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['transactions'] });
+            invalidateAccountData(queryClient);
             toast.success('Transaction deleted successfully');
         },
         onError: (error: Error) => {
