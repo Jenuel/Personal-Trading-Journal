@@ -24,28 +24,25 @@ const AccountContext = createContext<AccountContextValue>({
 });
 
 export function AccountProvider({ children }: { children: React.ReactNode }) {
-    const [selectedPortfolioId, setSelectedPortfolioId] = useState<string>('');
+    const [requestedPortfolioId, setRequestedPortfolioId] = useState<string>('');
     const { data: portfolios = [], isLoading, error } = usePortfolios();
 
-    // Auto-select first portfolio once data loads
-    useEffect(() => {
-        if (portfolios.length > 0 && !selectedPortfolioId) {
-            setSelectedPortfolioId(portfolios[0].id);
-        }
-    }, [portfolios, selectedPortfolioId]);
+    // Derived, not stored: an id that no longer resolves — nothing picked yet, or
+    // the account was deleted — falls back to the first. Auto-selecting in an
+    // effect let the stored id and the rendered account disagree (CRUD-AUDIT F-12).
+    const activePortfolio =
+        portfolios.find(p => p.id === requestedPortfolioId) ?? portfolios[0];
+    const selectedPortfolioId = activePortfolio?.id ?? '';
 
     // Otherwise a failed load is indistinguishable from an empty account list.
     useEffect(() => {
         if (error) toast.error(error.message || 'Could not load your accounts');
     }, [error]);
 
-    const activePortfolio =
-        portfolios.find(p => p.id === selectedPortfolioId) ?? portfolios[0];
-
     return (
         <AccountContext.Provider value={{
             selectedPortfolioId,
-            setSelectedPortfolioId,
+            setSelectedPortfolioId: setRequestedPortfolioId,
             activePortfolio,
             portfolios,
             isLoading,
