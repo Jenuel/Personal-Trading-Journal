@@ -173,6 +173,25 @@ describe('PortfolioService', () => {
                 { message: 'Portfolio not found' }
             );
         });
+
+        // Regression guard for the analytics cache: it is keyed on updated_at,
+        // and trades have no updated_at of their own.
+        test('should stamp updated_at even when the balance is unchanged', async () => {
+            mock.method(PortfolioRepository, 'getPortfolioById', async () => ({
+                id: 1,
+                initial_balance: 10000,
+                current_balance: 10000,
+                trades: [],
+                cash_transactions: [],
+            }));
+            mock.method(PortfolioRepository, 'updatePortfolio', async () => [{ id: 1 }]);
+
+            await PortfolioService.recalculateBalance(1);
+
+            const [, updates] = PortfolioRepository.updatePortfolio.mock.calls[0].arguments;
+            assert.strictEqual(updates.current_balance, 10000);
+            assert.ok(updates.updated_at, 'expected updated_at to be stamped unconditionally');
+        });
     });
 
     test('deletePortfolio should return result on success', async () => {
