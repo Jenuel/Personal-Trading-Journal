@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
+import Link from 'next/link';
 import { TradesTable } from '@/components/trades-table';
 import { TradeDialog } from '@/components/trade-dialog';
 import { useAccount } from '@/lib/account-context';
@@ -73,9 +74,9 @@ export default function TradesPage() {
                     <p style={{ color: '#4a6080', fontSize: 14, margin: '0 0 20px' }}>
                         Create a trading account first to start logging trades.
                     </p>
-                    <a href="/portfolios" className="btn-fx" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, textDecoration: 'none' }}>
+                    <Link href="/portfolios" className="btn-fx" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, textDecoration: 'none' }}>
                         <Plus size={15} /> Create Account
-                    </a>
+                    </Link>
                 </div>
             </div>
         );
