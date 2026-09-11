@@ -9,8 +9,6 @@ import {
     LayoutDashboard,
     ScrollText,
     BarChart3,
-    TrendingUp,
-    TrendingDown,
     ChevronLeft,
     ChevronRight,
     ChevronDown,
