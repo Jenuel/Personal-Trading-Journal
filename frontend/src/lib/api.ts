@@ -1,3 +1,4 @@
+import { getToken } from '@clerk/nextjs';
 import {
     Portfolio,
     ForexTrade,
@@ -7,6 +8,26 @@ import {
 } from '@/types/types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
+/**
+ * Fixtures are an explicit opt-in for working on the UI without a backend —
+ * set NEXT_PUBLIC_USE_MOCKS=true. They are never a *fallback*: a request that
+ * fails stays failed, so mutations cannot report success they did not earn.
+ */
+const USE_MOCKS = process.env.NEXT_PUBLIC_USE_MOCKS === 'true';
+
+const REQUEST_TIMEOUT_MS = 10_000;
+
+/** Carries the HTTP status through to the hooks, so they can tell a 404 from a 500. */
+export class ApiError extends Error {
+    readonly status?: number;
+
+    constructor(message: string, status?: number) {
+        super(message);
+        this.name = 'ApiError';
+        this.status = status;
+    }
+}
 
 const MOCK_PORTFOLIOS: Portfolio[] = [
     {
@@ -126,41 +147,74 @@ class ApiClient {
         endpoint: string,
         options?: RequestInit
     ): Promise<T> {
+        const method = options?.method ?? 'GET';
+
+        // Reads can be served from fixtures, and only when mocks are switched on
+        // explicitly. Writes never are — there is no honest fixture for "saved".
+        if (USE_MOCKS && method === 'GET') {
+            return this.getMockData(endpoint) as T;
+        }
+
+        const url = `${API_URL}${endpoint}`;
+
+        // Clerk session token, so the backend can identify the caller.
+        // Null on the server or before sign-in; the request still goes out.
+        const token = await getToken().catch(() => null);
+
+        let response: Response;
         try {
-            const url = `${API_URL}${endpoint}`;
-
-            const timeoutPromise = new Promise((_, reject) => {
-                setTimeout(() => reject(new Error('Fetch timeout')), 3000);
-            });
-
-            const fetchPromise = fetch(url, {
+            response = await fetch(url, {
                 ...options,
+                // Replaces the old un-cleared setTimeout race, which leaked a timer
+                // per request and reported anything slower than 3s as a failure.
+                signal: options?.signal ?? AbortSignal.timeout(REQUEST_TIMEOUT_MS),
                 headers: {
                     'Content-Type': 'application/json',
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
                     ...options?.headers,
                 },
             });
+        } catch (cause) {
+            // Transport-level failure: the request never got an answer.
+            const timedOut = cause instanceof DOMException && cause.name === 'TimeoutError';
+            throw new ApiError(
+                timedOut
+                    ? `${method} ${endpoint} timed out after ${REQUEST_TIMEOUT_MS / 1000}s.`
+                    : `Could not reach the API at ${API_URL}. Is the backend running?`
+            );
+        }
 
-            const response = await Promise.race([fetchPromise, timeoutPromise]) as Response;
+        if (!response.ok) {
+            const body = await response.json().catch(() => ({})) as { message?: string; error?: string };
+            throw new ApiError(
+                body.message || body.error || `API error: ${response.status} ${response.statusText}`,
+                response.status
+            );
+        }
 
-            if (!response.ok) {
-                const error = await response.json().catch(() => ({}));
-                throw new Error((error as { message?: string }).message || `API error: ${response.status}`);
-            }
+        return this.parseBody<T>(response);
+    }
 
-            return response.json();
+    /** 204s and empty bodies are valid successes; `response.json()` alone would throw on them. */
+    private async parseBody<T>(response: Response): Promise<T> {
+        if (response.status === 204) return undefined as T;
+
+        const text = await response.text();
+        if (!text) return undefined as T;
+
+        try {
+            return JSON.parse(text) as T;
         } catch {
-            // Fallback to mock data for development
-            const mockData = this.getMockData(endpoint, options);
-            return mockData as T;
+            throw new ApiError('The API returned a response that was not valid JSON.', response.status);
         }
     }
 
-    private getMockData(endpoint: string, options?: RequestInit): unknown {
-        if (endpoint === '/portfolios' && (!options || options.method !== 'POST')) {
+    /** Only ever reached for GETs, and only with NEXT_PUBLIC_USE_MOCKS=true. */
+    private getMockData(endpoint: string): unknown {
+        if (endpoint === '/portfolios') {
             return MOCK_PORTFOLIOS;
         }
-        if (endpoint.match(/^\/portfolios\/[\w-]+$/) && (!options || options.method !== 'PUT' && options.method !== 'DELETE')) {
+        if (endpoint.match(/^\/portfolios\/[\w-]+$/)) {
             const id = endpoint.split('/')[2];
             return MOCK_PORTFOLIOS.find(p => p.id === id) || MOCK_PORTFOLIOS[0];
         }
@@ -202,7 +256,7 @@ class ApiClient {
                 beCount: 0,
             } as PortfolioStats;
         }
-        return {};
+        throw new ApiError(`No mock fixture for GET ${endpoint}. Unset NEXT_PUBLIC_USE_MOCKS to use the real API.`);
     }
 
     async getPortfolios(): Promise<Portfolio[]> {
