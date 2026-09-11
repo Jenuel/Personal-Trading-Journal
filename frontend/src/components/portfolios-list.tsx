@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { Portfolio } from '@/types/types';
-import { formatCurrency, calculatePortfolioGain, calculateFxStats } from '@/lib/portfolio-utils';
+import { formatCurrency, calculatePortfolioGain, formatProfitFactor, profitFactorAtLeast } from '@/lib/portfolio-utils';
+import { useAnalyticsSummaries } from '@/hooks/use-portfolios';
 import { TrendingUp, TrendingDown, ExternalLink, Pencil, Trash2 } from 'lucide-react';
 
 interface PortfoliosListProps {
@@ -19,6 +20,9 @@ const ACCOUNT_TYPE_STYLE: Record<string, { bg: string; color: string }> = {
 };
 
 export function PortfoliosList({ portfolios, onEdit, onDelete, isDeleting }: PortfoliosListProps) {
+    // One batched request for every card, rather than one per card.
+    const { data: summaries } = useAnalyticsSummaries();
+
     if (!portfolios || portfolios.length === 0) {
         return (
             <div style={{
@@ -37,8 +41,7 @@ export function PortfoliosList({ portfolios, onEdit, onDelete, isDeleting }: Por
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16 }}>
             {portfolios.map((portfolio) => {
                 const { gain, gainPercent } = calculatePortfolioGain(portfolio);
-                const trades = portfolio.trades ?? [];
-                const stats = calculateFxStats(trades);
+                const stats = summaries?.find(s => s.portfolioId === portfolio.id)?.summary;
                 const typeStyle = ACCOUNT_TYPE_STYLE[portfolio.accountType] ?? ACCOUNT_TYPE_STYLE.DEMO;
                 const isProfit = gain >= 0;
 
@@ -135,15 +138,15 @@ export function PortfoliosList({ portfolios, onEdit, onDelete, isDeleting }: Por
                             </div>
                         </div>
 
-                        {trades.length > 0 && (
+                        {(stats?.totalTrades ?? 0) > 0 && (
                             <div style={{
                                 display: 'grid', gridTemplateColumns: '1fr 1fr 1fr',
                                 background: '#0b1220', borderRadius: 8, padding: '8px 0', marginBottom: 14,
                             }}>
                                 {[
-                                    { label: 'Win Rate', value: `${stats.winRate.toFixed(0)}%`, color: stats.winRate >= 50 ? '#10b981' : '#ef4444' },
-                                    { label: 'PF', value: stats.profitFactor === Infinity ? '∞' : stats.profitFactor.toFixed(2), color: stats.profitFactor >= 1 ? '#10b981' : '#ef4444' },
-                                    { label: 'Trades', value: stats.closedTrades.toString(), color: '#c8ddef' },
+                                    { label: 'Win Rate', value: stats ? `${stats.winRate.toFixed(0)}%` : '—', color: stats && stats.winRate >= 50 ? '#10b981' : '#ef4444' },
+                                    { label: 'PF', value: stats ? formatProfitFactor(stats.profitFactor) : '—', color: stats && profitFactorAtLeast(stats.profitFactor, 1) ? '#10b981' : '#ef4444' },
+                                    { label: 'Trades', value: stats ? stats.closedTrades.toString() : '—', color: '#c8ddef' },
                                 ].map(({ label, value, color }, i) => (
                                     <div key={label} style={{
                                         textAlign: 'center',

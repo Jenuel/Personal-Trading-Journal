@@ -5,11 +5,12 @@ import Link from 'next/link';
 import { StatsCard } from '@/components/stats-card';
 import { TradesTable } from '@/components/trades-table';
 import { useAccount } from '@/lib/account-context';
-import { usePortfolioTrades } from '@/hooks/use-portfolios';
+import { usePortfolioTrades, useAnalytics } from '@/hooks/use-portfolios';
 import {
     formatCurrency,
     formatPercent,
-    calculateFxStats,
+    formatProfitFactor,
+    profitFactorAtLeast,
     calculatePortfolioGain,
 } from '@/lib/portfolio-utils';
 import {
@@ -35,12 +36,12 @@ const ACCOUNT_TYPE_STYLE: Record<string, { bg: string; color: string }> = {
 export default function Dashboard() {
     const { activePortfolio, portfolios, isLoading: accountLoading } = useAccount();
 
+    // Rows for the recent-trades table; the figures come from the server.
     const { data: trades = [], isLoading: tradesLoading } = usePortfolioTrades(activePortfolio?.id ?? '');
+    const { data: analytics } = useAnalytics(activePortfolio?.id ?? '');
 
-    const stats = useMemo(() => {
-        if (!trades.length) return null;
-        return calculateFxStats(trades);
-    }, [trades]);
+    // Null for an empty account, so the tiles show an em dash, not zeroes.
+    const stats = analytics && analytics.summary.totalTrades > 0 ? analytics.summary : null;
 
     const { gain, gainPercent } = useMemo(() => {
         if (!activePortfolio) return { gain: 0, gainPercent: 0 };
@@ -150,10 +151,10 @@ export default function Dashboard() {
                     />
                     <StatsCard
                         label="Profit Factor"
-                        value={stats ? (stats.profitFactor === Infinity ? '∞' : stats.profitFactor.toFixed(2)) : '—'}
+                        value={stats ? formatProfitFactor(stats.profitFactor) : '—'}
                         subtext={stats ? `Avg R:R ${stats.avgRR.toFixed(2)}` : 'No closed trades'}
                         icon={<BarChart3 size={16} />}
-                        accentColor={stats && stats.profitFactor >= 1.5 ? '#10b981' : stats && stats.profitFactor >= 1 ? '#f59e0b' : '#ef4444'}
+                        accentColor={stats && profitFactorAtLeast(stats.profitFactor, 1.5) ? '#10b981' : stats && profitFactorAtLeast(stats.profitFactor, 1) ? '#f59e0b' : '#ef4444'}
                         className="stagger-4"
                     />
                 </div>

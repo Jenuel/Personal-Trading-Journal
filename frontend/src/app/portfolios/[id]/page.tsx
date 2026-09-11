@@ -10,6 +10,7 @@ import { TradeDialog } from '@/components/trade-dialog';
 import {
     usePortfolio,
     usePortfolioTrades,
+    useAnalytics,
     useCreateTrade,
     useUpdateTrade,
     useDeleteTrade,
@@ -17,9 +18,11 @@ import {
 import {
     formatCurrency,
     formatPercent,
+    formatProfitFactor,
+    profitFactorAtLeast,
     calculatePortfolioGain,
-    calculateFxStats,
 } from '@/lib/portfolio-utils';
+import { AnalyticsSummary } from '@/types/types';
 import { Button } from '@/components/ui/button';
 import {
     ArrowLeft,
@@ -38,6 +41,18 @@ const ACCOUNT_TYPE_BADGE: Record<string, { bg: string; color: string }> = {
     PROP:  { bg: 'rgba(245,158,11,0.12)', color: '#f59e0b' },
 };
 
+// Shown while analytics is in flight: the header and table have their own
+// queries, so blocking the page on it would be worse than a brief row of zeroes.
+const EMPTY_SUMMARY: AnalyticsSummary = {
+    totalTrades: 0, closedTrades: 0, openTrades: 0,
+    winCount: 0, lossCount: 0, beCount: 0,
+    winRate: 0, totalPL: 0, totalPips: 0,
+    grossProfit: 0, grossLoss: 0, profitFactor: 0,
+    avgRR: 0, avgWin: 0, avgLoss: 0,
+    largestWin: 0, largestLoss: 0,
+    bestPair: null, worstPair: null, bestSession: null,
+};
+
 export default function PortfolioPage() {
     const params = useParams();
     const portfolioId = params.id as string;
@@ -46,6 +61,7 @@ export default function PortfolioPage() {
 
     const { data: portfolio, isLoading } = usePortfolio(portfolioId);
     const { data: trades } = usePortfolioTrades(portfolioId);
+    const { data: analytics } = useAnalytics(portfolioId);
 
     const createTrade = useCreateTrade();
     const updateTrade = useUpdateTrade();
@@ -89,7 +105,7 @@ export default function PortfolioPage() {
 
     const { gain, gainPercent } = calculatePortfolioGain(portfolio);
     const allTrades = trades ?? portfolio.trades ?? [];
-    const stats = calculateFxStats(allTrades);
+    const stats: AnalyticsSummary = analytics?.summary ?? EMPTY_SUMMARY;
     const typeStyle = ACCOUNT_TYPE_BADGE[portfolio.accountType] || ACCOUNT_TYPE_BADGE.DEMO;
     const isProfit = gain >= 0;
 
@@ -174,10 +190,10 @@ export default function PortfolioPage() {
                 />
                 <StatsCard
                     label="Profit Factor"
-                    value={stats.profitFactor === Infinity ? '∞' : stats.profitFactor.toFixed(2)}
+                    value={formatProfitFactor(stats.profitFactor)}
                     subtext={`Avg R:R ${stats.avgRR.toFixed(2)} · ${stats.closedTrades} trades`}
                     icon={<BarChart3 size={16} />}
-                    accentColor={stats.profitFactor >= 1.5 ? 'var(--fx-profit)' : 'var(--fx-gold)'}
+                    accentColor={profitFactorAtLeast(stats.profitFactor, 1.5) ? 'var(--fx-profit)' : 'var(--fx-gold)'}
                     className="stagger-4"
                 />
             </div>
