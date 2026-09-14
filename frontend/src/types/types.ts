@@ -61,33 +61,85 @@ export interface CashTransaction {
     createdAt: string;
 }
 
-export interface PortfolioStats {
-    totalValue: number;
-    totalGain: number;
-    totalGainPercent: number;
-    realizedGain: number;
-    unrealizedGain: number;
-    availableCash: number;
-    winRate: number;
-    profitFactor: number;
-    avgRR: number;
+// ─── Analytics ───────────────────────────────────────────────────────────────
+// Computed by the backend and never in the browser: GET /portfolios/:id/analytics
+// is the single source of truth for every figure below. Every aggregate covers
+// CLOSED trades only; open positions are reported as a count and nothing else.
+
+/**
+ * Infinity has no JSON representation — JSON.stringify turns it into null, which
+ * would be indistinguishable from "not computable". The API sends the string
+ * instead, so an account with winners and no losers is unambiguous.
+ */
+export type ProfitFactor = number | 'Infinity';
+
+export interface AnalyticsSummary {
     totalTrades: number;
+    closedTrades: number;
+    openTrades: number;
     winCount: number;
     lossCount: number;
     beCount: number;
-}
-
-export interface TradeStats {
-    totalTrades: number;
-    winRate: number;
-    profitFactor: number;
+    winRate: number;                 // percent 0-100, closed-trade denominator
+    totalPL: number;
+    totalPips: number;
+    grossProfit: number;
+    grossLoss: number;
+    profitFactor: ProfitFactor;
     avgRR: number;
     avgWin: number;
     avgLoss: number;
     largestWin: number;
     largestLoss: number;
-    totalPips: number;
-    bestPair: string;
-    worstPair: string;
+    bestPair: string | null;
+    worstPair: string | null;        // null when only one pair was traded
     bestSession: FxSession | null;
+}
+
+export interface EquityPoint {
+    date: string | null;             // null on the synthetic opening balance point
+    balance: number;
+    pl: number;
+}
+
+export interface PairPerformance {
+    pair: string;
+    pl: number;
+    count: number;
+    wins: number;
+    winRate: number;
+}
+
+export interface SessionPerformance {
+    session: FxSession | 'OTHER';    // OTHER buckets trades with no session set
+    pl: number;
+    count: number;
+    wins: number;
+    winRate: number;
+}
+
+export interface MonthlyPerformance {
+    month: string;                   // YYYY-MM
+    pl: number;
+    count: number;
+}
+
+export interface PortfolioAnalytics {
+    portfolioId: string;
+    generatedAt: string;
+    version: string;                 // the account's updated_at, the cache stamp
+    currency: AccountCurrency;
+    initialBalance: number;
+    currentBalance: number;
+    summary: AnalyticsSummary;
+    equityCurve: EquityPoint[];
+    byPair: PairPerformance[];       // sorted by pl desc
+    bySession: SessionPerformance[]; // sorted by winRate desc
+    monthly: MonthlyPerformance[];   // every month, ascending
+}
+
+export interface AccountAnalyticsSummary {
+    portfolioId: string;
+    version: string;
+    summary: AnalyticsSummary;
 }

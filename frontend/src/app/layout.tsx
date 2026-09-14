@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import { ClerkProvider } from '@clerk/nextjs'
 import { Providers } from './providers'
 import { AppShell } from '@/components/app-shell'
 import './globals.css'
@@ -31,11 +32,13 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`} data-scroll-behavior="smooth">
       <body style={{ margin: 0, padding: 0, background: '#0b0f1a', color: '#e2e8f0', fontFamily: 'var(--fx-font-sans)' }}>
-        <Providers>
-          <AppShell>
-            {children}
-          </AppShell>
-        </Providers>
+        <ClerkProvider>
+          <Providers>
+            <AppShell>
+              {children}
+            </AppShell>
+          </Providers>
+        </ClerkProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>

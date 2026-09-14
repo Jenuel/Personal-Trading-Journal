@@ -2,23 +2,152 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useSignUp } from '@clerk/nextjs';
 import { Eye, EyeOff } from 'lucide-react';
 import { AuthBrandPanel } from '@/components/auth/auth-brand-panel';
+import { SSO_CALLBACK_URL, AFTER_SIGN_UP_URL } from '@/lib/auth-urls';
+
+/** Splits "John Trader" into the first/last name Clerk stores separately. */
+function splitName(fullName: string) {
+  const parts = fullName.trim().split(/\s+/).filter(Boolean);
+  return {
+    firstName: parts[0] ?? '',
+    lastName: parts.slice(1).join(' '),
+  };
+}
 
 export default function SignUpPage() {
+  const router = useRouter();
+  const { signUp, errors, fetchStatus } = useSignUp();
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [code, setCode] = useState('');
+  const [mismatch, setMismatch] = useState(false);
 
-  function handleSubmit(e: React.FormEvent) {
+  const isLoading = fetchStatus === 'fetching';
+  // Clerk emails a code whenever the address still needs verifying.
+  const needsEmailCode = signUp.unverifiedFields.includes('email_address');
+
+  const f = errors.fields;
+  const errorMessage =
+    errors.global?.[0]?.message ??
+    f.emailAddress?.message ??
+    f.password?.message ??
+    f.firstName?.message ??
+    f.lastName?.message ??
+    f.captcha?.message ??
+    f.code?.message ??
+    null;
+
+  async function finish() {
+    if (signUp.status !== 'complete') return;
+    await signUp.finalize();
+    router.push(AFTER_SIGN_UP_URL);
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setIsLoading(true);
-    // TODO: integrate Clerk signUp()
-    setTimeout(() => setIsLoading(false), 1500);
+    if (isLoading) return;
+
+    if (password !== confirm) {
+      setMismatch(true);
+      return;
+    }
+    setMismatch(false);
+
+    const { error } = await signUp.password({
+      emailAddress: email,
+      password,
+      ...splitName(fullName),
+    });
+    if (error) return;
+
+    if (signUp.status === 'complete') {
+      await finish();
+      return;
+    }
+
+    if (signUp.unverifiedFields.includes('email_address')) {
+      await signUp.verifications.sendEmailCode();
+    }
+  }
+
+  async function handleVerify(e: React.FormEvent) {
+    e.preventDefault();
+    if (isLoading) return;
+
+    const { error } = await signUp.verifications.verifyEmailCode({ code });
+    if (error) return;
+    await finish();
+  }
+
+  async function handleGoogle() {
+    if (isLoading) return;
+    await signUp.sso({
+      strategy: 'oauth_google',
+      redirectUrl: SSO_CALLBACK_URL,
+      redirectCallbackUrl: SSO_CALLBACK_URL,
+    });
+  }
+
+  if (needsEmailCode) {
+    return (
+      <div style={s.page}>
+        <AuthBrandPanel />
+
+        <div style={s.formSide}>
+          <div style={{ ...s.formWrap, width: '420px' }}>
+
+            <div style={s.header}>
+              <h1 style={s.title}>Check your email</h1>
+              <p style={s.sub}>
+                We sent a verification code to <strong>{email}</strong>.
+              </p>
+            </div>
+
+            <form onSubmit={handleVerify} style={s.form} noValidate>
+              <div style={s.field}>
+                <label htmlFor="su-code" style={s.label}>Verification code</label>
+                <input
+                  id="su-code" inputMode="numeric" autoComplete="one-time-code"
+                  placeholder="123456" value={code}
+                  onChange={(e) => setCode(e.target.value)} required
+                  style={s.input}
+                  onFocus={(e) => Object.assign(e.currentTarget.style, s.inputFocus)}
+                  onBlur={(e) => Object.assign(e.currentTarget.style, s.input)}
+                />
+              </div>
+
+              {errorMessage && <p role="alert" style={s.error}>{errorMessage}</p>}
+
+              <button type="submit" disabled={isLoading} style={s.submitBtn}>
+                {isLoading
+                  ? <><span style={s.spinner} />Verifying...</>
+                  : 'Verify email'}
+              </button>
+            </form>
+
+            <p style={s.footer}>
+              Wrong address?{' '}
+              <button
+                type="button"
+                onClick={() => { setCode(''); void signUp.reset(); }}
+                style={s.linkBtn}
+              >
+                Start over
+              </button>
+            </p>
+
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -110,6 +239,12 @@ export default function SignUpPage() {
               <span style={s.termsLink}>Privacy Policy</span>.
             </p>
 
+            {(errorMessage || mismatch) && (
+              <p role="alert" style={s.error}>
+                {mismatch ? 'Passwords do not match.' : errorMessage}
+              </p>
+            )}
+
             <button type="submit" disabled={isLoading} style={s.submitBtn}>
               {isLoading
                 ? <><span style={s.spinner} />Creating account…</>
@@ -124,7 +259,12 @@ export default function SignUpPage() {
             <span style={s.sepLine} />
           </div>
 
-          <button type="button" style={s.googleBtn} disabled>
+          <button
+            type="button"
+            onClick={handleGoogle}
+            disabled={isLoading}
+            style={{ ...s.googleBtn, cursor: isLoading ? 'not-allowed' : 'pointer' }}
+          >
             <GoogleIcon />
             Continue with Google
           </button>
@@ -343,6 +483,27 @@ const s: Record<string, React.CSSProperties> = {
     textAlign: 'center' as const,
     fontSize: '13px',
     color: '#506880',
+  },
+
+  error: {
+    margin: 0,
+    padding: '10px 14px',
+    borderRadius: '8px',
+    background: 'rgba(122, 42, 42, 0.18)',
+    color: '#e08c8c',
+    fontSize: '12.5px',
+    lineHeight: 1.5,
+  },
+
+  linkBtn: {
+    background: 'none',
+    border: 'none',
+    padding: 0,
+    color: '#7aA8cc',
+    fontWeight: 600,
+    fontSize: '13px',
+    fontFamily: 'var(--fx-font-sans)',
+    cursor: 'pointer',
   },
 
   footerLink: {

@@ -3,6 +3,7 @@ import assert from 'node:assert';
 import { portfolioToApi, portfolioToRow } from '../../src/mappers/portfolio.js';
 import { tradeToApi, tradeToRow } from '../../src/mappers/trade.js';
 import { cashTransactionToApi, cashTransactionToRow } from '../../src/mappers/cashTransaction.js';
+import { analyticsToApi, analyticsSummariesToApi } from '../../src/mappers/analytics.js';
 
 describe('TradeMapper', () => {
     test('toApi should rename columns and coerce numerics', () => {
@@ -130,5 +131,89 @@ describe('CashTransactionMapper', () => {
 
     test('toRow should omit keys the caller did not supply', () => {
         assert.deepStrictEqual(cashTransactionToRow({ notes: 'Revised' }), { notes: 'Revised' });
+    });
+});
+
+describe('AnalyticsMapper', () => {
+    const ANALYTICS = {
+        portfolio_id: 'p1',
+        generated_at: '2026-09-11T00:00:01.000Z',
+        version: '2026-09-11T00:00:00.000Z',
+        currency: 'USD',
+        initial_balance: 10000,
+        current_balance: 10134,
+        summary: {
+            total_trades: 3, closed_trades: 2, open_trades: 1,
+            win_count: 1, loss_count: 1, be_count: 0,
+            win_rate: 50, total_pl: 134, total_pips: 0,
+            gross_profit: 335, gross_loss: 201, profit_factor: 1.6667,
+            avg_rr: 0.21, avg_win: 335, avg_loss: -201,
+            largest_win: 335, largest_loss: -201,
+            best_pair: 'EURUSD', worst_pair: null, best_session: 'LONDON',
+        },
+        equity_curve: [{ date: null, balance: 10000, pl: 0 }],
+        by_pair: [{ pair: 'EURUSD', pl: 335, count: 1, wins: 1, win_rate: 100 }],
+        by_session: [{ session: 'OTHER', pl: 0, count: 1, wins: 0, win_rate: 0 }],
+        monthly: [{ month: '2026-09', pl: 134, count: 2 }],
+    };
+
+    // No numericFields here on purpose: the service has already coerced and
+    // rounded, so a second Number() pass would only blur who owns the coercion.
+    test('toApi should rename the envelope fields', () => {
+        const analytics = analyticsToApi(ANALYTICS);
+
+        assert.strictEqual(analytics.portfolioId, 'p1');
+        assert.strictEqual(analytics.generatedAt, '2026-09-11T00:00:01.000Z');
+        assert.strictEqual(analytics.initialBalance, 10000);
+        assert.ok(!('portfolio_id' in analytics), 'snake_case must not leak to the client');
+    });
+
+    test('toApi should map the summary and every nested collection', () => {
+        const analytics = analyticsToApi(ANALYTICS);
+
+        assert.strictEqual(analytics.summary.totalTrades, 3);
+        assert.strictEqual(analytics.summary.grossProfit, 335);
+        assert.strictEqual(analytics.byPair[0].winRate, 100);
+        assert.strictEqual(analytics.bySession[0].session, 'OTHER');
+        assert.strictEqual(analytics.monthly[0].month, '2026-09');
+        assert.strictEqual(analytics.equityCurve[0].date, null);
+    });
+
+    // createMapper skips undefined but keeps null, which is what carries
+    // "no worst pair" and the equity curve's synthetic origin point.
+    test('toApi should preserve nulls rather than dropping the key', () => {
+        const analytics = analyticsToApi(ANALYTICS);
+
+        assert.ok('worstPair' in analytics.summary, 'a null worstPair must still be reported');
+        assert.strictEqual(analytics.summary.worstPair, null);
+    });
+
+    test('toApi should serialize an infinite profit factor as a string', () => {
+        const analytics = analyticsToApi({
+            ...ANALYTICS,
+            summary: { ...ANALYTICS.summary, profit_factor: Infinity },
+        });
+
+        assert.strictEqual(analytics.summary.profitFactor, 'Infinity');
+    });
+
+    test('toApi should omit a collection the payload did not carry', () => {
+        const { by_session, ...withoutSessions } = ANALYTICS;
+        const analytics = analyticsToApi(withoutSessions);
+
+        assert.ok(!('bySession' in analytics), 'an absent collection must not become undefined');
+    });
+
+    test('toApi should pass null straight through', () => {
+        assert.strictEqual(analyticsToApi(null), null);
+    });
+
+    test('summaries should map to camelCase entries', () => {
+        const rows = analyticsSummariesToApi([
+            { portfolio_id: 'p1', version: 'v', summary: ANALYTICS.summary },
+        ]);
+
+        assert.strictEqual(rows[0].portfolioId, 'p1');
+        assert.strictEqual(rows[0].summary.winRate, 50);
     });
 });

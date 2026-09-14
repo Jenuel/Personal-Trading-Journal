@@ -1,13 +1,17 @@
 'use client';
 
-import { useMemo } from 'react';
 import { useAccount } from '@/lib/account-context';
-import { usePortfolioTrades } from '@/hooks/use-portfolios';
+import { useAnalytics } from '@/hooks/use-portfolios';
 import {
     formatCurrency,
-    calculateFxStats,
-    buildEquityCurve,
+    formatProfitFactor,
+    profitFactorAtLeast,
 } from '@/lib/portfolio-utils';
+import {
+    PairPerformance,
+    SessionPerformance,
+    MonthlyPerformance,
+} from '@/types/types';
 import { BarChart3, TrendingUp, Target, Zap, Calendar } from 'lucide-react';
 
 function MiniBar({ value, max, color }: { value: number; max: number; color: string }) {
@@ -116,34 +120,22 @@ function WinLossDonut({ win, loss, be }: { win: number; loss: number; be: number
     );
 }
 
-function PairsBreakdown({ trades }: { trades: Array<{ pair: string; result?: number; outcome?: string }> }) {
-    const byPair = useMemo(() => {
-        const map: Record<string, { pl: number; count: number; wins: number }> = {};
-        trades.forEach(t => {
-            if (!map[t.pair]) map[t.pair] = { pl: 0, count: 0, wins: 0 };
-            map[t.pair].pl += t.result ?? 0;
-            map[t.pair].count++;
-            if (t.outcome === 'WIN') map[t.pair].wins++;
-        });
-        return Object.entries(map)
-            .map(([pair, v]) => ({ pair, ...v, wr: v.count > 0 ? (v.wins / v.count) * 100 : 0 }))
-            .sort((a, b) => b.pl - a.pl);
-    }, [trades]);
-
-    if (byPair.length === 0) return (
+// Ordering and figures come from the server; the top-8 slice is presentation.
+function PairsBreakdown({ rows }: { rows: PairPerformance[] }) {
+    if (rows.length === 0) return (
         <p className="text-sm text-center py-4" style={{ color: 'var(--muted-foreground)' }}>No trade data</p>
     );
 
-    const maxAbs = Math.max(...byPair.map(p => Math.abs(p.pl)));
+    const maxAbs = Math.max(...rows.map(p => Math.abs(p.pl)));
 
     return (
         <div className="space-y-3">
-            {byPair.slice(0, 8).map(({ pair, pl, count, wr }) => (
+            {rows.slice(0, 8).map(({ pair, pl, count, winRate }) => (
                 <div key={pair}>
                     <div className="flex items-center justify-between mb-1">
                         <span className="pair-label text-sm">{pair}</span>
                         <div className="flex items-center gap-3">
-                            <span className="text-xs" style={{ color: 'var(--muted-foreground)' }}>{count}t · {wr.toFixed(0)}%WR</span>
+                            <span className="text-xs" style={{ color: 'var(--muted-foreground)' }}>{count}t · {winRate.toFixed(0)}%WR</span>
                             <span
                                 className="text-sm font-bold fx-number w-20 text-right"
                                 style={{ color: pl >= 0 ? 'var(--fx-profit)' : 'var(--fx-loss)' }}
@@ -159,7 +151,7 @@ function PairsBreakdown({ trades }: { trades: Array<{ pair: string; result?: num
     );
 }
 
-function SessionBreakdown({ trades }: { trades: Array<{ session?: string; result?: number; outcome?: string }> }) {
+function SessionBreakdown({ rows }: { rows: SessionPerformance[] }) {
     const SESSION_COLORS: Record<string, string> = {
         LONDON: '#63b3ed',
         NEW_YORK: '#8ab0cc',
@@ -168,27 +160,13 @@ function SessionBreakdown({ trades }: { trades: Array<{ session?: string; result
         OVERLAP: '#a78bfa',
     };
 
-    const bySession = useMemo(() => {
-        const map: Record<string, { pl: number; count: number; wins: number }> = {};
-        trades.forEach(t => {
-            const s = t.session ?? 'OTHER';
-            if (!map[s]) map[s] = { pl: 0, count: 0, wins: 0 };
-            map[s].pl += t.result ?? 0;
-            map[s].count++;
-            if (t.outcome === 'WIN') map[s].wins++;
-        });
-        return Object.entries(map)
-            .map(([session, v]) => ({ session, ...v, wr: v.count > 0 ? (v.wins / v.count) * 100 : 0 }))
-            .sort((a, b) => b.wr - a.wr);
-    }, [trades]);
-
-    if (bySession.length === 0) return (
+    if (rows.length === 0) return (
         <p className="text-sm text-center py-4" style={{ color: '#4a6080' }}>No session data</p>
     );
 
     return (
         <div className="space-y-3">
-            {bySession.map(({ session, pl, count, wr }) => (
+            {rows.map(({ session, pl, count, winRate }) => (
                 <div key={session} className="flex items-center gap-3">
                     <div
                         className="w-1.5 h-7 rounded-sm flex-shrink-0"
@@ -205,7 +183,7 @@ function SessionBreakdown({ trades }: { trades: Array<{ session?: string; result
                         </div>
                         <div className="flex justify-between text-xs" style={{ color: '#4a6080' }}>
                             <span>{count} trade{count !== 1 ? 's' : ''}</span>
-                            <span>{wr.toFixed(0)}% WR</span>
+                            <span>{winRate.toFixed(0)}% WR</span>
                         </div>
                     </div>
                 </div>
@@ -214,27 +192,19 @@ function SessionBreakdown({ trades }: { trades: Array<{ session?: string; result
     );
 }
 
-function MonthlyPL({ trades }: { trades: Array<{ date: string; result?: number }> }) {
-    const monthly = useMemo(() => {
-        const map: Record<string, number> = {};
-        trades.forEach(t => {
-            const key = t.date.slice(0, 7); // YYYY-MM
-            map[key] = (map[key] ?? 0) + (t.result ?? 0);
-        });
-        return Object.entries(map)
-            .sort(([a], [b]) => a.localeCompare(b))
-            .slice(-12);
-    }, [trades]);
+// The API returns every month; trimming to 12 is a display choice.
+function MonthlyPL({ rows }: { rows: MonthlyPerformance[] }) {
+    const monthly = rows.slice(-12);
 
     if (monthly.length === 0) return (
         <p className="text-sm text-center py-4" style={{ color: '#4a6080' }}>No monthly data</p>
     );
 
-    const maxAbs = Math.max(...monthly.map(([, v]) => Math.abs(v)));
+    const maxAbs = Math.max(...monthly.map(m => Math.abs(m.pl)));
 
     return (
         <div className="flex items-end gap-2 h-24">
-            {monthly.map(([month, pl]) => {
+            {monthly.map(({ month, pl }) => {
                 const pct = maxAbs > 0 ? Math.abs(pl) / maxAbs : 0;
                 const label = new Date(month + '-01').toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
                 return (
@@ -260,18 +230,12 @@ function MonthlyPL({ trades }: { trades: Array<{ date: string; result?: number }
 
 export default function AnalyticsPage() {
     const { activePortfolio, isLoading: accountLoading } = useAccount();
-    const { data: allTrades = [], isLoading: tradesLoading } = usePortfolioTrades(activePortfolio?.id ?? '');
+    // Every figure here is server-computed; the trades are never fetched.
+    const { data: analytics, isLoading: analyticsLoading } = useAnalytics(activePortfolio?.id ?? '');
 
-    const isLoading = accountLoading || tradesLoading;
+    const isLoading = accountLoading || analyticsLoading;
 
-    const stats = useMemo(() => calculateFxStats(allTrades), [allTrades]);
-
-    const equityCurve = useMemo(() => {
-        if (!activePortfolio) return [];
-        return buildEquityCurve(activePortfolio.initialBalance, allTrades, activePortfolio.cashTransactions ?? []);
-    }, [activePortfolio, allTrades]);
-
-    if (isLoading) {
+    if (isLoading || !analytics) {
         return (
             <div className="page-container space-y-8">
                 <div className="h-8 w-40 rounded-lg animate-pulse" style={{ background: '#0d1524' }} />
@@ -283,6 +247,8 @@ export default function AnalyticsPage() {
             </div>
         );
     }
+
+    const summary = analytics.summary;
 
     return (
         <div className="page-container space-y-8">
@@ -298,16 +264,16 @@ export default function AnalyticsPage() {
                 </h1>
                 <p className="mt-1 text-sm" style={{ color: '#4a6080' }}>
                     {activePortfolio?.broker && <span>{activePortfolio.broker} · </span>}
-                    {stats.closedTrades} closed trade{stats.closedTrades !== 1 ? 's' : ''} analyzed
+                    {summary.closedTrades} closed trade{summary.closedTrades !== 1 ? 's' : ''} analyzed
                 </p>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 animate-slide-up stagger-1">
                 {[
-                    { label: 'Win Rate', value: `${stats.winRate.toFixed(1)}%`, color: stats.winRate >= 50 ? '#10b981' : '#ef4444', icon: <Target size={15} /> },
-                    { label: 'Profit Factor', value: stats.profitFactor === Infinity ? '∞' : stats.profitFactor.toFixed(2), color: stats.profitFactor >= 1.5 ? '#10b981' : '#f59e0b', icon: <Zap size={15} /> },
-                    { label: 'Avg R:R', value: `${stats.avgRR.toFixed(2)}R`, color: '#7aA8cc', icon: <TrendingUp size={15} /> },
-                    { label: 'Total Pips', value: `${stats.totalPips >= 0 ? '+' : ''}${stats.totalPips.toFixed(1)}`, color: stats.totalPips >= 0 ? '#10b981' : '#ef4444', icon: <BarChart3 size={15} /> },
+                    { label: 'Win Rate', value: `${summary.winRate.toFixed(1)}%`, color: summary.winRate >= 50 ? '#10b981' : '#ef4444', icon: <Target size={15} /> },
+                    { label: 'Profit Factor', value: formatProfitFactor(summary.profitFactor), color: profitFactorAtLeast(summary.profitFactor, 1.5) ? '#10b981' : '#f59e0b', icon: <Zap size={15} /> },
+                    { label: 'Avg R:R', value: `${summary.avgRR.toFixed(2)}R`, color: '#7aA8cc', icon: <TrendingUp size={15} /> },
+                    { label: 'Total Pips', value: `${summary.totalPips >= 0 ? '+' : ''}${summary.totalPips.toFixed(1)}`, color: summary.totalPips >= 0 ? '#10b981' : '#ef4444', icon: <BarChart3 size={15} /> },
                 ].map(({ label, value, color, icon }) => (
                     <div key={label} className="glass-card p-5">
                         <div className="flex items-center justify-between mb-2">
@@ -339,7 +305,7 @@ export default function AnalyticsPage() {
                     <p className="text-xs mb-4" style={{ color: '#4a6080' }}>
                         Account balance over time
                     </p>
-                    <EquityCurve points={equityCurve} />
+                    <EquityCurve points={analytics.equityCurve} />
                 </div>
 
                 <div className="glass-card p-6 animate-slide-up stagger-2">
@@ -349,20 +315,20 @@ export default function AnalyticsPage() {
                     <p className="text-xs mb-5" style={{ color: '#4a6080' }}>
                         Trade results breakdown
                     </p>
-                    <WinLossDonut win={stats.winCount} loss={stats.lossCount} be={stats.beCount} />
+                    <WinLossDonut win={summary.winCount} loss={summary.lossCount} be={summary.beCount} />
 
-                    {stats.closedTrades > 0 && (
+                    {summary.closedTrades > 0 && (
                         <div className="mt-5 pt-4 border-t grid grid-cols-2 gap-4" style={{ borderColor: 'rgba(74, 96, 128, 0.10)' }}>
                             <div>
                                 <p className="text-xs" style={{ color: '#4a6080' }}>Avg Win</p>
                                 <p className="text-base font-bold fx-number" style={{ color: '#10b981' }}>
-                                    +{formatCurrency(stats.avgWin)}
+                                    +{formatCurrency(summary.avgWin, analytics.currency)}
                                 </p>
                             </div>
                             <div>
                                 <p className="text-xs" style={{ color: '#4a6080' }}>Avg Loss</p>
                                 <p className="text-base font-bold fx-number" style={{ color: '#ef4444' }}>
-                                    {formatCurrency(stats.avgLoss)}
+                                    {formatCurrency(summary.avgLoss, analytics.currency)}
                                 </p>
                             </div>
                         </div>
@@ -376,7 +342,7 @@ export default function AnalyticsPage() {
                     <p className="text-xs mb-5" style={{ color: '#4a6080' }}>
                         P&L and win rate by currency pair
                     </p>
-                    <PairsBreakdown trades={allTrades} />
+                    <PairsBreakdown rows={analytics.byPair} />
                 </div>
 
                 <div className="glass-card p-6 animate-slide-up stagger-4">
@@ -386,7 +352,7 @@ export default function AnalyticsPage() {
                     <p className="text-xs mb-5" style={{ color: '#4a6080' }}>
                         Trading results by market session
                     </p>
-                    <SessionBreakdown trades={allTrades} />
+                    <SessionBreakdown rows={analytics.bySession} />
                 </div>
 
                 <div className="glass-card p-6 animate-slide-up stagger-5" style={{ gridColumn: '1 / -1' }}>
@@ -399,26 +365,26 @@ export default function AnalyticsPage() {
                     <p className="text-xs mb-5" style={{ color: '#4a6080' }}>
                         Net profit/loss per month (last 12 months)
                     </p>
-                    <MonthlyPL trades={allTrades} />
+                    <MonthlyPL rows={analytics.monthly} />
                 </div>
             </div>
 
-            {stats.closedTrades > 0 && (
+            {summary.closedTrades > 0 && (
                 <div className="glass-card p-6 animate-slide-up">
                     <h2 className="text-sm font-bold mb-4" style={{ color: '#c8ddef' }}>
                         Detailed Statistics
                     </h2>
                     <div className="grid gap-x-8 gap-y-3 sm:grid-cols-2 lg:grid-cols-3">
                         {[
-                            { label: 'Total Trades', value: stats.totalTrades.toString() },
-                            { label: 'Closed Trades', value: stats.closedTrades.toString() },
-                            { label: 'Open Trades', value: stats.openTrades.toString() },
-                            { label: 'Best Trade', value: `+${formatCurrency(stats.largestWin)}`, color: '#10b981' },
-                            { label: 'Worst Trade', value: formatCurrency(stats.largestLoss), color: '#ef4444' },
-                            { label: 'Total Pips', value: `${stats.totalPips >= 0 ? '+' : ''}${stats.totalPips.toFixed(1)}`, color: stats.totalPips >= 0 ? '#10b981' : '#ef4444' },
-                            { label: 'Best Pair', value: stats.bestPair ?? '—', color: '#f59e0b' },
-                            { label: 'Worst Pair', value: stats.worstPair ?? '—', color: '#ef4444' },
-                            { label: 'Best Session', value: stats.bestSession?.replace('_', ' ') ?? '—', color: '#7aA8cc' },
+                            { label: 'Total Trades', value: summary.totalTrades.toString() },
+                            { label: 'Closed Trades', value: summary.closedTrades.toString() },
+                            { label: 'Open Trades', value: summary.openTrades.toString() },
+                            { label: 'Best Trade', value: `+${formatCurrency(summary.largestWin, analytics.currency)}`, color: '#10b981' },
+                            { label: 'Worst Trade', value: formatCurrency(summary.largestLoss, analytics.currency), color: '#ef4444' },
+                            { label: 'Total Pips', value: `${summary.totalPips >= 0 ? '+' : ''}${summary.totalPips.toFixed(1)}`, color: summary.totalPips >= 0 ? '#10b981' : '#ef4444' },
+                            { label: 'Best Pair', value: summary.bestPair ?? '—', color: '#f59e0b' },
+                            { label: 'Worst Pair', value: summary.worstPair ?? '—', color: '#ef4444' },
+                            { label: 'Best Session', value: summary.bestSession?.replace('_', ' ') ?? '—', color: '#7aA8cc' },
                         ].map(({ label, value, color }) => (
                             <div key={label} className="flex items-center justify-between py-2 border-b" style={{ borderColor: 'rgba(74, 96, 128, 0.08)' }}>
                                 <span className="text-xs" style={{ color: '#4a6080' }}>{label}</span>
@@ -431,7 +397,7 @@ export default function AnalyticsPage() {
                 </div>
             )}
 
-            {stats.closedTrades === 0 && (
+            {summary.closedTrades === 0 && (
                 <div
                     className="rounded-xl p-16 text-center animate-fade-in"
                     style={{ background: '#0d1524' }}

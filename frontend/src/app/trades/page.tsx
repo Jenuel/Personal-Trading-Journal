@@ -1,14 +1,15 @@
 'use client';
 
 import { useMemo } from 'react';
+import Link from 'next/link';
 import { TradesTable } from '@/components/trades-table';
 import { TradeDialog } from '@/components/trade-dialog';
 import { useAccount } from '@/lib/account-context';
-import { usePortfolioTrades, useCreateTrade, useUpdateTrade, useDeleteTrade } from '@/hooks/use-portfolios';
+import { usePortfolioTrades, useAnalytics, useCreateTrade, useUpdateTrade, useDeleteTrade } from '@/hooks/use-portfolios';
 import { ForexTrade } from '@/types/types';
 import { Button } from '@/components/ui/button';
 import { Plus, ScrollText, Target, TrendingUp, BarChart2, Activity } from 'lucide-react';
-import { formatCurrency, calculateFxStats, calculatePortfolioGain } from '@/lib/portfolio-utils';
+import { formatCurrency, formatProfitFactor, profitFactorAtLeast, calculatePortfolioGain } from '@/lib/portfolio-utils';
 import { useState } from 'react';
 
 export default function TradesPage() {
@@ -38,10 +39,9 @@ export default function TradesPage() {
         [rawTrades]
     );
 
-    const stats = useMemo(() => {
-        if (!trades.length) return null;
-        return calculateFxStats(trades);
-    }, [trades]);
+    // Figures are server-computed; `trades` above only feeds the table.
+    const { data: analytics } = useAnalytics(activePortfolio?.id ?? '');
+    const stats = analytics && analytics.summary.totalTrades > 0 ? analytics.summary : null;
 
     const { gain, gainPercent } = useMemo(() => {
         if (!activePortfolio) return { gain: 0, gainPercent: 0 };
@@ -73,9 +73,9 @@ export default function TradesPage() {
                     <p style={{ color: '#4a6080', fontSize: 14, margin: '0 0 20px' }}>
                         Create a trading account first to start logging trades.
                     </p>
-                    <a href="/portfolios" className="btn-fx" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, textDecoration: 'none' }}>
+                    <Link href="/portfolios" className="btn-fx" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, textDecoration: 'none' }}>
                         <Plus size={15} /> Create Account
-                    </a>
+                    </Link>
                 </div>
             </div>
         );
@@ -143,9 +143,9 @@ export default function TradesPage() {
                         {
                             icon: <BarChart2 size={13} />,
                             label: 'Profit Factor',
-                            value: stats.profitFactor === Infinity ? '∞' : stats.profitFactor.toFixed(2),
+                            value: formatProfitFactor(stats.profitFactor),
                             sub: `Avg R:R ${stats.avgRR.toFixed(2)}`,
-                            color: stats.profitFactor >= 1.5 ? '#10b981' : stats.profitFactor >= 1 ? '#f59e0b' : '#ef4444',
+                            color: profitFactorAtLeast(stats.profitFactor, 1.5) ? '#10b981' : profitFactorAtLeast(stats.profitFactor, 1) ? '#f59e0b' : '#ef4444',
                         },
                         {
                             icon: <Activity size={13} />,

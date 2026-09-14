@@ -78,6 +78,10 @@ export const PortfolioService = {
             Number(portfolio.initial_balance) + realized + netDeposits
         );
 
+        // updated_at is stamped unconditionally: it is the version stamp the
+        // analytics ETag and memo are keyed on, and trades have no updated_at of
+        // their own. Making this write conditional would freeze analytics after
+        // any edit that leaves the balance unchanged.
         const results = await portfolioRepository.updatePortfolio(portfolioId, {
             current_balance: currentBalance,
             updated_at: new Date().toISOString(),
