@@ -4,7 +4,7 @@ import React from 'react';
 import { usePathname } from 'next/navigation';
 import Sidebar from '@/components/sidebar';
 
-const AUTH_PATHS = ['/sign-in', '/sign-up'];
+const AUTH_PATHS = ['/sign-in', '/sign-up', '/sso-callback'];
 
 /** Auth routes render bare; every other route gets the sidebar + main layout. */
 export function AppShell({ children }: { children: React.ReactNode }) {

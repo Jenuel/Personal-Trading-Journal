@@ -3,7 +3,9 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useClerk, useUser } from '@clerk/nextjs';
 import { useAccount } from '@/lib/account-context';
+import { SIGN_IN_URL } from '@/lib/auth-urls';
 import { formatCurrency, calculatePortfolioGain } from '@/lib/portfolio-utils';
 import {
     LayoutDashboard,
@@ -14,6 +16,7 @@ import {
     ChevronDown,
     Check,
     Settings,
+    LogOut,
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -35,6 +38,12 @@ export default function Sidebar() {
     const pathname = usePathname();
 
     const { portfolios, activePortfolio, setSelectedPortfolioId, isLoading } = useAccount();
+    const { user } = useUser();
+    const { signOut } = useClerk();
+
+    const userLabel =
+        user?.primaryEmailAddress?.emailAddress ?? user?.fullName ?? '';
+    const userInitial = (user?.firstName ?? userLabel ?? '?').charAt(0).toUpperCase();
 
     const sidebarWidth = collapsed ? 64 : 224;
 
@@ -289,6 +298,64 @@ export default function Sidebar() {
                         );
                     })}
                 </nav>
+
+                {/* ── Signed-in user ──────────────────────── */}
+                {user && (
+                    <div style={{
+                        padding: '10px 8px',
+                        borderTop: '1px solid rgba(74, 96, 128, 0.08)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 10,
+                        justifyContent: collapsed ? 'center' : 'flex-start',
+                        overflow: 'hidden',
+                    }}>
+                        <div style={{
+                            width: 28, height: 28, borderRadius: '50%',
+                            background: 'rgba(200,216,236,0.08)',
+                            color: '#8fa8c4', fontSize: 12, fontWeight: 600,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            flexShrink: 0,
+                        }}>
+                            {userInitial}
+                        </div>
+
+                        {!collapsed && (
+                            <>
+                                <span style={{
+                                    flex: 1, minWidth: 0,
+                                    fontSize: 12, color: '#4a6080',
+                                    overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                                }}>
+                                    {userLabel}
+                                </span>
+
+                                <button
+                                    onClick={() => signOut({ redirectUrl: SIGN_IN_URL })}
+                                    title="Sign out"
+                                    aria-label="Sign out"
+                                    style={{
+                                        display: 'flex', alignItems: 'center',
+                                        padding: 6, borderRadius: 6,
+                                        background: 'transparent', border: 'none',
+                                        color: '#4a6080', cursor: 'pointer',
+                                        transition: 'all 0.15s ease', flexShrink: 0,
+                                    }}
+                                    onMouseEnter={e => {
+                                        (e.currentTarget as HTMLButtonElement).style.background = '#0e1628';
+                                        (e.currentTarget as HTMLButtonElement).style.color = '#8fa8c4';
+                                    }}
+                                    onMouseLeave={e => {
+                                        (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
+                                        (e.currentTarget as HTMLButtonElement).style.color = '#4a6080';
+                                    }}
+                                >
+                                    <LogOut size={16} strokeWidth={1.75} />
+                                </button>
+                            </>
+                        )}
+                    </div>
+                )}
 
                 {/* ── Collapse toggle ───────────────────────────────────── */}
                 <div style={{ padding: '12px 0', borderTop: '1px solid rgba(74, 96, 128, 0.08)' }}>
