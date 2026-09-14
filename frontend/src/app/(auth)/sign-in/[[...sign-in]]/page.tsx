@@ -2,20 +2,49 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useSignIn } from '@clerk/nextjs';
 import { Eye, EyeOff } from 'lucide-react';
 import { AuthBrandPanel } from '@/components/auth/auth-brand-panel';
+import { SSO_CALLBACK_URL, AFTER_SIGN_IN_URL } from '@/lib/auth-urls';
 
 export default function SignInPage() {
+  const router = useRouter();
+  const { signIn, errors, fetchStatus } = useSignIn();
+
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
 
-  function handleSubmit(e: React.FormEvent) {
+  const isLoading = fetchStatus === 'fetching';
+  const errorMessage =
+    errors.global?.[0]?.message ??
+    errors.fields.identifier?.message ??
+    errors.fields.password?.message ??
+    null;
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setIsLoading(true);
-    // TODO: integrate Clerk signIn()
-    setTimeout(() => setIsLoading(false), 1500);
+    if (isLoading) return;
+
+    const { error } = await signIn.password({ identifier: email, password });
+    if (error) return;
+
+    if (signIn.status === 'complete') {
+      await signIn.finalize();
+      router.push(AFTER_SIGN_IN_URL);
+    }
+    // Any other status (MFA, password reset, …) leaves `signIn` mid-flow;
+    // add the matching step here when those strategies get enabled in Clerk.
+  }
+
+  async function handleGoogle() {
+    if (isLoading) return;
+    await signIn.sso({
+      strategy: 'oauth_google',
+      redirectUrl: SSO_CALLBACK_URL,
+      redirectCallbackUrl: SSO_CALLBACK_URL,
+    });
   }
 
   return (
@@ -68,6 +97,10 @@ export default function SignInPage() {
               </div>
             </div>
 
+            {errorMessage && (
+              <p role="alert" style={s.error}>{errorMessage}</p>
+            )}
+
             <button type="submit" disabled={isLoading} style={s.submitBtn}>
               {isLoading
                 ? <><span style={s.spinner} />Signing in…</>
@@ -82,7 +115,12 @@ export default function SignInPage() {
             <span style={s.sepLine} />
           </div>
 
-          <button type="button" style={s.googleBtn} disabled>
+          <button
+            type="button"
+            onClick={handleGoogle}
+            disabled={isLoading}
+            style={{ ...s.googleBtn, cursor: isLoading ? 'not-allowed' : 'pointer' }}
+          >
             <GoogleIcon />
             Continue with Google
           </button>
@@ -300,5 +338,15 @@ const s: Record<string, React.CSSProperties> = {
     color: '#7aA8cc',
     textDecoration: 'none',
     fontWeight: 600,
+  },
+
+  error: {
+    margin: 0,
+    padding: '10px 14px',
+    borderRadius: '8px',
+    background: 'rgba(122, 42, 42, 0.18)',
+    color: '#e08c8c',
+    fontSize: '12.5px',
+    lineHeight: 1.5,
   },
 };
